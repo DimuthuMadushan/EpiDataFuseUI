@@ -14,14 +14,86 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color:white;
   min-height: 100vh;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+ 
+}
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: auto;
+}
+.box {
+  background-color:white;
+  width: 33%;
+  padding: 5px;
+}
+h4{
+  color: black;
+  text-align: left;
+}
+h6{
+  color: black;
+  text-align: left;
+}
+.h7{
+  color: red;
+  text-align: left;
+}
+.response{
+  color: green;
+  text-align: center;
+}
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+ 
+}
+.col-50 {
+  float: left;
+  width: 50%;
+  margin-top: 6px;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+.input-bar {
+  border:none;
+  border-bottom:1px solid #ccc;
+}
+
+input{
+  border:none;
+  border-bottom:1px solid #ccc;
+}
+
+label {
+  display: inline-block;
+}
+
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.header-background{
+  background-image: "header.jpg";
+  background-color: #EEEEEE;
 }
 
 .App-link {
