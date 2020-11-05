@@ -119,7 +119,7 @@ class IngestConfig extends React.Component {
     render() {
         let {records, shpFile} = this.state
         return(
-        <div >
+        <div className="w3-border" >
             <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                 <h6>
                 <label>Feature Name</label>

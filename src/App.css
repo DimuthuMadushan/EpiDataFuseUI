@@ -96,6 +96,16 @@ label {
   background-color: #EEEEEE;
 }
 
+.btn-home{
+  padding: 70px;
+  align-items: auto;
+  justify-content: space-around;
+
+}
+.item-align{
+  justify-content: space-between;
+}
+
 .App-link {
   color: #61dafb;
 }

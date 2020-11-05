@@ -99,7 +99,7 @@ class GranularityMappingConfig extends React.Component {
     render() {
         let {spatial, granularity,aggregationGran,featureGran} = this.state
         return(
-        <div >
+        <div  >
             <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                 <h6>
                     <div className="w3-panel w3-border">

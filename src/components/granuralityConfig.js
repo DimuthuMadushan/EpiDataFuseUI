@@ -129,11 +129,12 @@ class GranularityConfig extends React.Component {
     render() {
         let {featureGran} = this.state
         return(
-        <div >
+        <div  >
             <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                 <h6>
+                <label>Aggragation granularities</label>
                     <div className="w3-panel w3-border">
-                        <label>Aggragation granularities</label>
+                        
                         <br />
                         <div className="row" id="aggragationGran">
                             <label className="col-50">Temporal</label>

@@ -68,8 +68,7 @@ class SchemaConfig extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attribute: "", attributeName: "", attributeType: "", derived: "" }],
-            records: [...prevState.records, { attributeName: "", columnNumber: "" }],
+            attributes: [...prevState.attributes, { attribute: "", attributeName: "", attributeType: "", derived: "" }]
         }));
     }
     removeAttribute = (e) => {
@@ -163,9 +162,9 @@ class SchemaConfig extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { attributes, records, features } = this.state
+        let { attributes, features } = this.state
         return (
-            <div>
+            <div className="w3-border">
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                     <h6>
                         <label>Feature Name</label>
@@ -224,39 +223,6 @@ class SchemaConfig extends React.Component {
                         <br />
                         <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
                         <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
-                        
-                        {/* <label>Records</label>
-                        <br />
-                        <label className="col-50">Name</label>
-                        <label className="col-50">Column Index</label> */}
-                        {/* {
-                            records.map((val, idx) => {
-                                let attributeName = val["attributeName"]
-                                return (
-                                    <div key={idx} className="row">
-                                        <input
-                                            type="text"
-                                            name={attributeName}
-                                            data-id={idx}
-                                            id="columnNumber"
-                                            value={val["attributeName"]}
-                                            readOnly
-                                            className="col-25"
-                                        />
-                                        <label className="col-25"></label>
-                                        <input
-                                            type="text"
-                                            name={attributeName}
-                                            data-id={idx}
-                                            id="columnNumber"
-                                            value={records[idx].atr}
-                                            className="col-25"
-                                        />
-                                        {this.state.errorMsg[2]}
-                                    </div>
-                                )
-                            })
-                        } */}
                         <br /><br />
                         <label>Configuration</label>
                         <br />

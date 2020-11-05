@@ -64,7 +64,7 @@ class sourceConnector extends React.Component {
             {
                 sourceConnector.map((val, idx)=>{
                     return(
-                        <div key={idx} className="" >
+                        <div  key={idx} className="w3-border" >
                             <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                                 <h6>
                                 <label>Feature Name</label>
