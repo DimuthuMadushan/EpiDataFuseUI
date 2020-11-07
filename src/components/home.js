@@ -161,7 +161,7 @@ export default function PersistentDrawerLeft() {
         <div className="btn-home w3-border" >
         <Router>
         <Switch>
-          <Route exact path="/"><CreatePipeline/></Route>
+          <Route exact path="/app"><CreatePipeline/></Route>
           <Route exact path="/pipeline"><Pipeline/></Route>
           
         </Switch>

@@ -1,0 +1,17 @@
+.paper{
+    margin-Top: 8px;
+    display: 'flex';
+    flex-Direction: 'column';
+    align-Items: 'center';
+  }
+  .avatar {
+    margin: 1px;
+    background-Color: black;
+  }
+  .form {
+    width: '100%';
+    margin-Top: 1px;
+  }
+  .submit{
+    margin: 3px, 0px, 2px;
+  }
