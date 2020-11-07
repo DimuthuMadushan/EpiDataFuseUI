@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import auth from '../firebase/firebase';
+import fire from '../firebase/firebase';
 
 
 class SignUp extends React.Component{
@@ -39,7 +39,7 @@ class SignUp extends React.Component{
   }
 
   signUp=()=>{
-    auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
+    fire.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(res => {
         console.log(res)
       })

@@ -7,7 +7,7 @@ import SignIn from './components/signin'
 import SignUp from './components/signup'
 import {Route,Redirect, BrowserRouter as Router, Switch, Link} from 'react-router-dom';
 import CustomRouter from './components/router';
-import auth from './firebase/firebase';
+import fire from './firebase/firebase';
 
 class App extends React.Component {
   constructor(props){
@@ -25,7 +25,7 @@ class App extends React.Component {
   }
 
   authListener(){
-    auth.onAuthStateChanged((user)=>{
+    fire.auth().onAuthStateChanged((user)=>{
       if(user){
         this.setState({ user });
       } else {
