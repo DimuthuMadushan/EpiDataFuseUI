@@ -12,8 +12,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CreatePipeline from './createPipeline'
-import Pipeline from './pipeline'
+import CreatePipeline from './createPipeline';
+import Pipeline from './pipeline';
+import app from "../firebase/firebase.js";
 import {Route,Redirect, BrowserRouter as Router, Switch, Link} from 'react-router-dom';
 import { ListItem } from '@material-ui/core';
 
@@ -117,6 +118,7 @@ export default function PersistentDrawerLeft() {
             <p>Spatio Temporal Data Fusion Engine for Machine Learning Platform</p>
           </div>
           </Typography>
+          <button style={{fontsize:"24px"}} onClick={()=>{app.auth().signOut()}}>Logout <i className="fa fa-sign-out"></i></button>
           
         </Toolbar>
         <div class="w3-bar w3-teal">
