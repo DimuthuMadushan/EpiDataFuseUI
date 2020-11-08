@@ -1,55 +1,59 @@
 import React from 'react';
 import axios from 'axios';
+import Api from './api';
 
 class SchemaConfig extends React.Component {
     state = {
-        featureName:"",
+        featureName: "",
         attributes: [{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
-        configurations:[{geom:"POINT", dtg:"YYYYMMDD", featureId:""}],
-        features: [{featureName:"", attributes: [], configurations:[] }],
-        errorMsg:{featureName:"", atttributes:"", configurations:""},
-        response:""
+        configurations: [{ geom: "POINT", dtg: "YYYYMMDD", featureId: "" }],
+        features: [{ featureName: "", attributes: [], configurations: [] }],
+        postingFeatures: [],
+        errorMsg: { featureName: "", atttributes: "", configurations: "" },
+        response: ""
     }
-    
- 
+
+    api = new Api();
+
+
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
-        let id =  e.target.dataset.id
+        let id = e.target.dataset.id
         if (["attribute", "attributeName", "attributeType", "derived"].includes(e.target.id)) {
             let attributes = [...this.state.attributes]
             console.log("data set id:", e.target.dataset.id)
             attributes[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
             this.setState({ attributes }, () => {
                 let err = '';
-                if(!this.state.attributes[id]["attribute"] ||!this.state.attributes[id]["attributeName"]||
-                !this.state.attributes[id]["attributeType"]||!this.state.attributes[id]["derived"] ){
+                if (!this.state.attributes[id]["attribute"] || !this.state.attributes[id]["attributeName"] ||
+                    !this.state.attributes[id]["attributeType"] || !this.state.attributes[id]["derived"]) {
                     err = "Attribute fieldS can not be empty";
                     errorMsg["atttributes"] = err
-                    this.setState({errorMsg});
+                    this.setState({ errorMsg });
                 } else {
                     err = "";
                     errorMsg["atttributes"] = err
-                    this.setState({errorMsg}); 
+                    this.setState({ errorMsg });
                 }
                 //console.log(this.state.attributes)
             })
-        } else if (["geom","dtg","featureId"].includes(e.target.id)) {
+        } else if (["geom", "dtg", "featureId"].includes(e.target.id)) {
             console.log("configuration change")
             let configurations = [...this.state.configurations]
             let error = ""
             errorMsg["configurations"] = error
-            this.setState({errorMsg})
+            this.setState({ errorMsg })
             configurations[0][e.target.id] = e.target.value.toUpperCase()
             this.setState({ configurations }, () => {
                 let err = '';
-                if(!this.state.configurations[0]["featureId"] ){
+                if (!this.state.configurations[0]["featureId"]) {
                     err = "FeatureId field can not be empty";
                     errorMsg["configurations"] = err
-                    this.setState({errorMsg});
+                    this.setState({ errorMsg });
                 } else {
                     err = "";
                     errorMsg["configurations"] = err
-                    this.setState({errorMsg}); 
+                    this.setState({ errorMsg });
                 }
             })
         }
@@ -59,10 +63,10 @@ class SchemaConfig extends React.Component {
                 error = `${e.target.name} field cannot be empty`
             }
             errorMsg["featureName"] = error
-            this.setState({errorMsg});
+            this.setState({ errorMsg });
             this.setState({ [e.target.name]: e.target.value.toUpperCase() })
         }
-        
+
 
     }
 
@@ -94,40 +98,64 @@ class SchemaConfig extends React.Component {
         if (!this.state.featureName) {
             error = `Feature name field cannot be empty`
             errorMsg["featureName"] = error
-            this.setState({errorMsg});
+            this.setState({ errorMsg });
         }
-        else if(!this.state.configurations[0]["featureId"]){
+        else if (!this.state.configurations[0]["featureId"]) {
             error = `FeatureId field cannot be empty`
             errorMsg["configurations"] = error
-            this.setState({errorMsg});
-        } else if(this.state.errorMsg[1] ){
+            this.setState({ errorMsg });
+        } else if (this.state.errorMsg[1]) {
         } else {
-            console.log(this.state.errorMsg)
-            var id = this.state.features.length
-            let features = [...this.state.features]
-            features[id - 1]["featureName"] = this.state.featureName
-            features[id - 1]["attributes"] = this.state.attributes
-            features[id - 1]["records"] = this.state.records
-            features[id - 1]["configurations"] = this.state.configurations
-            this.setState({ features }, () => {
-                console.log(this.state.features)
+            // console.log(this.state.errorMsg)
+            // var id = this.state.features.length
 
-            })
+            // let features = [...this.state.features]
+            // features[id - 1]["featureName"] = this.state.featureName
+            // features[id - 1]["attributes"] = this.state.attributes
+            // features[id - 1]["records"] = this.state.records
+            // features[id - 1]["configurations"] = this.state.configurations
+            // this.setState({ features }, () => {
+            //     console.log(this.state.features)
+
+            // })
+            // this.setState((prevState) => ({
+            //     features: [...prevState.features, { featureName: "", attributes: [], records: [], configurations: [] }],
+            //     attributes: [{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
+            //     records: [{ attributeName: "", columnNumber: "" }],
+            //     configurations: [{ geom: "POINT", dtg: "YYYYMMDD", featureId: "" }],
+            //     featureName: ""
+            // }))
+
+            let addedFeature = {
+                featureName: this.state.featureName,
+                attributes: this.state.attributes,
+                records: this.state.records,
+                configurations: this.state.configurations
+            }
+
+            this.setState(prevState => ({
+                postingFeatures: [...prevState.postingFeatures, addedFeature]
+            }), () => {
+                console.log(this.state.postingFeatures);
+            });
+
             this.setState((prevState) => ({
-                features: [...prevState.features, {featureName:"", attributes: [], records: [], configurations:[] }],
-                attributes:[{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
-                records : [{ attributeName: "", columnNumber: "" }],
-                configurations: [{geom:"POINT", dtg:"YYYYMMDD", featureId:""}],
-                featureName:""
+                features: [{ featureName: "", attributes: [], records: [], configurations: [] }],
+                attributes: [{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
+                records: [{ attributeName: "", columnNumber: "" }],
+                configurations: [{ geom: "POINT", dtg: "YYYYMMDD", featureId: "" }],
+                featureName: ""
             }))
+
+
 
             Array.from(document.querySelectorAll("input")).forEach(
                 input => (input.value = "")
             );
-            errorMsg = {featureName:"", atttributes:"", records:"", configurations:""}
-            this.setState({errorMsg})
+            errorMsg = { featureName: "", atttributes: "", records: "", configurations: "" }
+            this.setState({ errorMsg })
         }
-        }
+    }
     removeFeature = (e) => {
         var arrayFeature = this.state.features;
         if (arrayFeature.length > 1) {
@@ -135,29 +163,28 @@ class SchemaConfig extends React.Component {
         }
         this.setState((prevState) => ({
             features: arrayFeature,
-            errorMsg: {featureName:"", atttributes:"", records:"", configurations:""}
-        }),()=>{
+            errorMsg: { featureName: "", atttributes: "", records: "", configurations: "" }
+        }), () => {
             console.log(this.state.features)
         });
         Array.from(document.querySelectorAll("input")).forEach(
             input => (input.value = "")
-          );
+        );
     }
 
-    postConfigurations = (e) =>{
+    postConfigurations = (e) => {
         let response = this.state.response
-        if(!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]){
-            axios
-            .post('https://localhost:8080', this.state.features)
-            .then(response =>{
-                console.log(response)
-            })
-            .catch(error =>{
-                console.log(error)
-            })
+        if (!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
+            this.api.configureSchema(this.state.features)
+                .then(response => {
+                    console.log(response)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
         }
-    } 
-    
+    }
+
     handleSubmit = (e) => {
         e.preventDefault()
     }
@@ -250,10 +277,10 @@ class SchemaConfig extends React.Component {
                     </h6>
                     <button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeFeature}>Remove</button>
                     <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addFeature}>Add Feature</button>
-                    <br/>
+                    <br />
                 </form>
-                <div className="response w3-panel w3-border">{this.state.response}</div> 
-                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.postConfigurations}>Submit</button>     
+                <div className="response w3-panel w3-border">{this.state.response}</div>
+                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.postConfigurations}>Submit</button>
             </div>
         );
     }
