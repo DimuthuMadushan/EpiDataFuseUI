@@ -1,67 +1,95 @@
-import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import React, { useCallback, useState} from "react";
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import fire from '../firebase/firebase';
+import {useHistory, Link } from 'react-router-dom';
+import app from "../firebase/firebase.js";
+import PipelineDataService from "../firebase/pipelineDataService.js";
 
 
-class SignUp extends React.Component{
-  state = {
-      email: "",
-      password:""
-    }
-  handleChange=(e)=>{
-    if(e.target.id==="email"){
-      let email = e.target.value
-      this.setState({email},()=>{
-        console.log(this.state.email)
-      })
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {'Copyright © '}
+      <Link color="inherit" href="https://material-ui.com/">
+        EpiDataFuse
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
+export default function SignUp() {
+  const [error, setError] = useState(null);
+  const classes = useStyles();
+  const history = useHistory();
+  const handleSignUp = useCallback(async event => {
+    event.preventDefault();
+    const { email, password, userName } = event.target.elements;
+    if(userName.value){
+      try {
+        await app
+          .auth()
+          .createUserWithEmailAndPassword(email.value, password.value);
+        PipelineDataService.create({userName:userName.value, email:email.value });
+        history.push("/");
+      } catch (error) {
+        setError(error.message);
+        console.log(error.message)
+      } 
     } else {
-      let password = e.target.value
-      this.setState({password},()=>{
-        console.log(this.state.password)
-      })
+      setError("The User Name is invalid.")
     }
-  }
-
-  handleSubmit = (e) => {
-    e.preventDefault()
-  }
-
-  signUp=()=>{
-    fire.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-    .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-  }
-
-
-  render(){
+}, [history]);
+  
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className="paper">
-        <Avatar className="avatar">
-          <LockOutlinedIcon />
-        </Avatar>
+      <div className={classes.paper}>
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className="form" onChange={this.handleChange} noValidate>
+        <form onSubmit={handleSignUp} className={classes.form} noValidate>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="fname"
+                name="userName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="User Name"
+                autoFocus
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -86,7 +114,11 @@ class SignUp extends React.Component{
               />
             </Grid>
             <Grid item xs={12}>
-             
+            <div className="h7">{error}</div>
+              {/* <FormControlLabel
+                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                label="I want to receive inspiration, marketing promotions and updates via email."
+              /> */}
             </Grid>
           </Grid>
           <Button
@@ -94,13 +126,13 @@ class SignUp extends React.Component{
             fullWidth
             variant="contained"
             color="primary"
-            onClick={this.signUp}
+            className={classes.submit}
           >
             Sign Up
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="/" variant="body2">
+              <Link to="/signin" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>
@@ -108,18 +140,8 @@ class SignUp extends React.Component{
         </form>
       </div>
       <Box mt={5}>
-        <Typography variant="body2" color="textSecondary" align="center">
-        {'Copyright © '}
-        <Link color="inherit" href="https://material-ui.com/">
-          EpiDataFuse
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
+        <Copyright />
       </Box>
     </Container>
   );
-  }
 }
-
-export default SignUp;
