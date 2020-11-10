@@ -2,46 +2,22 @@ import React,{useRef, useState} from 'react';
 import './App.css';
 import './w3.css';
 import './Mt.css';
-import Home from './components/home'
+import Home from './components/home';
 import SignIn from './components/signin'
 import SignUp from './components/signup'
 import {Route,Redirect, BrowserRouter as Router, Switch, Link} from 'react-router-dom';
 import PrivateRoute from './components/router';
 import fire from './firebase/firebase';
 import { AuthProvider } from './components/authentication';
+import CreatePipeline from './components/createPipeline';
 
 class App extends React.Component {
-//   constructor(props){
-//     super(props);
-//     this.state = {
-//       user: null,
-//     }
 
-//     this.authListenr = this.authListener.bind(this);
-//   }
-
-//   componentDidMount(){
-//     console.log(this.state.user)
-//     this.authListener();
-//   }
-
-//   authListener(){
-//     fire.auth().onAuthStateChanged((user)=>{
-//       if(user){
-//         this.setState({ user });
-//       } else {
-//         this.setState({user:null});
-//       }
-//     })
-//   }
-//   handleSubmit = (e) => {
-//     e.preventDefault()
-// }
   render(){
   return (
     <AuthProvider>
       <div>
-        <PrivateRoute exact path="/" component = {Home}/>
+        <PrivateRoute exact path="/" component={Home}/>
         <Route exact path="/signin" component = {SignIn}/>
         <Route exact path="/signup" component = {SignUp}/>
         {/* <Switch>

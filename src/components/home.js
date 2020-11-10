@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children, Component, useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,14 +17,20 @@ import Pipeline from './pipeline';
 import app from "../firebase/firebase.js";
 import {Route,Redirect, BrowserRouter as Router, Switch, Link} from 'react-router-dom';
 import { ListItem } from '@material-ui/core';
-
+import PrivateRoute from './router';
+import CustomRoute from './customRoute';
+import { AuthContext } from './authentication';
+import {useHistory } from 'react-router-dom';
+import PipelineDataService from '../firebase/pipelineDataService';
+import SchemaConfig from './schemaConfig';
+import firebase from "../firebase/firebase";
 
 const drawerWidth = 240;
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    flexdirection: 'column',
   },
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
@@ -82,25 +88,40 @@ const useStyles = makeStyles((theme) => ({
 export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [userName, setUserName] = useState(null);
 
   const handleDrawerOpen = () => {
+
     setOpen(true);
   };
+
+  const getUserName=()=>{
+    var uid = firebase.auth().currentUser.uid;
+    let name;
+    firebase.database().ref('users/'+uid).on("value", snapshot => {
+      name = snapshot.val().userName
+      setUserName(name)
+      console.log(name)
+  });
+}
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
 
+
   return (
     <div className={classes.root}>
+      <Router>
       <CssBaseline />
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open,
         })}
+        
       >
         <Toolbar>
           <IconButton
@@ -112,19 +133,21 @@ export default function PersistentDrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography noWrap>
+          
           <div>
             <h1>EpiDataFuse</h1>
-            <p>Spatio Temporal Data Fusion Engine for Machine Learning Platform</p>
+            <Typography noWrap>
+            Spatio Temporal Data Fusion Engine for Machine Learning Platform
+            </Typography>
           </div>
-          </Typography>
+          
           <button style={{fontsize:"24px"}} onClick={()=>{app.auth().signOut()}}>Logout <i className="fa fa-sign-out"></i></button>
           
         </Toolbar>
-        <div class="w3-bar w3-teal">
-            <a href="#" class="w3-bar-item w3-button w3-right">Status</a>
-            <a href="/pipeline" class="w3-bar-item w3-button w3-right">Create</a>
-            <a href="/" class="w3-bar-item w3-button w3-right">Home</a>
+        <div className="w3-bar w3-teal">
+            <Link to="/status" class="w3-bar-item w3-button w3-right">Status</Link>
+            <Link to="/pipeline" class="w3-bar-item w3-button w3-right">Customize Pipeline</Link>
+            <Link to="/" class="w3-bar-item w3-button w3-right">Home</Link>
           </div>
       </AppBar>
       <Drawer
@@ -143,33 +166,29 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
-          <div class="w3-card-4 w3-dark-white">
-          <div class="w3-container w3-center">
+          <div className="w3-card-4 w3-dark-white">
+          <div className="w3-container w3-center">
             <h3>User</h3>
             <img src="userProfile.jpg" alt="Avatar" style={{width:"80%"}}></img>
-            <h5>Chanuka Dissanayake</h5>
+            <h5>{userName}</h5>
           </div>
           </div>
-        </List>
-        
+        </List> 
       </Drawer>
-      <main
+      <div
         className={clsx(classes.content, {
           [classes.contentShift]: open,
         })}
       >
         <div className={classes.drawerHeader}/>
-        
         <div className="btn-home w3-border" >
-        <Router>
-        <Switch>
-          <Route exact path="/app"><CreatePipeline/></Route>
-          <Route exact path="/pipeline"><Pipeline/></Route>
-          
-        </Switch>
-        </Router>
-        </div>   
-      </main>
+          <Switch>
+          <PrivateRoute exact path="/pipeline" component={Pipeline}/>
+          <PrivateRoute exact path="/" component={CreatePipeline}/>
+          </Switch>
+        </div>
+      </div>
+      </Router>
     </div>
   )
 }
