@@ -2,8 +2,6 @@ import React, { useCallback, useState} from "react";
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
@@ -57,9 +55,15 @@ export default function SignUp() {
       try {
         await app
           .auth()
-          .createUserWithEmailAndPassword(email.value, password.value);
-        PipelineDataService.create({userName:userName.value, email:email.value });
+          .createUserWithEmailAndPassword(email.value, password.value).then(
+            ()=>{
+              var uid = app.auth().currentUser.uid;
+              console.log(uid);
+              PipelineDataService.createUser(uid,{userName:userName.value, email:email.value});
+            }
+          );
         history.push("/");
+        
       } catch (error) {
         setError(error.message);
         console.log(error.message)

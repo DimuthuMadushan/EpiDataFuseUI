@@ -1,18 +1,39 @@
 import firebase from "./firebase";
-const db = firebase.database().ref("/users");
+const db = firebase.database();
 
-
-class pipelineDataService {
-  getAll() {
-    return db;
+class PipelineDataService {
+  
+  getPipeline() {
+    var uid = firebase.auth().currentUser.uid;
+    let pipelines=[];
+    db.ref('users/'+uid+'/pipelines/').once("value")
+    .then((snapshot)=>{
+      snapshot.forEach((childSnapshot)=>{
+        pipelines.push(childSnapshot.val());
+      })
+    }
+    );
+    return pipelines;
   }
 
-  create(user) {
-    return db.push(user);
+  createUser(uid, user) {
+    return db.ref('users/'+uid).set(user);
   }
 
-  update(key, value) {
-    return db.child(key).update(value);
+  updatePipeline(key, value) {
+    var uid = firebase.auth().currentUser.uid;
+    return db.ref('users/'+uid+'/pipelines/').child(key).update(value);
+  }
+
+  getUserName(){
+    var uid = firebase.auth().currentUser.uid;
+    let name;
+    db.ref('users/'+uid).once("value").then((snapshot)=>{
+    name = snapshot.val().userName
+    console.log(name)
+    });
+    
+    return name
   }
 
   delete(key) {
@@ -23,5 +44,5 @@ class pipelineDataService {
     return db.remove();
   }
 }
-export default new pipelineDataService();
+export default new PipelineDataService();
 
