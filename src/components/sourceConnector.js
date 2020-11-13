@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-class sourceConnector extends React.Component {
+class Connector extends React.Component {
     state = {
         parameters:{url:"",requestFrequency:"",batchSize:""},
         sourceConnector:[{featureName:"", sourceType:"", parameters:{}}],
@@ -99,4 +99,4 @@ class sourceConnector extends React.Component {
     }
 }
 
-export default sourceConnector;
+export default Connector;

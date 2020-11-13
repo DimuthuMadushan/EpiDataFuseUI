@@ -26,6 +26,11 @@ import PipelineDataService from '../firebase/pipelineDataService';
 import SchemaConfig from './schemaConfig';
 import firebase from "../firebase/firebase";
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
+import Schema from "./single/schema";
+import Granularity from "./single/granularity";
+import BulkIngest from "./single/bulkIngest";
+import Ingest from "./single/ingest";
+import SourceConnector from "./single/sourceConnector";
 
 const drawerWidth = 240;
 
