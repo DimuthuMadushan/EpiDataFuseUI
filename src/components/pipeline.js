@@ -5,7 +5,7 @@ import GranularityConfig from './granuralityConfig'
 import GranularityMappingConfig from './granularityMappingConfig'
 import SchemaConfig from './schemaConfig'
 import Query from './query';
-import SourceConnector from './sourceConnector';
+
 import IngestConfig from './ingestConfig';
 import Start from './start';
 import { Divider } from '@material-ui/core';
@@ -19,7 +19,11 @@ import Select from '@material-ui/core/Select';
 import PipelineDataService from '../firebase/pipelineDataService';
 import firebase from "../firebase/firebase";
 import PrivateRoute from './router';
-
+import Schema from "./single/schema";
+import Ingest from "./single/ingest";
+import Granularity from "./single/granularity";
+import BulkIngest from "./single/bulkIngest";
+import SourceConnector from "./single/sourceConnector";
 class Pipeline extends React.Component {
     
     constructor(){
@@ -104,13 +108,13 @@ class Pipeline extends React.Component {
                     <Link to="/addFeature"><button className="w3-btn w3-white w3-border w3-border-green w3-round-large">Add New Feature</button></Link>
                     <Link to="/addSource"><button className="w3-btn w3-white w3-border w3-border-green w3-round-large">Add New Sources</button></Link>
                     <Link to="/addGranConfig"> <button className="w3-btn w3-white w3-border w3-border-green w3-round-large">Add Granularity Config</button></Link>
-                    <Link to="/addAggreConfig"><button className="w3-btn w3-white w3-border w3-border-green w3-round-large">Add Granularity Mapping Config</button></Link>
+                    <Link to="/addAggreConfig"><button className="w3-btn w3-white w3-border w3-border-green w3-round-large">Bulk Ingest</button></Link>
                 <Switch>
-                    <PrivateRoute exact path="/addGranular"><SchemaConfig/></PrivateRoute>
-                    <PrivateRoute exact path="/addFeature"><IngestConfig/></PrivateRoute>
+                    <PrivateRoute exact path="/addGranular"><Schema/></PrivateRoute>
+                    <PrivateRoute exact path="/addFeature"><Ingest/></PrivateRoute>
                     <PrivateRoute exact path="/addSource"><SourceConnector/></PrivateRoute>
-                    <PrivateRoute exact path="/addGranConfig"><GranularityConfig/></PrivateRoute>
-                    <PrivateRoute exact path="/addAggreConfig"><GranularityMappingConfig/></PrivateRoute>
+                    <PrivateRoute exact path="/addGranConfig"><Granularity/></PrivateRoute>
+                    <PrivateRoute exact path="/addAggreConfig"><BulkIngest/></PrivateRoute>
                 </Switch>
                 <br/><br/>
                 
