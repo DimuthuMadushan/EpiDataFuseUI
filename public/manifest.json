@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "EpiDataFuse",
+  "name": "EpiDatFuse:  A generic framework for collection, fusion, and integration of data for disease surveillance",
   "icons": [
     {
       "src": "favicon.ico",

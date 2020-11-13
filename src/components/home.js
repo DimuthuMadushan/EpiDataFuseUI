@@ -110,14 +110,15 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+
+
+
 export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState(null);
-
   const handleDrawerOpen = () => {
-
     setOpen(true);
   };
 
@@ -156,8 +157,9 @@ export default function PersistentDrawerLeft() {
           </Toolbar>
           <div className="w3-bar w3-light-grey" style={{ 'height': 30 }}>
             <Link to="/" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>HOME</Typography></Link>
-            <Link to="/pipeline" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>CUSTOMIZE PIPELINE</Typography></Link>
+            <Link to="/pipeline" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>CUSTOMIZE PIPELINES</Typography></Link>
             <Link to="/status" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>STATUS</Typography></Link>
+            <Link to="/status" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>DOCS</Typography></Link>
             <button class="w3-bar-item w3-button w3-right" style={{ 'height': 30, 'padding-top': 4 }} onClick={() => { app.auth().signOut() }}>
               <ExitToAppRoundedIcon style={{ height: 17 }} /></button>
           </div>
@@ -181,20 +183,21 @@ export default function PersistentDrawerLeft() {
           <List>
             <div className="w3-card-4 w3-dark-white">
               <div className="w3-container w3-center">
-                <h3>USpatio Temporal Data Fusion Engine for Machine Learning Platformser</h3>
+                <h3>EpiDataFuse</h3>
                 <img src="userProfile.jpg" alt="Avatar" style={{ width: "80%" }}></img>
                 <h5>{userName}</h5>
               </div>
             </div>
           </List>
         </Drawer>
+
         <div
           className={clsx(classes.content, {
             [classes.contentShift]: open,
           })}
         >
           <div className={classes.drawerHeader} />
-          <div className="btn-home w3-border" >
+          <div className="btn-home" style={{ "width": "100%", padding: 5 }}>
             <Switch>
               <PrivateRoute exact path="/pipeline" component={Pipeline} />
               <PrivateRoute exact path="/" component={CreatePipeline} />
