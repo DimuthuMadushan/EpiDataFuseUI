@@ -1,13 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-import Api from '../api';
+import Api from '../../api';
 
 class Schema extends React.Component {
     state = {
         featureName: "",
-        attributes: [{ attributeName: "", attributeType: ""}],
-        uuid:"",
-        postingFeatures: [{featureName:"", attributes:[], uuid:""}],
+        attributes: [{ attributeName: "", attributeType: "" }],
+        uuid: "",
+        postingFeatures: [{ featureName: "", attributes: [], uuid: "" }],
         errorMsg: { featureName: "", atttributes: "", uuid: "" },
         response: ""
     }
@@ -23,7 +23,7 @@ class Schema extends React.Component {
             this.setState({ attributes }, () => {
                 let err = '';
                 if (!this.state.attributes[id]["attributeName"] ||
-                    !this.state.attributes[id]["attributeType"] ) {
+                    !this.state.attributes[id]["attributeType"]) {
                     err = "Attribute fields can not be empty";
                     errorMsg["atttributes"] = err
                     this.setState({ errorMsg });
@@ -42,7 +42,7 @@ class Schema extends React.Component {
             }
             errorMsg["featureName"] = error
             this.setState({ errorMsg });
-            this.setState({ [e.target.name]: e.target.value.toUpperCase() },()=>{
+            this.setState({ [e.target.name]: e.target.value.toUpperCase() }, () => {
                 console.log(this.state.featureName);
                 console.log(this.state.uuid);
             })
@@ -73,9 +73,9 @@ class Schema extends React.Component {
         let error = ""
         errorMsg["featureName"] = error
         let postingFeatues = {
-            featureName:this.state.featureName,
-            attributes:this.state.attributes,
-            uuid:this.state.uuid
+            featureName: this.state.featureName,
+            attributes: this.state.attributes,
+            uuid: this.state.uuid
         }
         console.log(postingFeatues)
         if (!this.state.featureName) {
@@ -86,7 +86,7 @@ class Schema extends React.Component {
         else if (this.state.errorMsg["attributes"]) {
         } else {
             this.setState({
-                postingFeatures: [ postingFeatues ]
+                postingFeatures: [postingFeatues]
             }, () => {
                 console.log(this.state.postingFeatures);
             });
@@ -98,9 +98,9 @@ class Schema extends React.Component {
             this.setState({ errorMsg })
             this.setState((prevState) => ({
                 featureName: "",
-                attributes: [{ attributeName: "", attributeType: ""}],
-                uuid:"",
-                postingFeatures: [...prevState.postingFeatures, {featureName:"", attributes:{}, uuid:""}],
+                attributes: [{ attributeName: "", attributeType: "" }],
+                uuid: "",
+                postingFeatures: [...prevState.postingFeatures, { featureName: "", attributes: {}, uuid: "" }],
                 errorMsg: { featureName: "", atttributes: "", uuid: "" }
             }));
         }
@@ -138,7 +138,7 @@ class Schema extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { attributes} = this.state
+        let { attributes } = this.state
         return (
             <div className="w3-border">
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>

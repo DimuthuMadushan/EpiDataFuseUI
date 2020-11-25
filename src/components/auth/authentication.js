@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import app from "../firebase/firebase.js";
+import app from "../../firebase/firebase.js";
 export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -11,10 +11,11 @@ export const AuthProvider = ({ children }) => {
       setPending(false)
     });
   }, []);
-  
-  if(pending){
+
+  if (pending) {
     return <>Please wait...</>
   }
+
   return (
     <AuthContext.Provider
       value={{

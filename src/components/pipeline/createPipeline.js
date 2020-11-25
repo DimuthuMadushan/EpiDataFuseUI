@@ -1,18 +1,10 @@
 import React from 'react';
-import { Checkbox, Typography } from '@material-ui/core';
-import Radio from '@material-ui/core/Radio';
+import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Route, BrowserRouter as Router, useParams, useHistory, useRouteMatch, matchPath, Switch, Link } from 'react-router-dom';
-import AddIcon from "@material-ui/icons/Add";
-import { Fab, Button } from "@material-ui/core";
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Api from './api';
-import Pipeline from './pipeline';
-import PipelineDataService from '../firebase/pipelineDataService';
-import firebase from "../firebase/firebase";
+import { BrowserRouter as matchPath, Link } from 'react-router-dom';
+import Api from '../api';
+import PipelineDataService from '../../firebase/pipelineDataService';
+import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
 
 class CreatePipeline extends React.Component {
@@ -63,6 +55,7 @@ class CreatePipeline extends React.Component {
     let pipelineName = this.state.pipelineName
     pipelines[id - 1]["pipelineName"] = pipelineName
     pipelines[id - 1]["status"] = "idle"
+
     this.setState({ pipelines }, () => {
       console.log(pipelines)
     })
@@ -74,7 +67,6 @@ class CreatePipeline extends React.Component {
       PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
       let { path, url } = matchPath
     });
-
     this.api.createPipeLine({ "pipelineName": pipelineName })
       .then((response) => console.log("response ", response))
       .catch((err) => console.log(err));;
@@ -125,6 +117,11 @@ class CreatePipeline extends React.Component {
     }
   }
 
+  handleClick = (e) => {
+    console.log(e)
+  }
+
+
   clearPipelineName = () => {
     this.setState({ pipelineName: "" });
     this.setState({ "displayUI": "none" });
@@ -137,7 +134,7 @@ class CreatePipeline extends React.Component {
       pipelineNames.map((val, i) => {
         let status = val.status
         return (
-          <tr key={i}>
+          <tr key={i} >
             <td><Typography style={{
               fontSize: 10,
               fontFamily: 'Courier New',
@@ -150,7 +147,17 @@ class CreatePipeline extends React.Component {
               fontWeight: 'bolder',
               color: status === "running" ? "green" : "orange"
             }}>{val.status}</Typography></td>
-          </tr >
+            <td>
+              <Link to={{ pathname: '/pipeline', state: { pipelineId: val.pipelineName } }} className="w3-btn w3-white w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
+                <Typography style={{
+                  fontSize: 8,
+                  fontFamily: 'Courier New',
+                  fontWeight: 'bolder',
+                  'color': 'grey'
+                }}>Configure</Typography>
+              </Link>
+            </td>
+          </tr>
         )
       }, this);
 
@@ -166,7 +173,7 @@ class CreatePipeline extends React.Component {
             marginBottom: 3
           }}>Fusion pipelines</Typography>
 
-          <table className="w3-table-all w3-col-50" style={{ "margin-bottom": 10 }}>
+          <table className="w3-table-all w3-col-50" style={{ "marginBottom": 10 }}>
             <thead>
               <tr>
                 <th><Typography style={{
@@ -181,6 +188,7 @@ class CreatePipeline extends React.Component {
                   color: 'grey',
                   fontWeight: 'bolder'
                 }}>Status</Typography></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -190,9 +198,9 @@ class CreatePipeline extends React.Component {
 
           <div className="w3-border w3-left" style={{ width: this.state.displayUI === "block" | this.state.form === "block" ? "77%" : "auto" }}>
             <button className="w3-btn w3-white w3-border w3-small w3-left" style={{
-              "margin-bottom": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0,
-              "margin-left": this.state.displayUI === "block" | this.state.form === "block" ? 120 : 0,
-              "margin-top": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0
+              "marginBottom": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0,
+              "marginLeft": this.state.displayUI === "block" | this.state.form === "block" ? 120 : 0,
+              "marginTop": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0
             }} onClick={this.handleCreate} >
               <Typography style={{
                 fontSize: 10,
@@ -202,24 +210,24 @@ class CreatePipeline extends React.Component {
               }}>Create a new pipeline</Typography>
             </button>
             <div className="w3-border w3-left" style={{
-              display: this.state.displayUI, "margin-bottom": 10,
-              "margin-left": 50, padding: 5, width: "77%"
+              display: this.state.displayUI, "marginBottom": 10,
+              "marginLeft": 50, padding: 5, width: "77%"
             }}>
-              <div style={{ "margin-bottom": 10 }}>
+              <div style={{ "marginBottom": 10 }}>
                 <form noValidate autoComplete="off">
                   <TextField id="pipelineName" onChange={this.handleChange}
                     value={this.state.pipelineName} label="Pipeline name" />
                 </form>
               </div>
               <button className="w3-btn w3-white w3-bar w3-bar-item  w3-border w3-border-red w3-round-large w3-left"
-                style={{ "margin-left": 40 }} onClick={this.clearPipelineName}><Typography style={{
+                style={{ "marginLeft": 40 }} onClick={this.clearPipelineName}><Typography style={{
                   fontSize: 10,
                   fontFamily: 'Courier New',
                   color: 'grey',
                   fontWeight: 'bolder'
                 }}>cancel</Typography></button>
               <button className="w3-btn w3-white w3-bar-item w3-bar w3-border w3-border-green w3-round-large w3-right"
-                style={{ "margin-right": 40 }} onClick={this.createPipeline} ><Typography style={{
+                style={{ "marginRight": 40 }} onClick={this.createPipeline} ><Typography style={{
                   fontSize: 10,
                   fontFamily: 'Courier New',
                   color: 'grey',
@@ -229,9 +237,9 @@ class CreatePipeline extends React.Component {
               <button className="w3-btn w3-white w3-border w3-small w3-left"
                 style={{
                   "display": this.state.form === "none" ? "block" : "none",
-                  "margin-bottom": 10,
-                  "margin-left": 40,
-                  "margin-top": 10
+                  "marginBottom": 10,
+                  "marginLeft": 40,
+                  "marginTop": 10
                 }} onClick={this.useConfig}>
 
                 <Typography style={{
@@ -245,24 +253,24 @@ class CreatePipeline extends React.Component {
             </div>
 
             <div className="w3-border w3-left" style={{
-              display: this.state.form, "margin-bottom": 10,
-              "margin-left": 50, padding: 5, width: "77%"
+              display: this.state.form, "marginBottom": 10,
+              "marginLeft": 50, padding: 5, width: "77%"
             }}>
-              <div style={{ "margin-bottom": 10 }}>
+              <div style={{ "marginBottom": 10 }}>
                 <form noValidate autoComplete="off">
                   <Input className="formCotrol" type="file" id="upload-file" placeholder="choose file"></Input>
                 </form>
               </div>
 
               <button className="w3-btn w3-white w3-bar w3-bar-item  w3-border w3-border-red w3-round-large w3-left"
-                style={{ "margin-left": 40 }} onClick={this.clearPipelineName}><Typography style={{
+                style={{ "marginLeft": 40 }} onClick={this.clearPipelineName}><Typography style={{
                   fontSize: 10,
                   fontFamily: 'Courier New',
                   color: 'grey',
                   fontWeight: 'bolder'
                 }}>cancel</Typography></button>
               <button className="w3-btn w3-white w3-bar-item w3-bar w3-border w3-border-green w3-round-large w3-right"
-                style={{ "margin-right": 40 }} onClick={this.createPipeline} ><Typography style={{
+                style={{ "marginRight": 40 }} onClick={this.createPipeline} ><Typography style={{
                   fontSize: 10,
                   fontFamily: 'Courier New',
                   color: 'grey',
