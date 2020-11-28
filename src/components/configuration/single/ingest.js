@@ -1,16 +1,16 @@
 import React from 'react';
 import axios from 'axios';
-import Api from '../api';
+import Api from '../../api';
 
 class Ingest extends React.Component {
     state = {
         featureName: "",
-        sourceType:"",
-        sourceFormat:"",
-        transformation: [{ attributeName: "", transformation: ""}],
-        dataSources:[{dataSource:""}],
-        postingFeatures: [{featureName:"", sourceType:"", sourceFormat:"", transformation:[], dataSources:[]}],
-        errorMsg: { featureName: "", sourceType:"", sourceFormat:"", transformation: "" },
+        sourceType: "",
+        sourceFormat: "",
+        transformation: [{ attributeName: "", transformation: "" }],
+        dataSources: [{ dataSource: "" }],
+        postingFeatures: [{ featureName: "", sourceType: "", sourceFormat: "", transformation: [], dataSources: [] }],
+        errorMsg: { featureName: "", sourceType: "", sourceFormat: "", transformation: "" },
         response: ""
     }
 
@@ -25,7 +25,7 @@ class Ingest extends React.Component {
             this.setState({ transformation }, () => {
                 let err = '';
                 if (!this.state.transformation[id]["attributeName"] ||
-                    !this.state.transformation[id]["transformation"] ) {
+                    !this.state.transformation[id]["transformation"]) {
                     err = "Attribute fieldS can not be empty";
                     errorMsg["transformation"] = err
                     this.setState({ errorMsg });
@@ -36,12 +36,12 @@ class Ingest extends React.Component {
                 }
                 console.log(this.state.transformation)
             })
-        } else if(["dataSources"].includes(e.target.id)){
+        } else if (["dataSources"].includes(e.target.id)) {
             let dataSources = [...this.state.dataSources]
             dataSources[e.target.dataset.id][e.target.name] = e.target.value.toUpperCase()
             this.setState({
                 dataSources
-            },()=>{
+            }, () => {
                 console.log(this.state.dataSources)
             })
         }
@@ -52,7 +52,7 @@ class Ingest extends React.Component {
             }
             errorMsg[e.target.id] = error
             this.setState({ errorMsg });
-            this.setState({ [e.target.name]: e.target.value.toUpperCase() },()=>{
+            this.setState({ [e.target.name]: e.target.value.toUpperCase() }, () => {
             })
         }
 
@@ -61,7 +61,7 @@ class Ingest extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            transformation: [...prevState.transformation, { attributeName: "", transformation: ""}]
+            transformation: [...prevState.transformation, { attributeName: "", transformation: "" }]
         }));
     }
     removeAttribute = (e) => {
@@ -78,7 +78,7 @@ class Ingest extends React.Component {
     }
     addSource = (e) => {
         this.setState((prevState) => ({
-            dataSources: [...prevState.dataSources, {dataSource:""}]
+            dataSources: [...prevState.dataSources, { dataSource: "" }]
         }));
     }
     removeSource = (e) => {
@@ -111,8 +111,8 @@ class Ingest extends React.Component {
         } else {
             let postingFeatures = {
                 featureName: this.state.featureName,
-                sourceType:this.state.sourceType,
-                sourceFormat:this.state.sourceFormat,
+                sourceType: this.state.sourceType,
+                sourceFormat: this.state.sourceFormat,
                 transformation: this.state.transformation,
                 dataSources: this.state.dataSources
             }
@@ -125,12 +125,12 @@ class Ingest extends React.Component {
 
             this.setState((prevState) => ({
                 featureName: "",
-                sourceType:"",
-                sourceFormat:"",
-                transformation: [{ attributeName: "", transformation: ""}],
-                dataSources:[{dataSource:""}],
-                postingFeatures: [...prevState.postingFeatures, {featureName:"", sourceType:"", sourceFormat:"", transformation:[], dataSources:[]}],
-                errorMsg: { featureName: "", sourceType:"", sourceFormat:"", transformation: "" },
+                sourceType: "",
+                sourceFormat: "",
+                transformation: [{ attributeName: "", transformation: "" }],
+                dataSources: [{ dataSource: "" }],
+                postingFeatures: [...prevState.postingFeatures, { featureName: "", sourceType: "", sourceFormat: "", transformation: [], dataSources: [] }],
+                errorMsg: { featureName: "", sourceType: "", sourceFormat: "", transformation: "" },
             }))
 
 
@@ -149,7 +149,7 @@ class Ingest extends React.Component {
         }
         this.setState((prevState) => ({
             postingFeature: arrayFeature,
-            errorMsg: { featureName: "", sourceType:"", sourceFormat:"", transformation: "" },
+            errorMsg: { featureName: "", sourceType: "", sourceFormat: "", transformation: "" },
         }), () => {
             console.log(this.state.postingFeatures)
         });
@@ -175,7 +175,7 @@ class Ingest extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { transformation, dataSources} = this.state
+        let { transformation, dataSources } = this.state
         return (
             <div className="w3-border">
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
@@ -226,11 +226,11 @@ class Ingest extends React.Component {
                         <label>Data Sources</label>
                         {
                             dataSources.map((val, idx) => {
-                                let inputId =`${idx}`
-                                return(
-                                    <input className="w3-input" data-id={idx} id="dataSources"type="text" name="dataSource"></input>
+                                let inputId = `${idx}`
+                                return (
+                                    <input className="w3-input" data-id={idx} id="dataSources" type="text" name="dataSource"></input>
                                 )
-                        })
+                            })
                         }
                         <br />
                         <button className="w3-button w3-circle w3-teal" onClick={this.removeSource}>-</button>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState} from "react";
+import React, { useCallback, useState } from "react";
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -7,9 +7,9 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {useHistory, Link } from 'react-router-dom';
-import app from "../firebase/firebase.js";
-import PipelineDataService from "../firebase/pipelineDataService.js";
+import { useHistory, Link } from 'react-router-dom';
+import app from "../../firebase/firebase.js";
+import PipelineDataService from "../../firebase/pipelineDataService.js";
 
 
 function Copyright() {
@@ -51,28 +51,28 @@ export default function SignUp() {
   const handleSignUp = useCallback(async event => {
     event.preventDefault();
     const { email, password, userName } = event.target.elements;
-    if(userName.value){
+    if (userName.value) {
       try {
         await app
           .auth()
           .createUserWithEmailAndPassword(email.value, password.value).then(
-            ()=>{
+            () => {
               var uid = app.auth().currentUser.uid;
               console.log(uid);
-              PipelineDataService.createUser(uid,{userName:userName.value, email:email.value});
+              PipelineDataService.createUser(uid, { userName: userName.value, email: email.value });
             }
           );
         history.push("/");
-        
+
       } catch (error) {
         setError(error.message);
         console.log(error.message)
-      } 
+      }
     } else {
       setError("The User Name is invalid.")
     }
-}, [history]);
-  
+  }, [history]);
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -118,7 +118,7 @@ export default function SignUp() {
               />
             </Grid>
             <Grid item xs={12}>
-            <div className="h7">{error}</div>
+              <div className="h7">{error}</div>
               {/* <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
