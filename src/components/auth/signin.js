@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react'; 
+import React, { useCallback, useContext, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -10,8 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 // add {useCallback, useContext}
-import { withRouter,History, Redirect, useHistory } from "react-router";
-import app from "../firebase/firebase.js";
+import { Redirect, useHistory } from "react-router";
+import app from "../../firebase/firebase.js";
 import { AuthContext } from "./authentication.js";
 import { Link } from 'react-router-dom';
 
@@ -78,7 +78,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleLogin}  className={classes.form} noValidate>
+        <form onSubmit={handleLogin} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"

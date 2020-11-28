@@ -1,4 +1,4 @@
-import React, { Children, Component, useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,18 +13,12 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CreatePipeline from './createPipeline';
-import Pipeline from './pipeline';
-import app from "../firebase/firebase.js";
-import { Route, Redirect, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import { ListItem } from '@material-ui/core';
-import PrivateRoute from './router';
-import CustomRoute from './customRoute';
-import { AuthContext } from './authentication';
-import { useHistory } from 'react-router-dom';
-import PipelineDataService from '../firebase/pipelineDataService';
-import SchemaConfig from './schemaConfig';
-import firebase from "../firebase/firebase";
+import CreatePipeline from '../pipeline/createPipeline';
+import Pipeline from '../pipeline/pipeline';
+import app from "../../firebase/firebase.js";
+import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
+import PrivateRoute from '../route/router';
+import firebase from "../../firebase/firebase";
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import Schema from "./single/schema";
 import Granularity from "./single/granularity";
@@ -33,7 +27,6 @@ import Ingest from "./single/ingest";
 import SourceConnector from "./single/sourceConnector";
 
 const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -103,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
   },
   menuBarOption: {
     fontSize: 10,
+    marginTop: 10,
     fontFamily: 'Courier New',
     color: 'grey',
     fontWeight: 'bolder'
@@ -115,9 +109,7 @@ export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState(null);
-
   const handleDrawerOpen = () => {
-
     setOpen(true);
   };
 
@@ -141,7 +133,7 @@ export default function PersistentDrawerLeft() {
       <Router>
         <CssBaseline />
         <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open, })}>
-          <Toolbar class={classes.toolbar} style={{ display: "flex", justifyContent: "left", height: 30 }}>
+          <Toolbar className={classes.toolbar} style={{ display: "flex", justifyContent: "left", height: 30 }}>
             <MenuItem start="edge">
               <IconButton color="inherit" aria-label="open drawer"
                 onClick={handleDrawerOpen}
@@ -151,14 +143,15 @@ export default function PersistentDrawerLeft() {
               </IconButton>
             </MenuItem>
             <MenuItem>
-              <Typography class={classes.topic}>EpiDataFuse -  A generic framework for collection, fusion and integration of data for disease surveillance</Typography>
+              <Typography className={classes.topic}>EpiDataFuse -  A generic framework for collection, fusion and integration of data for disease surveillance</Typography>
             </MenuItem>
           </Toolbar>
           <div className="w3-bar w3-light-grey" style={{ 'height': 30 }}>
-            <Link to="/" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>HOME</Typography></Link>
-            <Link to="/pipeline" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>CUSTOMIZE PIPELINE</Typography></Link>
-            <Link to="/status" class="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'padding-top': 1 }}><Typography class={classes.menuBarOption}>STATUS</Typography></Link>
-            <button class="w3-bar-item w3-button w3-right" style={{ 'height': 30, 'padding-top': 4 }} onClick={() => { app.auth().signOut() }}>
+            <Link to="/" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>HOME</Typography></Link>
+            <Link to="/pipeline" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>CUSTOMIZE PIPELINES</Typography></Link>
+            <Link to="/status" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>STATUS</Typography></Link>
+            <Link to="/status" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>DOCS</Typography></Link>
+            <button className="w3-bar-item w3-button w3-right" style={{ 'height': 30, 'paddingTop': 4 }} onClick={() => { app.auth().signOut() }}>
               <ExitToAppRoundedIcon style={{ height: 17 }} /></button>
           </div>
         </AppBar>
@@ -181,20 +174,21 @@ export default function PersistentDrawerLeft() {
           <List>
             <div className="w3-card-4 w3-dark-white">
               <div className="w3-container w3-center">
-                <h3>USpatio Temporal Data Fusion Engine for Machine Learning Platformser</h3>
+                <h3>EpiDataFuse</h3>
                 <img src="userProfile.jpg" alt="Avatar" style={{ width: "80%" }}></img>
                 <h5>{userName}</h5>
               </div>
             </div>
           </List>
         </Drawer>
+
         <div
           className={clsx(classes.content, {
             [classes.contentShift]: open,
           })}
         >
           <div className={classes.drawerHeader} />
-          <div className="btn-home w3-border" >
+          <div className="btn-home" style={{ "width": "100%", padding: 5 }}>
             <Switch>
               <PrivateRoute exact path="/pipeline" component={Pipeline} />
               <PrivateRoute exact path="/" component={CreatePipeline} />
