@@ -1,5 +1,6 @@
 import React from 'react';
 import Api from '../api';
+import axios from 'axios';
 
 class SchemaConfig extends React.Component {
     state = {
@@ -11,9 +12,6 @@ class SchemaConfig extends React.Component {
         errorMsg: { featureName: "", atttributes: "", configurations: "" },
         response: ""
     }
-
-    api = new Api();
-
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
@@ -173,15 +171,15 @@ class SchemaConfig extends React.Component {
 
     postConfigurations = (e) => {
         let response = this.state.response
-        if (!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
-            this.api.configureSchema(this.state.features)
-                .then(response => {
-                    console.log(response)
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-        }
+        let features = this.state.features
+        // eslint-disable-next-line no-undef
+        axios.post(`http://localhost:3000/addFeatureSchema`, { features })
+            .then(res => {
+                response = res;
+                console.log(res);
+                console.log(res.data);
+            })
+
     }
 
     handleSubmit = (e) => {

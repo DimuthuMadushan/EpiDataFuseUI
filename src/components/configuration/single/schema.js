@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import Api from '../../api';
+import Granularity from "./granularity";
+import Aggregation from "./aggregation";
 
 class Schema extends React.Component {
     state = {
@@ -191,6 +193,8 @@ class Schema extends React.Component {
                 </form>
                 <div className="response w3-panel w3-border">{this.state.response}</div>
                 <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.postConfigurations}>Submit</button>
+                <div> <Granularity /></div>
+                <div> <Aggregation /></div>
             </div>
         );
     }

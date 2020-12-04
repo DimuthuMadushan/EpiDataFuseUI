@@ -14,8 +14,10 @@ class CreatePipeline extends React.Component {
     this.state = {
       pipelineNames: [],
       pipelineName: "",
-      pipelines: [{ pipelineName: "", status: "" }],
+      pipelines: [{ pipelineName: "", status: "" , isConfigured:"False"}],
       displayUI: "none",
+      errorMsg:"",
+      response:"",
       form: "none",
     }
 
@@ -53,28 +55,34 @@ class CreatePipeline extends React.Component {
     let pipelines = [...this.state.pipelines]
     var id = pipelines.length
     let pipelineName = this.state.pipelineName
-    pipelines[id - 1]["pipelineName"] = pipelineName
-    pipelines[id - 1]["status"] = "idle"
+    if(pipelineName==""){
+        let error = "Pipeline Name can not be null"
+        this.setState({errorMsg:error})
+    } else {
+      pipelines[id - 1]["pipelineName"] = pipelineName
+      pipelines[id - 1]["status"] = "idle"
 
-    this.setState({ pipelines }, () => {
-      console.log(pipelines)
-    })
+      this.setState({ pipelines }, () => {
+        console.log(pipelines)
+      })
 
-    this.setState((prevState) => ({
-      pipelines: [...prevState.pipelines, { pipelineName: "", status: "" }]
-    }), () => {
-      console.log(this.state.pipelines[id - 1])
-      PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
-      let { path, url } = matchPath
-    });
-    this.api.createPipeLine({ "pipelineName": pipelineName })
-      .then((response) => console.log("response ", response))
-      .catch((err) => console.log(err));;
+      this.setState((prevState) => ({
+        pipelines: [...prevState.pipelines, { pipelineName: "", status: "" }]
+      }), () => {
+        console.log(this.state.pipelines[id - 1])
+        PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
+        let { path, url } = matchPath
+      });
 
-    this.state.pipelineName = "";
+      let data = this.api.createPipeLine({ pipeline_name: pipelineName });
+      this.setState({response:data});
+      this.state.pipelineName = "";
+    }
+
   }
 
   handleChange = (e) => {
+    this.setState({errorMsg:""})
     this.setState({ pipelineName: e.target.value });
   }
 
@@ -121,6 +129,10 @@ class CreatePipeline extends React.Component {
     console.log(e)
   }
 
+  initializePipeline = (name) => {
+    let data = this.api.initializePipeline(name);
+    console.log("data in pipeline" + data);
+  }
 
   clearPipelineName = () => {
     this.setState({ pipelineName: "" });
@@ -156,6 +168,9 @@ class CreatePipeline extends React.Component {
                   'color': 'grey'
                 }}>Configure</Typography>
               </Link>
+            </td>
+            <td>
+               <button onClick={this.initializePipeline(val.pipelineName)}>init</button>
             </td>
           </tr>
         )
@@ -209,10 +224,13 @@ class CreatePipeline extends React.Component {
                 fontWeight: 'bolder'
               }}>Create a new pipeline</Typography>
             </button>
+
             <div className="w3-border w3-left" style={{
               display: this.state.displayUI, "marginBottom": 10,
               "marginLeft": 50, padding: 5, width: "77%"
             }}>
+              <div className="h7">{this.state.errorMsg}</div>
+              <div className="response">{this.state.response}</div>
               <div style={{ "marginBottom": 10 }}>
                 <form noValidate autoComplete="off">
                   <TextField id="pipelineName" onChange={this.handleChange}

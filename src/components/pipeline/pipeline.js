@@ -58,7 +58,7 @@ class Pipeline extends React.Component {
 
     componentDidMount() {
         var id = this.props.location.state.pipelineId
-        this.retriveData(id)
+        //this.retriveData(id)
 
     }
 

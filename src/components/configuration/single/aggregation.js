@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-class Granularity extends React.Component {
+class Aggregation extends React.Component {
     state = {
         spatial:"",
         temporal:"",
@@ -20,7 +20,7 @@ class Granularity extends React.Component {
         let mappings = this.state.mappings
         let errorMsg = {spatial:"",temporal:"", featureName:"" ,spatailGran:"", tempGran:""}
         this.setState({errorMsg})
-         if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
+        if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
             let temporal = this.state.temporal
             temporal[e.target.id] = e.target.value.toUpperCase()
             mappings["temporal"] = temporal
@@ -29,39 +29,39 @@ class Granularity extends React.Component {
             })
         } else if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
             let {spatialMapping,spatialMappingArgs} = this.state
-             if(e.target.id==="spatialMethodName"){
-                 spatialMapping[e.target.name] = e.target.value.toUpperCase()
-                 this.setState({spatialMapping},()=>{
-                     console.log(spatialMapping)
-                 })
-             } else {
-                 spatialMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                 spatialMapping["mappingArgs"] = spatialMappingArgs
-                 this.setState({
-                     spatialMapping: spatialMapping
-                 }, () => {
-                     console.log(this.state.spatialMapping)
-                 })
-             }
+            if(e.target.id==="spatialMethodName"){
+                spatialMapping[e.target.name] = e.target.value.toUpperCase()
+                this.setState({spatialMapping},()=>{
+                    console.log(spatialMapping)
+                })
+            } else {
+                spatialMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+                spatialMapping["mappingArgs"] = spatialMappingArgs
+                this.setState({
+                    spatialMapping: spatialMapping
+                }, () => {
+                    console.log(this.state.spatialMapping)
+                })
+            }
 
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
-             let {temporalMapping,temporalMappingArgs} = this.state
-             if(e.target.id==="temporalMethodName"){
-                 temporalMapping[e.target.name] = e.target.value.toUpperCase()
-                 this.setState({temporalMapping},()=>{
-                     console.log(temporalMapping)
-                 })
-             } else {
-                 temporalMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                 temporalMapping["mappingArgs"] = temporalMappingArgs
-                 this.setState({
-                     temporalMapping: temporalMapping
-                 }, () => {
-                     console.log(this.state.temporalMapping)
-                 })
-             }
+            let {temporalMapping,temporalMappingArgs} = this.state
+            if(e.target.id==="temporalMethodName"){
+                temporalMapping[e.target.name] = e.target.value.toUpperCase()
+                this.setState({temporalMapping},()=>{
+                    console.log(temporalMapping)
+                })
+            } else {
+                temporalMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+                temporalMapping["mappingArgs"] = temporalMappingArgs
+                this.setState({
+                    temporalMapping: temporalMapping
+                }, () => {
+                    console.log(this.state.temporalMapping)
+                })
+            }
 
-         } else {
+        } else {
             let error = ""
             if (!e.target.value) {
                 error = `${e.target.name} field cannot be empty`
@@ -181,39 +181,24 @@ class Granularity extends React.Component {
             <div  >
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                     <h6>
-                        <label>Granularity Config</label>
+                        <label>Aggregation Configg</label>
                         <div className="w3-panel w3-border">
 
                             <br/>
-                            <label>Spatial Granularity</label>
-                            <input className="w3-input" type="text" id="spatial"></input>
-                            <div className="h7">{this.state.errorMsg["spatial"]}</div>
-                            <br/>
-                            <label>Temporal Granularity</label>
-                            <input className="w3-input" type="text" id="temporal"></input>
-                            <div className="h7">{this.state.errorMsg["temporal"]}</div>
-                            <br/>
-                            <br/>
-                            <label>Target Spatial Granularity</label>
-                            <input className="w3-input" type="text" id="targetSpatial"></input>
-                            <div className="h7">{this.state.errorMsg["targetSpatial"]}</div>
-                            <br/>
-                            <label>Target Temporal Granularity</label>
-                            <input className="w3-input" type="text" id="targetTemporal"></input>
-                            <div className="h7">{this.state.errorMsg["targetTemporal"]}</div>
+                            <label>Aggregated attributes</label>
+                            <input className="w3-input" type="text" id="aggregatedAttributes"></input>
+                            <div className="h7">{this.state.errorMsg["aggregatedAttributes"]}</div>
                             <br/>
                         </div>
                         <div className="" >
-                            <label>Mappings Method</label>
-                            <br/>
-                            <label>Spatial</label>
+                            <label>Spatial Aggregation</label>
                             <br/>
                             <div className="row w3-panel w3-border" id="spatialMethodName">
                                 <label className="col-50">Method Name</label>
                                 <div className="col-50">
                                     <select id="spatialMethodName" name="spatialMethodName">
-                                        <option value="nearest">Nearest</option>
-                                        <option value="nearest">Nearest</option>
+                                        <option value="inverseDistance">InverseDistance</option>
+                                        <option value="inverseDistance">InverseDistance</option>
                                     </select>
                                 </div>
                                 <br/>
@@ -232,7 +217,7 @@ class Granularity extends React.Component {
                                                     value={spatialMappingArgs[idx].ame}
                                                     className="col-75"
                                                 />
-                                                <label htmlFor={valueId} className="col-25">Type</label>
+                                                <label htmlFor={valueId} className="col-25">Value</label>
                                                 <input
                                                     type="text"
                                                     name={valueId}
@@ -253,14 +238,14 @@ class Granularity extends React.Component {
                                 <br /><br />
                             </div>
                             <br/>
-                            <label>Temporal</label>
+                            <label>Temporal Aggregation</label>
                             <br/>
                             <div className="row w3-panel w3-border" id="temporalMethodName">
                                 <label className="col-50">Method Name</label>
                                 <div className="col-50">
                                     <select id="temporalMethodName" name="temporalMethodName">
-                                        <option value="nearest">Nearest</option>
-                                        <option value="nearest">Nearest</option>
+                                        <option value="mean">Mean</option>
+                                        <option value="nedian">Median</option>
                                     </select>
                                 </div>
                                 <br/>
@@ -309,4 +294,4 @@ class Granularity extends React.Component {
     }
 }
 
-export default Granularity;
+export default Aggregation;
