@@ -170,7 +170,14 @@ class CreatePipeline extends React.Component {
               </Link>
             </td>
             <td>
-               <button onClick={this.initializePipeline(val.pipelineName)}>init</button>
+              <button onClick={()=>{this.initializePipeline(val.pipelineName)}} className="w3-btn w3-white w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
+                <Typography style={{
+                  fontSize: 8,
+                  fontFamily: 'Courier New',
+                  fontWeight: 'bolder',
+                  'color': 'grey'
+                }}>Initialize</Typography>
+              </button>
             </td>
           </tr>
         )

@@ -10,6 +10,9 @@ class Schema extends React.Component {
         attributes: [{ attributeName: "", attributeType: "" }],
         uuid: "",
         postingFeatures: [{ featureName: "", attributes: [], uuid: "" }],
+        granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
+        aggregation:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
+        schemaConfig:{postingFeatures:[], granularity: [], aggregation: []},
         errorMsg: { featureName: "", atttributes: "", uuid: "" },
         response: ""
     }
@@ -52,6 +55,18 @@ class Schema extends React.Component {
 
 
     }
+
+    addGranularity = (granularity) =>{
+        //console.log(granularity);
+        this.setState({granularity:granularity})
+    }
+
+    addAggregation = (aggregation) =>{
+        //console.log(aggregation);
+        this.setState({aggregation:aggregation})
+    }
+
+
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
@@ -124,16 +139,13 @@ class Schema extends React.Component {
     }
 
     postConfigurations = (e) => {
-        let response = this.state.response
-        if (!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
-            this.api.configureSchema(this.state.features)
-                .then(response => {
-                    console.log(response)
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-        }
+        let schemaConfig = this.state.schemaConfig;
+        schemaConfig["postingFeatures"] = this.state.postingFeatures[0];
+        schemaConfig["granularity"] = this.state.granularity;
+        schemaConfig["aggregation"] = this.state.aggregation;
+        console.log(schemaConfig);
+        let response = this.api.configureSchema(schemaConfig);
+        console.log(response);
     }
 
     handleSubmit = (e) => {
@@ -191,10 +203,10 @@ class Schema extends React.Component {
                     <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addFeature}>Add Feature</button>
                     <br />
                 </form>
+                <div> <Granularity addGranularity={this.addGranularity}/></div>
+                <div> <Aggregation addAggregation = {this.addAggregation}/></div>
                 <div className="response w3-panel w3-border">{this.state.response}</div>
                 <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.postConfigurations}>Submit</button>
-                <div> <Granularity /></div>
-                <div> <Aggregation /></div>
             </div>
         );
     }

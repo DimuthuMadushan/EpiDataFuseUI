@@ -2,62 +2,51 @@ import React from 'react';
 import axios from 'axios';
 class Aggregation extends React.Component {
     state = {
-        spatial:"",
-        temporal:"",
-        targetSpatial: "",
-        targetTemporal: "",
-        spatialMapping:{spatialMethodName:"", mappingArgs:[]},
-        temporalMapping:{temporalMethodName:"", mappingArgs:[]},
-        spatialMappingArgs:[{spatialArgName:"", spatialArgValue:""}],
-        temporalMappingArgs:[{temporalArgName:"", temporalArgValue:""}],
-        granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
-        errorMsg:{spatial:"",temporal:"", targetSpatial:"",targetTemporal:""},
+        aggregatedAttribute:[""],
+        spatialAggregation:{spatialMethodName:"", aggregationArgs:[]},
+        temporalAggregation:{temporalMethodName:"", aggregationArgs:[]},
+        spatialAggregationArgs:[{spatialArgName:"", spatialArgValue:""}],
+        temporalAggregationArgs:[{temporalArgName:"", temporalArgValue:""}],
+        aggregation:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
+        errorMsg:{aggregatedAttribute:""},
         response:""
     }
 
 
     handleChange = (e) => {
-        let mappings = this.state.mappings
-        let errorMsg = {spatial:"",temporal:"", featureName:"" ,spatailGran:"", tempGran:""}
+        let errorMsg = {aggregatedAttribute:""}
         this.setState({errorMsg})
-        if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
-            let temporal = this.state.temporal
-            temporal[e.target.id] = e.target.value.toUpperCase()
-            mappings["temporal"] = temporal
-            this.setState({mappings},()=>{
-                console.log(mappings)
-            })
-        } else if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
-            let {spatialMapping,spatialMappingArgs} = this.state
+        if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
+            let {spatialAggregation,spatialAggregationArgs} = this.state
             if(e.target.id==="spatialMethodName"){
-                spatialMapping[e.target.name] = e.target.value.toUpperCase()
-                this.setState({spatialMapping},()=>{
-                    console.log(spatialMapping)
+                spatialAggregation[e.target.name] = e.target.value.toUpperCase()
+                this.setState({spatialAggregation},()=>{
+                    //console.log(spatialAggregation)
                 })
             } else {
-                spatialMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                spatialMapping["mappingArgs"] = spatialMappingArgs
+                spatialAggregationArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+                spatialAggregation["aggregationArgs"] = spatialAggregationArgs
                 this.setState({
-                    spatialMapping: spatialMapping
+                    spatialAggregation: spatialAggregation
                 }, () => {
-                    console.log(this.state.spatialMapping)
+                    //console.log(this.state.spatialAggregation)
                 })
             }
 
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
-            let {temporalMapping,temporalMappingArgs} = this.state
+            let {temporalAggregation,temporalAggregationArgs} = this.state
             if(e.target.id==="temporalMethodName"){
-                temporalMapping[e.target.name] = e.target.value.toUpperCase()
-                this.setState({temporalMapping},()=>{
-                    console.log(temporalMapping)
+                temporalAggregation[e.target.name] = e.target.value.toUpperCase()
+                this.setState({temporalAggregation:temporalAggregation },()=>{
+                    //console.log(temporalAggregation)
                 })
             } else {
-                temporalMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                temporalMapping["mappingArgs"] = temporalMappingArgs
+                temporalAggregationArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+                temporalAggregation["aggregationArgs"] = temporalAggregationArgs
                 this.setState({
-                    temporalMapping: temporalMapping
+                    temporalAggregation: temporalAggregation
                 }, () => {
-                    console.log(this.state.temporalMapping)
+                    //console.log(this.state.temporalAggregation)
                 })
             }
 
@@ -68,57 +57,40 @@ class Aggregation extends React.Component {
             }
             errorMsg[e.target.id] = error
             this.setState({ errorMsg });
-            this.setState({ [e.target.id]: e.target.value.toUpperCase() },()=>{
-                console.log(this.state.spatial)
-                console.log(this.state.temporal)
-                console.log(this.state.targetSpatial)
-                console.log(this.state.targetTemporal)
+            let aggregatedAttribute = this.state.aggregatedAttribute;
+            aggregatedAttribute[e.target.dataset.id] = e.target.value.toUpperCase();
+            this.setState({ aggregatedAttribute},()=>{
+                //console.log(this.state.aggregatedAttribute)
             })
         }
     }
 
-    addGranuralityMapping = () =>{
-        let granularity = this.state.granularity
+    addAggregation = (e) =>{
+        let aggregation = this.state.aggregation
         let errorMsg = this.state.errorMsg
         let err = '';
-        granularity["spatial"] = this.state.spatial
-        granularity["temporal"] = this.state.temporal
-        granularity["targetSpatial"] = this.state.targetSpatial
-        granularity["targetTemporal"] = this.state.targetTemporal
-        granularity["spatialMapping"] = this.state.spatialMapping
-        granularity["temporalMapping"] = this.state.temporalMapping
-        if(!this.state.granularity["spatial"]){
-            err = "Spatial can not be null value"
-            errorMsg["spatial"] = err
+        aggregation["aggregatedAttribute"] = this.state.aggregatedAttribute
+        aggregation["spatialAggregation"] = this.state.spatialAggregation
+        aggregation["temporalAggregation"] = this.state.temporalAggregation
+        if(!this.state.aggregation["aggregatedAttribute"]){
+            err = "Aggregated attribute fields can not be empty"
+            errorMsg["aggregatedAttribute"] = err
             this.setState({errorMsg})
-        }else if(!this.state.granularity["temporal"]){
-            err = "Temporal can not be null value"
-            errorMsg["temporal"] = err
-            this.setState({errorMsg})
-        } else if(!this.state.granularity["targetSpatial"]){
-            err = "Target spatial fields can not be empty"
-            errorMsg["targetSpatial"] = err
-            this.setState({errorMsg})
-        } else if(!this.state.granularity["targetTemporal"]){
-            err = "Target temporal fields can not be empty"
-            errorMsg["targetTemporal"] = err
-            this.setState({errorMsg})
-        } else {
-            this.setState({granularity},()=>{
-                console.log(granularity)
-                this.postConfigurations()
+        }
+        else {
+            this.setState({aggregation},()=>{
+                //console.log(aggregation)
+                this.props.addAggregation(aggregation);
+                //this.postConfigurations()
             })
             this.setState({
-                spatial:"",
-                temporal:"",
-                targetSpatial: "",
-                targetTemporal: "",
-                spatialMapping:{spatialMethodName:"", mappingArgs:[]},
-                temporalMapping:{temporalMethodName:"", mappingArgs:[]},
-                spatialMappingArgs:[{spatialArgName:"", spatialArgValue:""}],
-                temporalMappingArgs:[{temporalArgName:"", temporalArgValue:""}],
-                granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
-                errorMsg:{spatial:"",temporal:"", targetSpatial:"",targetTemporal:""},
+                aggregatedAttribute:[""],
+                spatialAggregation:{spatialMethodName:"", mappingArgs:[]},
+                temporalAggregation:{temporalMethodName:"", mappingArgs:[]},
+                spatialAggregationArgs:[{spatialArgName:"", spatialArgValue:""}],
+                temporalAggregationArgs:[{temporalArgName:"", temporalArgValue:""}],
+                granularity:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
+                errorMsg:{aggregatedAttribute:""},
             })
         }
     }
@@ -138,36 +110,53 @@ class Aggregation extends React.Component {
 
     addArgs = (e) => {
         this.setState((prevState) => ({
-            spatialMappingArgs: [...prevState.spatialMappingArgs, {spatialArgName:"", spatialArgValue:""}]
+            spatialAggregationArgs: [...prevState.spatialAggregationArgs, {spatialArgName:"", spatialArgValue:""}]
         }));
     }
     removeArgs = (e) => {
         let errorMsg = this.state.errorMsg
-        var arrayArgs = this.state.spatialMappingArgs;
+        var arrayArgs = this.state.spatialAggregationArgs;
         if (arrayArgs.length > 0) {
             arrayArgs.splice(-1, 1)
         }
-        errorMsg["spatialMappingArgs"] = ""
+        errorMsg["spatialAggregationArgs"] = ""
         this.setState((prevState) => ({
-            spatialMappingArgs: arrayArgs,
+            spatialAggregationArgs: arrayArgs,
+            errorMsg: errorMsg
+        }));
+    }
+    addAttribute = (e) => {
+        this.setState((prevState) => ({
+            aggregatedAttribute: [...prevState.aggregatedAttribute,""]
+        }));
+    }
+    removeAttribute = (e) => {
+        let errorMsg = this.state.errorMsg
+        var arrayArgs = this.state.aggregatedAttribute;
+        if (arrayArgs.length > 0) {
+            arrayArgs.splice(-1, 1)
+        }
+        errorMsg["aggregatedAttribute"] = ""
+        this.setState((prevState) => ({
+            aggregatedAttribute: arrayArgs,
             errorMsg: errorMsg
         }));
     }
 
     addTempArgs = (e) => {
         this.setState((prevState) => ({
-            temporalMappingArgs: [...prevState.temporalMappingArgs, {temporalArgName:"", temporalArgValue:""}]
+            temporalAggregationArgs: [...prevState.temporalAggregationArgs, {temporalArgName:"", temporalArgValue:""}]
         }));
     }
     removeTempArgs = (e) => {
         let errorMsg = this.state.errorMsg
-        var arrayArgs = this.state.temporalMappingArgs;
+        var arrayArgs = this.state.temporalAggregationArgs;
         if (arrayArgs.length > 0) {
             arrayArgs.splice(-1, 1)
         }
-        errorMsg["temporalMappingArgs"] = ""
+        errorMsg["temporalAggregationArgs"] = ""
         this.setState((prevState) => ({
-            temporalMappingArgs: arrayArgs,
+            temporalAggregationArgs: arrayArgs,
             errorMsg: errorMsg
         }));
     }
@@ -176,18 +165,38 @@ class Aggregation extends React.Component {
         e.preventDefault()
     }
     render() {
-        let {spatialMappingArgs, temporalMappingArgs, granularity,aggregationGran,featureGran} = this.state
+        let {spatialAggregationArgs, temporalAggregationArgs, aggregatedAttribute} = this.state
         return(
-            <div  >
+            <div>
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                     <h6>
                         <label>Aggregation Configg</label>
                         <div className="w3-panel w3-border">
 
                             <br/>
-                            <label>Aggregated attributes</label>
-                            <input className="w3-input" type="text" id="aggregatedAttributes"></input>
-                            <div className="h7">{this.state.errorMsg["aggregatedAttributes"]}</div>
+                            {
+                                aggregatedAttribute.map((val,idx)=>{
+                                    let nameId = `name-${idx}`, valueId = `value-${idx}`
+                                    return(
+                                        <div key={idx} className="row w3-panel w3-border">
+                                            <label htmlFor={nameId} className="col-25">Aggregated Attributes</label>
+                                            <input
+                                                type="text"
+                                                name={nameId}
+                                                data-id={idx}
+                                                id="aggregatedAttribute"
+                                                value={aggregatedAttribute[idx].ame}
+                                                className="col-75"
+                                            />
+                                            <div className="h7">{this.state.errorMsg["aggregatedAttributes"]}</div>
+                                        </div>
+                                    )
+                                })
+                            }
+                            <div className="h7">{this.state.errorMsg["spatialAggregationArgs"]}</div>
+                            <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
+                            <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
+
                             <br/>
                         </div>
                         <div className="" >
@@ -204,7 +213,7 @@ class Aggregation extends React.Component {
                                 <br/>
                                 <label className="col-50">Arguments</label>
                                 {
-                                    spatialMappingArgs.map((val, idx) => {
+                                    spatialAggregationArgs.map((val, idx) => {
                                         let nameId = `name-${idx}`, valueId = `value-${idx}`
                                         return (
                                             <div key={idx} className="row w3-panel w3-border">
@@ -214,7 +223,7 @@ class Aggregation extends React.Component {
                                                     name={nameId}
                                                     data-id={idx}
                                                     id="spatialArgName"
-                                                    value={spatialMappingArgs[idx].ame}
+                                                    value={spatialAggregationArgs[idx].ame}
                                                     className="col-75"
                                                 />
                                                 <label htmlFor={valueId} className="col-25">Value</label>
@@ -223,7 +232,7 @@ class Aggregation extends React.Component {
                                                     name={valueId}
                                                     data-id={idx}
                                                     id="spatialArgValue"
-                                                    value={spatialMappingArgs[idx].type}
+                                                    value={spatialAggregationArgs[idx].type}
                                                     className="col-75 "
                                                 />
                                                 <br />
@@ -231,7 +240,7 @@ class Aggregation extends React.Component {
                                         )
                                     })
                                 }
-                                <div className="h7">{this.state.errorMsg["spatialMappingArgs"]}</div>
+                                <div className="h7">{this.state.errorMsg["spatialAggregationArgs"]}</div>
                                 <br />
                                 <button className="w3-button w3-circle w3-teal" onClick={this.removeArgs}>-</button>
                                 <button className="w3-button w3-circle w3-teal" onClick={this.addArgs}>+</button>
@@ -251,7 +260,7 @@ class Aggregation extends React.Component {
                                 <br/>
                                 <label className="col-50">Arguments</label>
                                 {
-                                    temporalMappingArgs.map((val, idx) => {
+                                    temporalAggregationArgs.map((val, idx) => {
                                         let nameId = `name-${idx}`, valueId = `value-${idx}`
                                         return (
                                             <div key={idx} className="row w3-panel w3-border">
@@ -261,7 +270,7 @@ class Aggregation extends React.Component {
                                                     name={nameId}
                                                     data-id={idx}
                                                     id="temporalArgName"
-                                                    value={temporalMappingArgs[idx].ame}
+                                                    value={temporalAggregationArgs[idx].ame}
                                                     className="col-75"
                                                 />
                                                 <label htmlFor={valueId} className="col-25">Value</label>
@@ -270,7 +279,7 @@ class Aggregation extends React.Component {
                                                     name={valueId}
                                                     data-id={idx}
                                                     id="temporalArgValue"
-                                                    value={temporalMappingArgs[idx].type}
+                                                    value={temporalAggregationArgs[idx].type}
                                                     className="col-75 "
                                                 />
                                                 <br />
@@ -278,7 +287,7 @@ class Aggregation extends React.Component {
                                         )
                                     })
                                 }
-                                <div className="h7">{this.state.errorMsg["spatialMappingArgs"]}</div>
+                                <div className="h7">{this.state.errorMsg["temporalAggregationArgs"]}</div>
                                 <br />
                                 <button className="w3-button w3-circle w3-teal" onClick={this.removeTempArgs}>-</button>
                                 <button className="w3-button w3-circle w3-teal" onClick={this.addTempArgs}>+</button>
@@ -287,7 +296,7 @@ class Aggregation extends React.Component {
                         </div>
                     </h6>
                 </form>
-                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addGranuralityMapping}>Submit</button>
+                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addAggregation}>Add Aggregation</button>
 
             </div>
         )
