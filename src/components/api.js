@@ -47,6 +47,14 @@ export default class Api {
             })
     }
     configureSchema = (data) => {
-        return this.init().post("/configureschema", { data: data });
-    };
+        axios.post('http://localhost:8080/addFeatureSchema', data)
+            .then(function (response) {
+                if (response.data.success) {
+                    console.log(response.data.message);
+                    return response.data.message;
+                } else {
+                    return response.data.message;
+                }
+            })
+    }
 }
