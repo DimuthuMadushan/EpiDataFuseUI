@@ -14,7 +14,8 @@ class Pipeline extends React.Component {
     constructor() {
         super();
         this.state = {
-            features: []
+            features: [],
+            granularities: []
         }
     }
 
@@ -33,8 +34,10 @@ class Pipeline extends React.Component {
             }).then(featureData => {
                 console.log(featureData)
                 var featurelist = []
+                var granularitylist = []
                 var features = featureData['features']
                 var granularityConfigs = featureData['granularityConfigs']
+                var granularities = featureData['granularities']
                 Object.keys(features).forEach(function (key, index) {
                     let obj = {
                         'featureName': key,
@@ -43,8 +46,7 @@ class Pipeline extends React.Component {
                         'temporalGranularity': granularityConfigs[key]['temporalGranularity'],
                         'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
                         'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
-                        'spatialMappingMethod': granularityConfigs[key]['spatialMappingMethod'],
-                        'temporalMappingMethod': granularityConfigs[key]['temporalMappingMethod'],
+                        'mappingMethod': granularityConfigs[key],
                         'conversionFrequency': '24hrs',
                         'externalSource': 'http://localhost/3000/weatherdata'
 
@@ -52,13 +54,20 @@ class Pipeline extends React.Component {
                     featurelist.push(obj)
                 })
                 this.setState(prevState => ({ features: featurelist }))
-                console.log(this.state)
+                Object.keys(granularities).forEach(function (key, index) {
+                    let obj = {
+                        'granularityName': key,
+                        'attributes': granularities[key],
+                    }
+                    granularitylist.push(obj)
+                })
+                this.setState(prevState => ({ granularities: granularitylist }))
             })
     }
 
     componentDidMount() {
         var id = this.props.location.state.pipelineId
-        //this.retriveData(id)
+        this.retriveData(id)
 
     }
 
@@ -71,13 +80,14 @@ class Pipeline extends React.Component {
     }
 
     render() {
-        let { features } = this.state
+        let { features, granularities } = this.state
         let featureList = features.length > 0
             && features.map((val, i) => {
                 return (
                     <option key={i} value={val.pipelineName}>{val.pipelineName}</option>
                 )
             }, this);
+
         let featureInfoList = features.length > 0 &&
             features.map((feature, i) => {
                 console.log(feature)
@@ -90,7 +100,7 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>{feature['featureName']}</Typography></td>
                         <td>
-                            <ul style={{ "listStyleType": "none", marginLeft: 0 }}>
+                            <ul style={{ "listStyleType": "none", marginLeft: 0, marginTop: 0, padding: 0 }}>
                                 {feature['attributes'].map(function (d, idx) {
                                     return (
                                         <li key={idx}>
@@ -132,18 +142,49 @@ class Pipeline extends React.Component {
                             color: 'grey',
                             fontWeight: 'bolder'
                         }}>{feature['targetTemporalGranularity']}</Typography></td>
-                        <td><Typography style={{
+                        <td>
+                            {feature['mappingMethod']['spatialRelationMappingMethod'] != null ? <div> <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}> MethodName:{feature['mappingMethod']['spatialRelationMappingMethod']} </Typography>
+                                {feature['mappingMethod']['spatialMappingArguments'] != null ?
+                                    <div>
+                                        <Typography style={{
+                                            fontSize: 10,
+                                            fontFamily: 'Courier New',
+                                            color: 'grey',
+                                            fontWeight: 'bolder',
+                                            marginTop: 2
+                                        }}>
+                                            Mapping Arguments
+                                        </Typography>
+                                        <ul style={{ "listStyleType": "none", marginLeft: 0, padding: 0, marginTop: 0 }}>
+                                            {Object.keys(feature['mappingMethod']['spatialMappingArguments']).map(function (arg, idx) {
+                                                return (
+                                                    <li key={idx}>
+                                                        <Typography style={{
+                                                            fontSize: 10,
+                                                            fontFamily: 'Courier New',
+                                                            color: 'grey',
+                                                            fontWeight: 'bolder',
+                                                            marginLeft: 4
+                                                        }}>
+                                                            {arg + ":" + feature['mappingMethod']['spatialMappingArguments'][arg]}
+                                                        </Typography>
+                                                    </li>
+                                                )
+                                            })} </ul> </div> : ""}
+                            </div>
+                                : ""}
+                        </td>
+                        <td> <Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
                             color: 'grey',
                             fontWeight: 'bolder'
-                        }}>{feature['spatialMappingMethod']}</Typography></td>
-                        <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['temporalMappingMethod']}</Typography></td>
+                        }}>{feature['mappingMethod']['temporalRelationMappingMethod']}</Typography></td>
                         <td><Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
@@ -160,9 +201,48 @@ class Pipeline extends React.Component {
                 )
             }, this);
 
+        let granularityInfoList = granularities.length > 0 &&
+            granularities.map((granularity, i) => {
+                return (
+                    <tr key={i} >
+                        <td><Typography style={{
+                            fontSize: 10,
+                            fontFamily: 'Courier New',
+                            color: 'grey',
+                            fontWeight: 'bolder'
+                        }}>{granularity['granularityName']}</Typography></td>
+                        <td>
+                            <ul style={{ "listStyleType": "none", marginLeft: 0, marginTop: 0, padding: 0 }}>
+                                {granularity['attributes'].map(function (d, idx) {
+                                    return (
+                                        <li key={idx}>
+                                            <Typography style={{
+                                                fontSize: 10,
+                                                fontFamily: 'Courier New',
+                                                color: 'grey',
+                                                fontWeight: 'bolder'
+                                            }}>
+                                                {d['attribute_name'] + ":" + d['attribute_type']}
+                                            </Typography>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </td>
+                    </tr>
+                )
+            }, this);
+
         return (
             <div>
-                <table className="w3-table-all w3-col-50">
+                <Typography style={{
+                    fontSize: 12.5,
+                    fontFamily: 'Courier New',
+                    color: 'grey',
+                    fontWeight: 'bolder',
+                    marginBottom: 5
+                }}> Feature Table</Typography>
+                <table className="w3-table-all w3-col-50" style={{ marginBottom: 10 }}>
                     <thead>
                         <tr>
                             <th><Typography style={{
@@ -229,6 +309,34 @@ class Pipeline extends React.Component {
                     </thead>
                     <tbody>
                         {featureInfoList}
+                    </tbody>
+                </table>
+                <Typography style={{
+                    fontSize: 12.5,
+                    fontFamily: 'Courier New',
+                    color: 'grey',
+                    fontWeight: 'bolder',
+                    marginBottom: 5
+                }}> Granularity Table</Typography>
+                <table className="w3-table-all w3-col-50">
+                    <thead>
+                        <tr>
+                            <th><Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Granularity Name</Typography></th>
+                            <th><Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Attributes</Typography></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {granularityInfoList}
                     </tbody>
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
