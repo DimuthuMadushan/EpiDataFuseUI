@@ -8,15 +8,17 @@ import BulkIngest from "../configuration/single/bulkIngest";
 import SourceConnector from "../configuration/single/sourceConnector";
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
+import SpatialGranularity from '../map/SpatialGranularity';
+
 
 class Pipeline extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            pipelineName:this.props.location.state.pipelineId,
+            pipelineName: this.props.location.state.pipelineId,
             features: [],
-            granularities: []
+            granularities: [],
         }
     }
 
@@ -33,13 +35,15 @@ class Pipeline extends React.Component {
                     return null;
                 }
             }).then(featureData => {
-                if(featureData != null) {
-                    console.log(featureData)
+                if (featureData != null) {
                     var featurelist = []
                     var granularitylist = []
+                    var geodatalist = []
                     var features = featureData['features']
                     var granularityConfigs = featureData['granularityConfigs']
                     var granularities = featureData['granularities']
+                    var granules = featureData['granules']
+                    console.log(granules)
                     Object.keys(features).forEach(function (key, index) {
                         let obj = {
                             'featureName': key,
@@ -55,18 +59,19 @@ class Pipeline extends React.Component {
                         }
                         featurelist.push(obj)
                     })
-                    this.setState(prevState => ({features: featurelist}))
+                    this.setState(prevState => ({ features: featurelist }))
                     Object.keys(granularities).forEach(function (key, index) {
                         let obj = {
                             'granularityName': key,
                             'attributes': granularities[key],
+                            'shapefile': granules[key]
                         }
                         granularitylist.push(obj)
                     })
-                    this.setState(prevState => ({granularities: granularitylist}))
-                } else {
-                    this.setState(prevState => ({granularities: []}))
+
+                    this.setState(prevState => ({ granularities: granularitylist }))
                 }
+
             })
     }
 
@@ -76,7 +81,6 @@ class Pipeline extends React.Component {
         //     console.log(this.state.pipelineName)
         // })
         this.retriveData(id)
-
     }
 
     handleSubmit = (e) => {
@@ -98,7 +102,6 @@ class Pipeline extends React.Component {
 
         let featureInfoList = features.length > 0 &&
             features.map((feature, i) => {
-                console.log(feature)
                 return (
                     <tr key={i} >
                         <td><Typography style={{
@@ -237,6 +240,11 @@ class Pipeline extends React.Component {
                                 })}
                             </ul>
                         </td>
+                        <td>
+                            <div style={{ width: 900, height: 400 }}>
+                                <SpatialGranularity shapefile={granularity['shapefile']}></SpatialGranularity>
+                            </div>
+                        </td>
                     </tr>
                 )
             }, this);
@@ -294,13 +302,13 @@ class Pipeline extends React.Component {
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Spatial conversion</Typography></th>
+                            }}>Spatial conversion Method</Typography></th>
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Temporal conversion</Typography></th>
+                            }}>Temporal conversion Method</Typography></th>
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
@@ -341,6 +349,13 @@ class Pipeline extends React.Component {
                                 color: 'grey',
                                 fontWeight: 'bolder'
                             }}>Attributes</Typography></th>
+                            <th><Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Granules</Typography></th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -382,7 +397,7 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
-                            <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addFeature"><Ingest /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
                             <PrivateRoute exact path="/addGranConfig"><Granularity /></PrivateRoute>
