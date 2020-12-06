@@ -50,9 +50,10 @@ export default class Api {
         axios.post('http://localhost:8080/addFeatureSchema', data)
             .then(function (response) {
                 if (response.data.success) {
-                    console.log(response.data.message);
+                    console.log("inside config schema");
                     return response.data.message;
                 } else {
+                    console.log(response);
                     return response.data.message;
                 }
             })

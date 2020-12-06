@@ -11,9 +11,10 @@ import axios from 'axios';
 
 class Pipeline extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
+            pipelineName:this.props.location.state.pipelineId,
             features: [],
             granularities: []
         }
@@ -32,41 +33,48 @@ class Pipeline extends React.Component {
                     return null;
                 }
             }).then(featureData => {
-                console.log(featureData)
-                var featurelist = []
-                var granularitylist = []
-                var features = featureData['features']
-                var granularityConfigs = featureData['granularityConfigs']
-                var granularities = featureData['granularities']
-                Object.keys(features).forEach(function (key, index) {
-                    let obj = {
-                        'featureName': key,
-                        'attributes': features[key],
-                        'spatialGranularity': granularityConfigs[key]['spatialGranularity'],
-                        'temporalGranularity': granularityConfigs[key]['temporalGranularity'],
-                        'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
-                        'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
-                        'mappingMethod': granularityConfigs[key],
-                        'conversionFrequency': '24hrs',
-                        'externalSource': 'http://localhost/3000/weatherdata'
+                if(featureData != null) {
+                    console.log(featureData)
+                    var featurelist = []
+                    var granularitylist = []
+                    var features = featureData['features']
+                    var granularityConfigs = featureData['granularityConfigs']
+                    var granularities = featureData['granularities']
+                    Object.keys(features).forEach(function (key, index) {
+                        let obj = {
+                            'featureName': key,
+                            'attributes': features[key],
+                            'spatialGranularity': granularityConfigs[key]['spatialGranularity'],
+                            'temporalGranularity': granularityConfigs[key]['temporalGranularity'],
+                            'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
+                            'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
+                            'mappingMethod': granularityConfigs[key],
+                            'conversionFrequency': '24hrs',
+                            'externalSource': 'http://localhost/3000/weatherdata'
 
-                    }
-                    featurelist.push(obj)
-                })
-                this.setState(prevState => ({ features: featurelist }))
-                Object.keys(granularities).forEach(function (key, index) {
-                    let obj = {
-                        'granularityName': key,
-                        'attributes': granularities[key],
-                    }
-                    granularitylist.push(obj)
-                })
-                this.setState(prevState => ({ granularities: granularitylist }))
+                        }
+                        featurelist.push(obj)
+                    })
+                    this.setState(prevState => ({features: featurelist}))
+                    Object.keys(granularities).forEach(function (key, index) {
+                        let obj = {
+                            'granularityName': key,
+                            'attributes': granularities[key],
+                        }
+                        granularitylist.push(obj)
+                    })
+                    this.setState(prevState => ({granularities: granularitylist}))
+                } else {
+                    this.setState(prevState => ({granularities: []}))
+                }
             })
     }
 
     componentDidMount() {
         var id = this.props.location.state.pipelineId
+        // this.setState({pipelineName:id},()=>{
+        //     console.log(this.state.pipelineName)
+        // })
         this.retriveData(id)
 
     }
@@ -80,7 +88,7 @@ class Pipeline extends React.Component {
     }
 
     render() {
-        let { features, granularities } = this.state
+        let { features, granularities, pipelineName } = this.state
         let featureList = features.length > 0
             && features.map((val, i) => {
                 return (
@@ -341,7 +349,7 @@ class Pipeline extends React.Component {
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
                     <Router>
-                        <Link to="/addGranular"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
+                        <Link to='/addGranular' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
                             <Typography style={{
                                 fontSize: 12,
                                 fontFamily: 'Courier New',
@@ -374,7 +382,7 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
-                            <PrivateRoute exact path="/addGranular"><Schema /></PrivateRoute>
+                            <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/addFeature"><Ingest /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
                             <PrivateRoute exact path="/addGranConfig"><Granularity /></PrivateRoute>

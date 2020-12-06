@@ -2,13 +2,13 @@ import React from 'react';
 import axios from 'axios';
 class Aggregation extends React.Component {
     state = {
-        aggregatedAttribute:[""],
-        spatialAggregation:{spatialMethodName:"", aggregationArgs:[]},
-        temporalAggregation:{temporalMethodName:"", aggregationArgs:[]},
-        spatialAggregationArgs:[{spatialArgName:"", spatialArgValue:""}],
-        temporalAggregationArgs:[{temporalArgName:"", temporalArgValue:""}],
-        aggregation:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
-        errorMsg:{aggregatedAttribute:""},
+        aggregated_attribute:[],
+        spatial_aggregation:{method_name:null, aggregation_arguments:[]},
+        temporal_aggregation:{method_name:null, aggregation_argument:[]},
+        spatialAggregationArgs:[{argument_name:null, argument_value:null}],
+        temporalAggregationArgs:[{argument_name:null, argument_value:null}],
+        aggregation:{aggregated_attribute:null, spatial_aggregation: {}, temporal_aggregation:{}},
+        errorMsg:{aggregatedAttribute:null},
         response:""
     }
 
@@ -17,36 +17,45 @@ class Aggregation extends React.Component {
         let errorMsg = {aggregatedAttribute:""}
         this.setState({errorMsg})
         if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
-            let {spatialAggregation,spatialAggregationArgs} = this.state
+            let {spatial_aggregation,spatialAggregationArgs} = this.state
             if(e.target.id==="spatialMethodName"){
-                spatialAggregation[e.target.name] = e.target.value.toUpperCase()
-                this.setState({spatialAggregation},()=>{
-                    //console.log(spatialAggregation)
+                spatial_aggregation["method_name"] = e.target.value.toUpperCase()
+                this.setState({spatial_aggregation: spatial_aggregation},()=>{
+                    console.log(spatial_aggregation)
                 })
             } else {
-                spatialAggregationArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                spatialAggregation["aggregationArgs"] = spatialAggregationArgs
+                if(e.target.id==="spatialArgName") {
+                    spatialAggregationArgs[e.target.dataset.id]["argument_name"] = e.target.value.toUpperCase()
+                }else{
+                    spatialAggregationArgs[e.target.dataset.id]["argument_value"] = e.target.value.toUpperCase()
+                }
+                    spatial_aggregation["aggregation_arguments"] = spatialAggregationArgs
                 this.setState({
-                    spatialAggregation: spatialAggregation
+                    spatialAggregation: spatial_aggregation
                 }, () => {
-                    //console.log(this.state.spatialAggregation)
+                    console.log(this.state.spatial_aggregation)
                 })
             }
 
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
-            let {temporalAggregation,temporalAggregationArgs} = this.state
+            let {temporal_aggregation,temporalAggregationArgs} = this.state
             if(e.target.id==="temporalMethodName"){
-                temporalAggregation[e.target.name] = e.target.value.toUpperCase()
-                this.setState({temporalAggregation:temporalAggregation },()=>{
-                    //console.log(temporalAggregation)
+                temporal_aggregation["method_name"] = e.target.value.toUpperCase()
+                this.setState({temporal_aggregation:temporal_aggregation },()=>{
+                    console.log(temporal_aggregation)
                 })
             } else {
-                temporalAggregationArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                temporalAggregation["aggregationArgs"] = temporalAggregationArgs
+                if(e.target.id==="temporalArgName") {
+                    temporalAggregationArgs[e.target.dataset.id]["argument_name"] = e.target.value.toUpperCase()
+                }else{
+                    temporalAggregationArgs[e.target.dataset.id]["argument_value"] = e.target.value.toUpperCase()
+                }
+
+                temporal_aggregation["aggregation_argument"] = temporalAggregationArgs
                 this.setState({
-                    temporalAggregation: temporalAggregation
+                    temporalAggregation: temporal_aggregation
                 }, () => {
-                    //console.log(this.state.temporalAggregation)
+                    console.log(this.state.temporal_aggregation)
                 })
             }
 
@@ -57,10 +66,10 @@ class Aggregation extends React.Component {
             }
             errorMsg[e.target.id] = error
             this.setState({ errorMsg });
-            let aggregatedAttribute = this.state.aggregatedAttribute;
-            aggregatedAttribute[e.target.dataset.id] = e.target.value.toUpperCase();
-            this.setState({ aggregatedAttribute},()=>{
-                //console.log(this.state.aggregatedAttribute)
+            let aggregated_attribute = this.state.aggregated_attribute;
+            aggregated_attribute[e.target.dataset.id] = e.target.value.toUpperCase();
+            this.setState({ aggregated_attribute},()=>{
+                console.log(this.state.aggregated_attribute)
             })
         }
     }
@@ -69,10 +78,10 @@ class Aggregation extends React.Component {
         let aggregation = this.state.aggregation
         let errorMsg = this.state.errorMsg
         let err = '';
-        aggregation["aggregatedAttribute"] = this.state.aggregatedAttribute
-        aggregation["spatialAggregation"] = this.state.spatialAggregation
-        aggregation["temporalAggregation"] = this.state.temporalAggregation
-        if(!this.state.aggregation["aggregatedAttribute"]){
+        aggregation["aggregated_attribute"] = this.state.aggregated_attribute
+        aggregation["spatial_aggregation"] = this.state.spatial_aggregation
+        aggregation["temporal_aggregation"] = this.state.temporal_aggregation
+        if(!this.state.aggregation["aggregated_attribute"]){
             err = "Aggregated attribute fields can not be empty"
             errorMsg["aggregatedAttribute"] = err
             this.setState({errorMsg})
@@ -84,13 +93,14 @@ class Aggregation extends React.Component {
                 //this.postConfigurations()
             })
             this.setState({
-                aggregatedAttribute:[""],
-                spatialAggregation:{spatialMethodName:"", mappingArgs:[]},
-                temporalAggregation:{temporalMethodName:"", mappingArgs:[]},
-                spatialAggregationArgs:[{spatialArgName:"", spatialArgValue:""}],
-                temporalAggregationArgs:[{temporalArgName:"", temporalArgValue:""}],
-                granularity:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
-                errorMsg:{aggregatedAttribute:""},
+                aggregated_attribute:[],
+                spatial_aggregation:{method_name:null, aggregation_arguments:[]},
+                temporal_aggregation:{method_name:null, aggregation_argument:[]},
+                spatialAggregationArgs:[{argument_name:null, argument_value:null}],
+                temporalAggregationArgs:[{argument_name:null, argument_value:null}],
+                aggregation:{aggregated_attribute:null, spatial_aggregation: {}, temporal_aggregation:{}},
+                errorMsg:{aggregatedAttribute:null},
+                response:""
             })
         }
     }
@@ -127,12 +137,12 @@ class Aggregation extends React.Component {
     }
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            aggregatedAttribute: [...prevState.aggregatedAttribute,""]
+            aggregated_attribute: [...prevState.aggregated_attribute,""]
         }));
     }
     removeAttribute = (e) => {
         let errorMsg = this.state.errorMsg
-        var arrayArgs = this.state.aggregatedAttribute;
+        var arrayArgs = this.state.aggregated_attribute;
         if (arrayArgs.length > 0) {
             arrayArgs.splice(-1, 1)
         }
@@ -165,7 +175,7 @@ class Aggregation extends React.Component {
         e.preventDefault()
     }
     render() {
-        let {spatialAggregationArgs, temporalAggregationArgs, aggregatedAttribute} = this.state
+        let {spatialAggregationArgs, temporalAggregationArgs, aggregated_attribute} = this.state
         return(
             <div>
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
@@ -175,7 +185,7 @@ class Aggregation extends React.Component {
 
                             <br/>
                             {
-                                aggregatedAttribute.map((val,idx)=>{
+                                aggregated_attribute.map((val, idx)=>{
                                     let nameId = `name-${idx}`, valueId = `value-${idx}`
                                     return(
                                         <div key={idx} className="row w3-panel w3-border">
@@ -185,7 +195,7 @@ class Aggregation extends React.Component {
                                                 name={nameId}
                                                 data-id={idx}
                                                 id="aggregatedAttribute"
-                                                value={aggregatedAttribute[idx].ame}
+                                                value={aggregated_attribute[idx].ame}
                                                 className="col-75"
                                             />
                                             <div className="h7">{this.state.errorMsg["aggregatedAttributes"]}</div>

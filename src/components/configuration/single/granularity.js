@@ -2,62 +2,70 @@ import React from 'react';
 import axios from 'axios';
 class Granularity extends React.Component {
     state = {
-        spatial:"",
-        temporal:"",
-        targetSpatial: "",
-        targetTemporal: "",
-        spatialMapping:{spatialMethodName:"", mappingArgs:[]},
-        temporalMapping:{temporalMethodName:"", mappingArgs:[]},
-        spatialMappingArgs:[{spatialArgName:"", spatialArgValue:""}],
-        temporalMappingArgs:[{temporalArgName:"", temporalArgValue:""}],
-        granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
-        errorMsg:{spatial:"",temporal:"", targetSpatial:"",targetTemporal:""},
+        spatial_granularity:null,
+        temporal_granularity:null,
+        target_spatial_granularity: null,
+        target_temporal_granularity: null,
+        spatialMapping:{method_name:null, mapping_arguments:[]},
+        temporalMapping:{method_name:null, mapping_arguments:[]},
+        spatialMappingArgs:[{argument_name:null, argument_value:null}],
+        temporalMappingArgs:[{argument_name:null, argument_value:null}],
+        granularity:{spatial_granularity:null, temporal_granularity:null, target_spatial_granularity:null, target_temporal_granularity:null, granularity_mapping:{spatial_mapping_method:{}, temporal_mapping_method:{}}},
+        errorMsg:{spatial:null,temporal:null, target_spatial_granularity:null,target_temporal_granularity:null},
         response:""
     }
 
 
     handleChange = (e) => {
         let mappings = this.state.mappings
-        let errorMsg = {spatial:"",temporal:"", featureName:"" ,spatailGran:"", tempGran:""}
+        let errorMsg = {spatial:"",temporal:"", featureName:"" ,target_spatial_granularity:"",target_temporal_granularity:""}
         this.setState({errorMsg})
          if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
-            let temporal = this.state.temporal
-            temporal[e.target.id] = e.target.value.toUpperCase()
-            mappings["temporal"] = temporal
+            let temporal_granularity = this.state.temporal_granularity
+            temporal_granularity[e.target.id] = e.target.value.toUpperCase()
+            mappings["temporal"] = temporal_granularity
             this.setState({mappings},()=>{
-                //console.log(mappings)
+                console.log(mappings)
             })
         } else if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
             let {spatialMapping,spatialMappingArgs} = this.state
              if(e.target.id==="spatialMethodName"){
-                 spatialMapping[e.target.name] = e.target.value.toUpperCase()
+                 spatialMapping["method_name"] = e.target.value.toUpperCase()
                  this.setState({spatialMapping},()=>{
-                     //console.log(spatialMapping)
+                     console.log(spatialMapping)
                  })
              } else {
-                 spatialMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                 spatialMapping["mappingArgs"] = spatialMappingArgs
+                 if(e.target.id==="spatialArgName") {
+                     spatialMappingArgs[e.target.dataset.id]["argument_name"] = e.target.value.toUpperCase()
+                 }else{
+                     spatialMappingArgs[e.target.dataset.id]["argument_value"] = e.target.value.toUpperCase()
+                 }
+                 spatialMapping["mapping_arguments"] = spatialMappingArgs
                  this.setState({
                      spatialMapping: spatialMapping
                  }, () => {
-                     //console.log(this.state.spatialMapping)
+                     console.log(this.state.spatialMapping)
                  })
              }
 
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
              let {temporalMapping,temporalMappingArgs} = this.state
              if(e.target.id==="temporalMethodName"){
-                 temporalMapping[e.target.name] = e.target.value.toUpperCase()
+                 temporalMapping["method_name"] = e.target.value.toUpperCase()
                  this.setState({temporalMapping},()=>{
-                     //console.log(temporalMapping)
+                     console.log(temporalMapping)
                  })
              } else {
-                 temporalMappingArgs[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-                 temporalMapping["mappingArgs"] = temporalMappingArgs
+                 if(e.target.id==="temporalArgName") {
+                     temporalMappingArgs[e.target.dataset.id]["argument_name"] = e.target.value.toUpperCase()
+                 }else{
+                     temporalMappingArgs[e.target.dataset.id]["argument_value"] = e.target.value.toUpperCase()
+                 }
+                     temporalMapping["mapping_arguments"] = temporalMappingArgs
                  this.setState({
                      temporalMapping: temporalMapping
                  }, () => {
-                     //console.log(this.state.temporalMapping)
+                     console.log(this.state.temporalMapping)
                  })
              }
 
@@ -69,10 +77,10 @@ class Granularity extends React.Component {
             errorMsg[e.target.id] = error
             this.setState({ errorMsg });
             this.setState({ [e.target.id]: e.target.value.toUpperCase() },()=>{
-                // console.log(this.state.spatial)
-                // console.log(this.state.temporal)
-                // console.log(this.state.targetSpatial)
-                // console.log(this.state.targetTemporal)
+                // console.log(this.state.spatial_granularity)
+                // console.log(this.state.temporal_granularity)
+                // console.log(this.state.target_spatial_granularity)
+                // console.log(this.state.target_temporal_granularity)
             })
         }
     }
@@ -81,61 +89,61 @@ class Granularity extends React.Component {
         let granularity = this.state.granularity
         let errorMsg = this.state.errorMsg
         let err = '';
-        granularity["spatial"] = this.state.spatial
-        granularity["temporal"] = this.state.temporal
-        granularity["targetSpatial"] = this.state.targetSpatial
-        granularity["targetTemporal"] = this.state.targetTemporal
-        granularity["spatialMapping"] = this.state.spatialMapping
-        granularity["temporalMapping"] = this.state.temporalMapping
-        console.log("this is granuklarity")
-        if(!this.state.granularity["spatial"]){
+        granularity["spatial_granularity"] = this.state.spatial_granularity
+        granularity["temporal_granularity"] = this.state.temporal_granularity
+        granularity["target_spatial_granularity"] = this.state.target_spatial_granularity
+        granularity["target_temporal_granularity"] = this.state.target_temporal_granularity
+        granularity["granularity_mapping"] = {spatial_mapping_method:this.state.spatialMapping, temporal_mapping_method:this.state.temporalMapping}
+        if(!this.state.granularity["spatial_granularity"]){
             err = "Spatial can not be null value"
             errorMsg["spatial"] = err
             this.setState({errorMsg})
-        }else if(!this.state.granularity["temporal"]){
+        }else if(!this.state.granularity["temporal_granularity"]){
             err = "Temporal can not be null value"
             errorMsg["temporal"] = err
             this.setState({errorMsg})
-        } else if(!this.state.granularity["targetSpatial"]){
-            err = "Target spatial fields can not be empty"
-            errorMsg["targetSpatial"] = err
+        } else if(!this.state.granularity["target_spatial_granularity"]){
+            err = "Target spatial_granularity fields can not be empty"
+            errorMsg["target_spatial_granularity"] = err
             this.setState({errorMsg})
-        } else if(!this.state.granularity["targetTemporal"]){
-            err = "Target temporal fields can not be empty"
-            errorMsg["targetTemporal"] = err
+        } else if(!this.state.granularity["target_temporal_granularity"]){
+            err = "Target temporal_granularity fields can not be empty"
+            errorMsg["target_temporal_granularity"] = err
             this.setState({errorMsg})
         } else {
             this.setState({granularity:granularity},()=>{
                 this.props.addGranularity(granularity);
+                console.log(granularity)
                 //this.postConfigurations()
             })
             this.setState({
-                spatial:"",
-                temporal:"",
-                targetSpatial: "",
-                targetTemporal: "",
-                spatialMapping:{spatialMethodName:"", mappingArgs:[]},
-                temporalMapping:{temporalMethodName:"", mappingArgs:[]},
-                spatialMappingArgs:[{spatialArgName:"", spatialArgValue:""}],
-                temporalMappingArgs:[{temporalArgName:"", temporalArgValue:""}],
-                granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
-                errorMsg:{spatial:"",temporal:"", targetSpatial:"",targetTemporal:""},
+                spatial_granularity:null,
+                temporal_granularity:null,
+                target_spatial_granularity: null,
+                target_temporal_granularity: null,
+                spatialMapping:{method_name:null, mapping_arguments:[]},
+                temporalMapping:{method_name:null, mapping_arguments:[]},
+                spatialMappingArgs:[{argument_name:null, argument_value:null}],
+                temporalMappingArgs:[{argument_name:null, argument_value:null}],
+                granularity:{spatial_granularity:null, temporal_granularity:null, target_spatial_granularity:null, target_temporal_granularity:null, granularity_mapping:{spatial_mapping_method:{}, temporal_mapping_method:{}}},
+                errorMsg:{spatial:null,temporal:null, target_spatial_granularity:null,target_temporal_granularity:null},
+                response:""
             })
         }
     }
-    postConfigurations=()=>{
-        let response = this.state.response
-        if(!this.state.errorMsg["featureName"] & !this.state.errorMsg["spatial"] & !this.state.errorMsg["temporal"] &!this.state.errorMsg["spatialGran"]&!this.state.errorMsg["temporalGran"]){
-            axios
-                .post('https://localhost:8080', this.state.GranularityMappingConfig)
-                .then(response =>{
-                    console.log(response)
-                })
-                .catch(error =>{
-                    console.log(error)
-                })
-        }
-    }
+    // postConfigurations=()=>{
+    //     let response = this.state.response
+    //     if(!this.state.errorMsg["featureName"] & !this.state.errorMsg["spatial"] & !this.state.errorMsg["temporal"] &!this.state.errorMsg["target_spatial_granularity"]&!this.state.errorMsg["target_temporal_granularity"]){
+    //         axios
+    //             .post('https://localhost:8080', this.state.GranularityMappingConfig)
+    //             .then(response =>{
+    //                 console.log(response)
+    //             })
+    //             .catch(error =>{
+    //                 console.log(error)
+    //             })
+    //     }
+    // }
 
     addArgs = (e) => {
         this.setState((prevState) => ({
@@ -187,21 +195,21 @@ class Granularity extends React.Component {
 
                             <br/>
                             <label>Spatial Granularity</label>
-                            <input className="w3-input" type="text" id="spatial"></input>
+                            <input className="w3-input" type="text" id="spatial_granularity"></input>
                             <div className="h7">{this.state.errorMsg["spatial"]}</div>
                             <br/>
                             <label>Temporal Granularity</label>
-                            <input className="w3-input" type="text" id="temporal"></input>
+                            <input className="w3-input" type="text" id="temporal_granularity"></input>
                             <div className="h7">{this.state.errorMsg["temporal"]}</div>
                             <br/>
                             <br/>
                             <label>Target Spatial Granularity</label>
-                            <input className="w3-input" type="text" id="targetSpatial"></input>
-                            <div className="h7">{this.state.errorMsg["targetSpatial"]}</div>
+                            <input className="w3-input" type="text" id="target_spatial_granularity"></input>
+                            <div className="h7">{this.state.errorMsg["target_spatial_granularity"]}</div>
                             <br/>
                             <label>Target Temporal Granularity</label>
-                            <input className="w3-input" type="text" id="targetTemporal"></input>
-                            <div className="h7">{this.state.errorMsg["targetTemporal"]}</div>
+                            <input className="w3-input" type="text" id="target_temporal_granularity"></input>
+                            <div className="h7">{this.state.errorMsg["target_temporal_granularity"]}</div>
                             <br/>
                         </div>
                         <div className="" >
@@ -280,7 +288,7 @@ class Granularity extends React.Component {
                                                     value={temporalMappingArgs[idx].ame}
                                                     className="col-75"
                                                 />
-                                                <label htmlFor={valueId} className="col-25">Type</label>
+                                                <label htmlFor={valueId} className="col-25">Value</label>
                                                 <input
                                                     type="text"
                                                     name={valueId}
