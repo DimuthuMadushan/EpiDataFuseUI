@@ -23,14 +23,14 @@ class GranularityMappingConfig extends React.Component {
                 console.log(baseGran)
             })
         } else if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
-            let temporal = this.state.temporal
+            let temporal_granularity = this.state.temporal
             temporal[e.target.id] = e.target.value.toUpperCase()
             mappings["temporal"] = temporal
             this.setState({mappings},()=>{
                 console.log(mappings)
             })
         } else if(["spatialGranType","spatialGran","spatialMap"].includes(e.target.id)){
-            let spatial = this.state.spatial
+            let spatial_granularity = this.state.spatial
             spatial[e.target.id] = e.target.value.toUpperCase()
             mappings["spatial"] = spatial
             this.setState({mappings},()=>{

@@ -47,6 +47,7 @@ class CreatePipeline extends React.Component {
   }
 
   componentDidMount() {
+
     this.retriveData();
     // this.setState({pipelineNames:this.props.pipelineNames})
   }
@@ -170,7 +171,7 @@ class CreatePipeline extends React.Component {
               </Link>
             </td>
             <td>
-              <button onClick={()=>{this.initializePipeline(val.pipelineName)}} className="w3-btn w3-white w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
+              <button onClick={()=>{this.initializePipeline(val.pipelineName)}} disabled={<val className="isConfigured"></val>} className="w3-btn w3-white w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
                 <Typography style={{
                   fontSize: 8,
                   fontFamily: 'Courier New',

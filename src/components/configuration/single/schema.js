@@ -5,30 +5,38 @@ import Granularity from "./granularity";
 import Aggregation from "./aggregation";
 
 class Schema extends React.Component {
-    state = {
-        featureName: "",
-        attributes: [{ attributeName: "", attributeType: "" }],
-        uuid: "",
-        postingFeatures: [{ featureName: "", attributes: [], uuid: "" }],
-        granularity:{spatial:"", temporal:"", targetSpatial:"", targetTemporal:"", spatialMapping: {}, temporalMapping:{}},
-        aggregation:{aggregatedAttribute:"", spatialAggregation: {}, temporalAggregation:{}},
-        schemaConfig:{postingFeatures:[], granularity: [], aggregation: []},
-        errorMsg: { featureName: "", atttributes: "", uuid: "" },
-        response: ""
+    constructor(props){
+        super(props);
+
+        this.state = {
+            pipelineName:this.props.pipelineName,
+            featureName: null,
+            attributes: [{ attribute_name: null, attribute_type: null }],
+            uuid: null,
+            postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
+            granularity:{spatial_granularity:null, temporal_granularity:null, target_spatial_granularity:null, target_temporal_granularity:null, granularity_mapping:{spatial_mapping_method:{}, temporal_mapping_method:{}}},
+            aggregation:{aggregatedAttribute:null, spatialAggregation: {}, temporalAggregation:{}},
+            schemaConfig:{pipeline_name:null, feature_name:null, attributes:[], granularity_config: [], aggregation_config: []},
+            errorMsg: { featureName: null, atttributes: null, uuid: null },
+            response: null
+        };
+
+        this.api = new Api();
     }
 
-    api = new Api();
+
+
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
         let id = e.target.dataset.id
-        if (["attributeName", "attributeType"].includes(e.target.id)) {
+        if (["attribute_name", "attribute_type"].includes(e.target.id)) {
             let attributes = [...this.state.attributes]
             attributes[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
             this.setState({ attributes }, () => {
                 let err = '';
-                if (!this.state.attributes[id]["attributeName"] ||
-                    !this.state.attributes[id]["attributeType"]) {
+                if (!this.state.attributes[id]["attribute_name"] ||
+                    !this.state.attributes[id]["attribute_type"]) {
                     err = "Attribute fields can not be empty";
                     errorMsg["atttributes"] = err
                     this.setState({ errorMsg });
@@ -56,6 +64,12 @@ class Schema extends React.Component {
 
     }
 
+    componentDidMount() {
+        var id = this.props.pipelineName
+        this.setState({pipelineName:id})
+    }
+
+
     addGranularity = (granularity) =>{
         //console.log(granularity);
         this.setState({granularity:granularity})
@@ -70,7 +84,7 @@ class Schema extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attributeName: "", attributeType: "" }]
+            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "" }]
         }));
     }
     removeAttribute = (e) => {
@@ -115,7 +129,7 @@ class Schema extends React.Component {
             this.setState({ errorMsg })
             this.setState((prevState) => ({
                 featureName: "",
-                attributes: [{ attributeName: "", attributeType: "" }],
+                attributes: [{ attribute_name: "", attribute_type: "" }],
                 uuid: "",
                 postingFeatures: [...prevState.postingFeatures, { featureName: "", attributes: {}, uuid: "" }],
                 errorMsg: { featureName: "", atttributes: "", uuid: "" }
@@ -140,9 +154,12 @@ class Schema extends React.Component {
 
     postConfigurations = (e) => {
         let schemaConfig = this.state.schemaConfig;
-        schemaConfig["postingFeatures"] = this.state.postingFeatures[0];
-        schemaConfig["granularity"] = this.state.granularity;
-        schemaConfig["aggregation"] = this.state.aggregation;
+        schemaConfig["pipeline_name"] = this.state.pipelineName;
+        schemaConfig["feature_name"] = this.state.postingFeatures[0]["featureName"];
+        schemaConfig["attributes"] = this.state.postingFeatures[0]["attributes"];
+        schemaConfig["uuid_attribute_name"] = this.state.postingFeatures[0]["uuid"];
+        schemaConfig["granularity_config"] = this.state.granularity;
+        schemaConfig["aggregation_config"] = this.state.aggregation;
         console.log(schemaConfig);
         let response = this.api.configureSchema(schemaConfig);
         console.log(response);
@@ -173,7 +190,7 @@ class Schema extends React.Component {
                                             type="text"
                                             name={nameId}
                                             data-id={idx}
-                                            id="attributeName"
+                                            id="attribute_name"
                                             value={attributes[idx].ame}
                                             className="col-75"
                                         />
@@ -182,7 +199,7 @@ class Schema extends React.Component {
                                             type="text"
                                             name={typeId}
                                             data-id={idx}
-                                            id="attributeType"
+                                            id="attribute_type"
                                             value={attributes[idx].type}
                                             className="col-75 "
                                         />
