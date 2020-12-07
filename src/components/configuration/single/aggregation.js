@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 class Aggregation extends React.Component {
     state = {
-        aggregated_attribute:[],
+        aggregated_attribute:[""],
         spatial_aggregation:{method_name:null, aggregation_arguments:[]},
         temporal_aggregation:{method_name:null, aggregation_argument:[]},
         spatialAggregationArgs:[{argument_name:null, argument_value:null}],
@@ -15,6 +15,7 @@ class Aggregation extends React.Component {
 
     handleChange = (e) => {
         let errorMsg = {aggregatedAttribute:""}
+        let aggregation = this.state.aggregation
         this.setState({errorMsg})
         if(["spatialMethodName", "spatialArgName","spatialArgValue"].includes(e.target.id)){
             let {spatial_aggregation,spatialAggregationArgs} = this.state
@@ -36,6 +37,7 @@ class Aggregation extends React.Component {
                     console.log(this.state.spatial_aggregation)
                 })
             }
+            aggregation["spatial_aggregation"] = this.state.spatial_aggregation
 
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
             let {temporal_aggregation,temporalAggregationArgs} = this.state
@@ -58,7 +60,7 @@ class Aggregation extends React.Component {
                     console.log(this.state.temporal_aggregation)
                 })
             }
-
+            aggregation["temporal_aggregation"] = this.state.temporal_aggregation
         } else {
             let error = ""
             if (!e.target.value) {
@@ -69,9 +71,12 @@ class Aggregation extends React.Component {
             let aggregated_attribute = this.state.aggregated_attribute;
             aggregated_attribute[e.target.dataset.id] = e.target.value.toUpperCase();
             this.setState({ aggregated_attribute},()=>{
+                aggregation["aggregated_attribute"] = this.state.aggregated_attribute
                 console.log(this.state.aggregated_attribute)
             })
         }
+        this.props.addAggregation(aggregation);
+
     }
 
     addAggregation = (e) =>{
@@ -120,7 +125,7 @@ class Aggregation extends React.Component {
 
     addArgs = (e) => {
         this.setState((prevState) => ({
-            spatialAggregationArgs: [...prevState.spatialAggregationArgs, {spatialArgName:"", spatialArgValue:""}]
+            spatialAggregationArgs: [...prevState.spatialAggregationArgs, {argument_name:"", argument_value:""}]
         }));
     }
     removeArgs = (e) => {
@@ -155,7 +160,7 @@ class Aggregation extends React.Component {
 
     addTempArgs = (e) => {
         this.setState((prevState) => ({
-            temporalAggregationArgs: [...prevState.temporalAggregationArgs, {temporalArgName:"", temporalArgValue:""}]
+            temporalAggregationArgs: [...prevState.temporalAggregationArgs, {argument_name:"", argument_value:""}]
         }));
     }
     removeTempArgs = (e) => {
@@ -306,8 +311,6 @@ class Aggregation extends React.Component {
                         </div>
                     </h6>
                 </form>
-                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addAggregation}>Add Aggregation</button>
-
             </div>
         )
     }

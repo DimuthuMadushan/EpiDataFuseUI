@@ -16,7 +16,7 @@ class SourceConnector extends React.Component {
     handleChange = (e) => {
         let sourceConnector = this.state.sourceConnector
         let errorMsg = this.state.errorMsg
-        errorMsg = { featureName: "", sourceType: "", url: "", requestFrequency: "", batchSize: "" }
+        errorMsg = { feature_name: "", source_type: "", url: "", requestFrequency: "", batchSize: "" }
         let err = ""
         let id = e.target.dataset.id
         let val = e.target.value

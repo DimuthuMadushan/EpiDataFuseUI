@@ -107,7 +107,7 @@ class SchemaConfig extends React.Component {
             // var id = this.state.features.length
 
             // let features = [...this.state.features]
-            // features[id - 1]["featureName"] = this.state.featureName
+            // features[id - 1]["feature_name"] = this.state.feature_name
             // features[id - 1]["attributes"] = this.state.attributes
             // features[id - 1]["records"] = this.state.records
             // features[id - 1]["configurations"] = this.state.configurations
@@ -116,11 +116,11 @@ class SchemaConfig extends React.Component {
 
             // })
             // this.setState((prevState) => ({
-            //     features: [...prevState.features, { featureName: "", attributes: [], records: [], configurations: [] }],
-            //     attributes: [{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
-            //     records: [{ attributeName: "", columnNumber: "" }],
+            //     features: [...prevState.features, { feature_name: "", attributes: [], records: [], configurations: [] }],
+            //     attributes: [{ attribute: "", attribute_name: "", attributeType: "", derived: "" }],
+            //     records: [{ attribute_name: "", columnNumber: "" }],
             //     configurations: [{ geom: "POINT", dtg: "YYYYMMDD", featureId: "" }],
-            //     featureName: ""
+            //     feature_name: ""
             // }))
 
             let addedFeature = {
@@ -149,7 +149,7 @@ class SchemaConfig extends React.Component {
             Array.from(document.querySelectorAll("input")).forEach(
                 input => (input.value = "")
             );
-            errorMsg = { featureName: "", atttributes: "", records: "", configurations: "" }
+            errorMsg = { feature_name: "", atttributes: "", records: "", configurations: "" }
             this.setState({ errorMsg })
         }
     }

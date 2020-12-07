@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
 import PrivateRoute from '../route/router';
 import Schema from "../configuration/single/schema";
 import Ingest from "../configuration/single/ingest";
-import Granularity from "../configuration/single/granularity";
+import Granularity from "../configuration/single/addGranularity";
 import BulkIngest from "../configuration/single/bulkIngest";
 import SourceConnector from "../configuration/single/sourceConnector";
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import SpatialGranularity from '../map/SpatialGranularity';
+import IngestToGranularity from "../configuration/single/ingestToGranularity";
+import IngestToFeature from "../configuration/single/ingestToFeature";
 
 
 class Pipeline extends React.Component {
@@ -80,7 +82,7 @@ class Pipeline extends React.Component {
         // this.setState({pipelineName:id},()=>{
         //     console.log(this.state.pipelineName)
         // })
-        this.retriveData(id)
+       // this.retriveData(id)
     }
 
     handleSubmit = (e) => {
@@ -389,6 +391,18 @@ class Pipeline extends React.Component {
                             color: 'white',
                             fontWeight: 'bolder'
                         }}>Add New Granularity</Typography></button></Link>
+                        <Link to="/ingestToGranularity"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                            fontSize: 12,
+                            fontFamily: 'Courier New',
+                            color: 'white',
+                            fontWeight: 'bolder'
+                        }}>Ingest to Granularity</Typography></button></Link>
+                        <Link to="/ingestToFeature"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                            fontSize: 12,
+                            fontFamily: 'Courier New',
+                            color: 'white',
+                            fontWeight: 'bolder'
+                        }}>Ingest to Feature</Typography></button></Link>
 
                         <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
                             fontSize: 12,
@@ -398,9 +412,11 @@ class Pipeline extends React.Component {
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
                             <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addFeature"><Ingest /></PrivateRoute>
+                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
-                            <PrivateRoute exact path="/addGranConfig"><Granularity /></PrivateRoute>
+                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/addAggreConfig"><BulkIngest /></PrivateRoute>
                         </Switch>
                     </Router>
