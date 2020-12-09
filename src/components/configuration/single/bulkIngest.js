@@ -4,14 +4,14 @@ import Api from '../../api';
 
 class BulkIngest extends React.Component {
     state = {
-        featureName: "",
-        sourceType: "",
-        sourceFormat: "",
-        transformation: [{ attributeName: "", transformation: "" }],
+        feature_name: "",
+        source_type: "",
+        source_format: "",
+        transformations: [{ attribute_name: "", transformations: "" }],
         geomConfigurations: [{ geomFormat: "POINT", dataSource: "", featureId: "" }],
-        dataSources: [{ source: "" }],
+        data_sources: [{ source: "" }],
         postingFeatures: [],
-        errorMsg: { featureName: "", sourceType: "", sourceFormat: "", transformation: "", geomConfiguration: "" },
+        errorMsg: { feature_name: "", source_type: "", source_format: "", transformations: "", geomConfiguration: "" },
         response: ""
     }
 
@@ -20,20 +20,20 @@ class BulkIngest extends React.Component {
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
         let id = e.target.dataset.id
-        if (["attributeName", "attributeType"].includes(e.target.id)) {
-            let transformation = [...this.state.transformation]
+        if (["attribute_name", "attributeType"].includes(e.target.id)) {
+            let transformations = [...this.state.transformations]
             console.log("data set id:", e.target.dataset.id)
-            transformation[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
-            this.setState({ transformation }, () => {
+            transformations[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+            this.setState({ transformations }, () => {
                 let err = '';
-                if (!this.state.transformation[id]["attributeName"] ||
-                    !this.state.transformation[id]["transformation"]) {
+                if (!this.state.transformations[id]["attribute_name"] ||
+                    !this.state.transformations[id]["transformations"]) {
                     err = "Attribute fieldS can not be empty";
-                    errorMsg["transformation"] = err
+                    errorMsg["transformations"] = err
                     this.setState({ errorMsg });
                 } else {
                     err = "";
-                    errorMsg["transformation"] = err
+                    errorMsg["transformations"] = err
                     this.setState({ errorMsg });
                 }
                 //console.log(this.state.attributes)
@@ -73,46 +73,46 @@ class BulkIngest extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            transformation: [...prevState.transformation, { attributeName: "", transformation: "" }]
+            transformations: [...prevState.transformations, { attribute_name: "", transformations: "" }]
         }));
     }
     removeAttribute = (e) => {
         let errorMsg = this.state.errorMsg
-        var arrayTransformation = this.state.transformation;
+        var arrayTransformation = this.state.transformations;
         if (arrayTransformation.length > 0) {
             arrayTransformation.splice(-1, 1)
         }
-        errorMsg["transformation"] = ""
+        errorMsg["transformations"] = ""
         this.setState((prevState) => ({
-            transformation: arrayTransformation,
+            transformations: arrayTransformation,
             errorMsg: errorMsg
         }));
     }
     addSource = (e) => {
         this.setState((prevState) => ({
-            dataSources: [...prevState.dataSources, { source: "" }]
+            data_sources: [...prevState.data_sources, { source: "" }]
         }));
     }
     removeSource = (e) => {
         let errorMsg = this.state.errorMsg
-        var arraySources = this.state.dataSources;
+        var arraySources = this.state.data_sources;
         if (arraySources.length > 0) {
             arraySources.splice(-1, 1)
         }
-        errorMsg["dataSources"] = ""
+        errorMsg["data_sources"] = ""
         this.setState((prevState) => ({
-            dataSources: arraySources,
+            data_sources: arraySources,
             errorMsg: errorMsg
         }));
     }
     addFeature = (e) => {
         let errorMsg = this.state.errorMsg
         let error = ""
-        errorMsg["featureName"] = error
+        errorMsg["feature_name"] = error
         errorMsg["configurations"] = error
-        if (!this.state.featureName) {
+        if (!this.state.feature_name) {
             error = `Feature name field cannot be empty`
-            errorMsg["featureName"] = error
+            errorMsg["feature_name"] = error
             this.setState({ errorMsg });
         }
         else if (!this.state.configurations[0]["featureId"]) {
@@ -122,8 +122,8 @@ class BulkIngest extends React.Component {
         } else if (this.state.errorMsg[1]) {
         } else {
             let addedFeature = {
-                featureName: this.state.featureName,
-                attributes: this.state.transformation,
+                feature_name: this.state.feature_name,
+                attributes: this.state.transformations,
                 configurations: this.state.configurations
             }
 
@@ -134,10 +134,10 @@ class BulkIngest extends React.Component {
             });
 
             this.setState((prevState) => ({
-                features: [{ featureName: "", attributes: [], configurations: [] }],
-                attributes: [{ attribute: "", attributeName: "", attributeType: "", derived: "" }],
+                features: [{ feature_name: "", attributes: [], configurations: [] }],
+                attributes: [{ attribute: "", attribute_name: "", attributeType: "", derived: "" }],
                 configurations: [{ geom: "POINT", dtg: "YYYYMMDD", featureId: "" }],
-                featureName: ""
+                feature_name: ""
             }))
 
 
@@ -145,7 +145,7 @@ class BulkIngest extends React.Component {
             Array.from(document.querySelectorAll("input")).forEach(
                 input => (input.value = "")
             );
-            errorMsg = { featureName: "", atttributes: "", configurations: "" }
+            errorMsg = { feature_name: "", atttributes: "", configurations: "" }
             this.setState({ errorMsg })
         }
     }
@@ -156,7 +156,7 @@ class BulkIngest extends React.Component {
         }
         this.setState((prevState) => ({
             features: arrayFeature,
-            errorMsg: { featureName: "", atttributes: "", configurations: "" }
+            errorMsg: { feature_name: "", atttributes: "", configurations: "" }
         }), () => {
             console.log(this.state.features)
         });
@@ -167,8 +167,8 @@ class BulkIngest extends React.Component {
 
     postConfigurations = (e) => {
         let response = this.state.response
-        if (!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
-            this.api.configureSchema(this.state.features)
+        if (!this.state.errorMsg["feature_name"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
+            this.api.bulkIngest(this.state.features)
                 .then(response => {
                     console.log(response)
                 })
@@ -182,23 +182,23 @@ class BulkIngest extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { transformation, dataSources } = this.state
+        let { transformations, data_sources } = this.state
         return (
             <div className="w3-border">
                 <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
                     <h6>
                         <label>Feature Name</label>
-                        <input className="w3-input" type="text" name="featureName"></input>
+                        <input className="w3-input" type="text" name="feature_name"></input>
                         <label>Source Type</label>
-                        <input className="w3-input" type="text" name="sourceType"></input>
+                        <input className="w3-input" type="text" name="source_type"></input>
                         <label>Source Format</label>
-                        <input className="w3-input" type="text" name="sourceFormat"></input>
-                        <div className="h7">{this.state.errorMsg["featureName"]}</div>
+                        <input className="w3-input" type="text" name="source_format"></input>
+                        <div className="h7">{this.state.errorMsg["feature_name"]}</div>
                         <br />
                         <label>Transformation</label>
                         <br /><br />
                         {
-                            transformation.map((val, idx) => {
+                            transformations.map((val, idx) => {
                                 let nameId = `name-${idx}`, typeId = `type-${idx}`
                                 return (
                                     <div key={idx} className="row w3-panel w3-border">
@@ -207,8 +207,8 @@ class BulkIngest extends React.Component {
                                             type="text"
                                             name={nameId}
                                             data-id={idx}
-                                            id="attributeName"
-                                            value={transformation[idx].ame}
+                                            id="attribute_name"
+                                            value={transformations[idx].ame}
                                             className="col-75"
                                         />
                                         <label htmlFor={typeId} className="col-25">Type</label>
@@ -217,7 +217,7 @@ class BulkIngest extends React.Component {
                                             name={typeId}
                                             data-id={idx}
                                             id="attributeType"
-                                            value={transformation[idx].type}
+                                            value={transformations[idx].type}
                                             className="col-75 "
                                         />
                                         <br />
@@ -225,17 +225,17 @@ class BulkIngest extends React.Component {
                                 )
                             })
                         }
-                        <div className="h7">{this.state.errorMsg["transformation"]}</div>
+                        <div className="h7">{this.state.errorMsg["transformations"]}</div>
                         <br />
                         <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
                         <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
                         <br /><br />
                         <label>Data Sources</label>
                         {
-                            dataSources.map((val, idx) => {
+                            data_sources.map((val, idx) => {
                                 let inputId = `${idx}`
                                 return (
-                                    <input className="w3-input" dataId={inputId} type="text" name="dataSources"></input>
+                                    <input className="w3-input" dataId={inputId} type="text" name="data_sources"></input>
                                 )
                             })
                         }

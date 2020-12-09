@@ -58,4 +58,55 @@ export default class Api {
                 }
             })
     }
+
+    addGranularity = (data) => {
+        axios.post('http://localhost:8080/addGranularity', data)
+            .then(function (response) {
+                console.log(response);
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
+    bulkIngest = (data) =>{
+        axios.post('http://localhost:8080/ingest', data)
+            .then(function (response) {
+                console.log(response);
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
+
+    ingestToGranularity = (data) =>{
+        axios.post('http://localhost:8080/ingestToGranularity', data)
+            .then(function (response) {
+                console.log(response);
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
+
+    ingestToFeature = (data) =>{
+        axios.post('http://localhost:8080/ingestToFeature', data)
+            .then(function (response) {
+                console.log(response);
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
 }

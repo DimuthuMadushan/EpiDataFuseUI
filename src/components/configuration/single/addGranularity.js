@@ -4,7 +4,7 @@ import Api from '../../api';
 import Granularity from "./granularity";
 import Aggregation from "./aggregation";
 
-class Schema extends React.Component {
+class AddGranularity extends React.Component {
     constructor(props){
         super(props);
 
@@ -14,9 +14,7 @@ class Schema extends React.Component {
             attributes: [{ attribute_name: null, attribute_type: null }],
             uuid: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
-            granularity:{spatial_granularity:null, temporal_granularity:null, target_spatial_granularity:null, target_temporal_granularity:null, granularity_mapping:{spatial_mapping_method:{}, temporal_mapping_method:{}}},
-            aggregation:{aggregatedAttribute:null, spatialAggregation: {}, temporalAggregation:{}},
-            schemaConfig:{pipeline_name:null, feature_name:null, attributes:[], granularity_config: [], aggregation_config: []},
+            granularity:{feature_name:null, attributes:[], uuid_attribute_name:null},
             errorMsg: { featureName: null, atttributes: null, uuid: null },
             response: null
         };
@@ -29,7 +27,6 @@ class Schema extends React.Component {
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
-        let schemaConfig = this.state.schemaConfig;
         let id = e.target.dataset.id
         if (["attribute_name", "attribute_type"].includes(e.target.id)) {
             let attributes = [...this.state.attributes]
@@ -48,7 +45,6 @@ class Schema extends React.Component {
                 }
                 //console.log(this.state.attributes)
             })
-            schemaConfig["attributes"] = this.state.attributes;
         }
         else {
             let error = ""
@@ -60,7 +56,6 @@ class Schema extends React.Component {
             this.setState({ [e.target.name]: e.target.value.toUpperCase() }, () => {
                 console.log(this.state.featureName);
                 console.log(this.state.uuid);
-                schemaConfig["feature_name"] = this.state.featureName;
             })
         }
 
@@ -72,24 +67,12 @@ class Schema extends React.Component {
         this.setState({pipelineName:id})
     }
 
-
-    addGranularity = (granularity) =>{
-        //console.log(granularity);
-        this.setState({granularity:granularity})
-    }
-
-    addAggregation = (aggregation) =>{
-        //console.log(aggregation);
-        this.setState({aggregation:aggregation})
-    }
-
-
-
     addAttribute = (e) => {
         this.setState((prevState) => ({
             attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "" }]
         }));
     }
+
     removeAttribute = (e) => {
         let errorMsg = this.state.errorMsg
         var arrayAttribute = this.state.attributes;
@@ -102,6 +85,7 @@ class Schema extends React.Component {
             errorMsg: errorMsg
         }));
     }
+
     addFeature = (e) => {
         let errorMsg = this.state.errorMsg
         let error = ""
@@ -123,6 +107,8 @@ class Schema extends React.Component {
                 postingFeatures: [postingFeatues]
             }, () => {
                 console.log(this.state.postingFeatures);
+                this.postConfigurations();
+
             });
 
             Array.from(document.querySelectorAll("input")).forEach(
@@ -131,14 +117,16 @@ class Schema extends React.Component {
             errorMsg = { featureName: "", atttributes: "", uuid: "" }
             this.setState({ errorMsg })
             this.setState((prevState) => ({
-                featureName: "",
-                attributes: [{ attribute_name: "", attribute_type: "" }],
-                uuid: "",
-                postingFeatures: [...prevState.postingFeatures, { featureName: "", attributes: {}, uuid: "" }],
-                errorMsg: { featureName: "", atttributes: "", uuid: "" }
+                featureName: null,
+                attributes: [{ attribute_name: null, attribute_type: null }],
+                uuid: null,
+                postingFeatures: [...prevState.postingFeatures, { featureName: null, attributes: {}, uuid: null }],
+                granularity:{feature_name:null, attributes:[], uuid_attribute_name:null},
+                errorMsg: { featureName: null, atttributes: null, uuid: null }
             }));
         }
     }
+
     removeFeature = (e) => {
         var arrayFeature = this.state.postingFeatures;
         if (arrayFeature.length > 1) {
@@ -156,15 +144,13 @@ class Schema extends React.Component {
     }
 
     postConfigurations = (e) => {
-        let schemaConfig = this.state.schemaConfig;
-        schemaConfig["pipeline_name"] = this.state.pipelineName;
-        // schemaConfig["feature_name"] = this.state.postingFeatures[0]["feature_name"];
-        // schemaConfig["attributes"] = this.state.postingFeatures[0]["attributes"];
-        // schemaConfig["uuid_attribute_name"] = this.state.postingFeatures[0]["uuid"];
-        schemaConfig["granularity_config"] = this.state.granularity;
-        schemaConfig["aggregation_config"] = this.state.aggregation;
-        console.log(schemaConfig);
-        let response = this.api.configureSchema(schemaConfig);
+        let granularity = this.state.granularity;
+        granularity["pipeline_name"] = this.state.pipelineName;
+        granularity["feature_name"] = this.state.postingFeatures[0]["feature_name"];
+        granularity["attributes"] = this.state.postingFeatures[0]["attributes"];
+        granularity["uuid_attribute_name"] = this.state.postingFeatures[0]["uuid"];
+        console.log(granularity);
+        let response = this.api.addGranularity(granularity);
         console.log(response);
     }
 
@@ -216,20 +202,18 @@ class Schema extends React.Component {
                         <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
                         <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
                         <br /><br />
-                        {/*<label>UUID</label>*/}
-                        {/*<input className="w3-input" type="text" name="uuid"></input>*/}
+                        <label>UUID</label>
+                        <input className="w3-input" type="text" name="uuid"></input>
                     </h6>
-                    {/*<button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeFeature}>Remove</button>*/}
-                    {/*<button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addFeature}>Add Feature</button>*/}
+                    <p className="response w3-panel w3-border">{this.state.response}</p>
+                    <button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeFeature}>Remove</button>
+                    <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addFeature}>Add Feature</button>
                     <br />
                 </form>
-                <div> <Granularity addGranularity={this.addGranularity}/></div>
-                <div> <Aggregation addAggregation = {this.addAggregation}/></div>
-                <div className="response w3-panel w3-border">{this.state.response}</div>
-                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.postConfigurations}>Submit</button>
+
             </div>
         );
     }
 }
 
-export default Schema;
+export default AddGranularity;

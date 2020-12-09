@@ -18,6 +18,7 @@ class Granularity extends React.Component {
 
     handleChange = (e) => {
         let mappings = this.state.mappings
+        let granularity = this.state.granularity
         let errorMsg = {spatial:"",temporal:"", featureName:"" ,target_spatial_granularity:"",target_temporal_granularity:""}
         this.setState({errorMsg})
          if(["temporalGranType","temporalGran","temporalMap"].includes(e.target.id)){
@@ -47,7 +48,7 @@ class Granularity extends React.Component {
                      console.log(this.state.spatialMapping)
                  })
              }
-
+             granularity["granularity_mapping"] = {spatial_mapping_method:this.state.spatialMapping, temporal_mapping_method:this.state.temporalMapping}
         } else if(["temporalMethodName", "temporalArgName","temporalArgValue"].includes(e.target.id)){
              let {temporalMapping,temporalMappingArgs} = this.state
              if(e.target.id==="temporalMethodName"){
@@ -68,7 +69,7 @@ class Granularity extends React.Component {
                      console.log(this.state.temporalMapping)
                  })
              }
-
+             granularity["granularity_mapping"] = {spatial_mapping_method:this.state.spatialMapping, temporal_mapping_method:this.state.temporalMapping}
          } else {
             let error = ""
             if (!e.target.value) {
@@ -77,12 +78,17 @@ class Granularity extends React.Component {
             errorMsg[e.target.id] = error
             this.setState({ errorMsg });
             this.setState({ [e.target.id]: e.target.value.toUpperCase() },()=>{
+                granularity["spatial_granularity"] = this.state.spatial_granularity
+                granularity["temporal_granularity"] = this.state.temporal_granularity
+                granularity["target_spatial_granularity"] = this.state.target_spatial_granularity
+                granularity["target_temporal_granularity"] = this.state.target_temporal_granularity
                 // console.log(this.state.spatial_granularity)
                 // console.log(this.state.temporal_granularity)
                 // console.log(this.state.target_spatial_granularity)
                 // console.log(this.state.target_temporal_granularity)
             })
         }
+        this.props.addGranularity(granularity);
     }
 
     addGranularityMapping = () =>{
@@ -133,7 +139,7 @@ class Granularity extends React.Component {
     }
     // postConfigurations=()=>{
     //     let response = this.state.response
-    //     if(!this.state.errorMsg["featureName"] & !this.state.errorMsg["spatial"] & !this.state.errorMsg["temporal"] &!this.state.errorMsg["target_spatial_granularity"]&!this.state.errorMsg["target_temporal_granularity"]){
+    //     if(!this.state.errorMsg["feature_name"] & !this.state.errorMsg["spatial"] & !this.state.errorMsg["temporal"] &!this.state.errorMsg["target_spatial_granularity"]&!this.state.errorMsg["target_temporal_granularity"]){
     //         axios
     //             .post('https://localhost:8080', this.state.GranularityMappingConfig)
     //             .then(response =>{
@@ -147,7 +153,7 @@ class Granularity extends React.Component {
 
     addArgs = (e) => {
         this.setState((prevState) => ({
-            spatialMappingArgs: [...prevState.spatialMappingArgs, {spatialArgName:"", spatialArgValue:""}]
+            spatialMappingArgs: [...prevState.spatialMappingArgs, {argument_name:"", argument_value:""}]
         }));
     }
     removeArgs = (e) => {
@@ -165,7 +171,7 @@ class Granularity extends React.Component {
 
     addTempArgs = (e) => {
         this.setState((prevState) => ({
-            temporalMappingArgs: [...prevState.temporalMappingArgs, {temporalArgName:"", temporalArgValue:""}]
+            temporalMappingArgs: [...prevState.temporalMappingArgs, {argument_name:"", argument_value:""}]
         }));
     }
     removeTempArgs = (e) => {
@@ -311,7 +317,7 @@ class Granularity extends React.Component {
                         </div>
                     </h6>
                 </form>
-                <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addGranularityMapping}>Add Granularity</button>
+                {/*<button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addGranularityMapping}>Add Granularity</button>*/}
 
             </div>
         )

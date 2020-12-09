@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Api from '../../api';
 
-class Ingest extends React.Component {
+class IngestToGranularity extends React.Component {
     state = {
         pipelineName:this.props.pipelineName,
         featureName: null,
@@ -27,7 +27,7 @@ class Ingest extends React.Component {
             }else{
                 transformation[e.target.dataset.id]["transformation"] = e.target.value.toUpperCase()
             }
-                this.setState({ transformation }, () => {
+            this.setState({ transformation }, () => {
                 let err = '';
                 if (!this.state.transformation[id]["attribute_name"] ||
                     !this.state.transformation[id]["transformation"]) {
@@ -172,7 +172,7 @@ class Ingest extends React.Component {
     postConfigurations = (e) => {
         let response = this.state.response
         if (!this.state.errorMsg["featureName"] & !this.state.errorMsg["atttributes"] & !this.state.errorMsg["configurations"]) {
-            this.api.configureSchema(this.state.features)
+            this.api.ingestToGranularity(this.state.features)
                 .then(response => {
                     console.log(response)
                 })
@@ -260,4 +260,4 @@ class Ingest extends React.Component {
     }
 }
 
-export default Ingest;
+export default IngestToGranularity;
