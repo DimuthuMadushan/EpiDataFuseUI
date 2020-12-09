@@ -7,7 +7,7 @@ import PipelineDataService from '../../firebase/pipelineDataService';
 import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
 
-class CreatePipeline extends React.Component {
+class PipelineMenu extends React.Component {
 
   constructor() {
     super();
@@ -27,6 +27,7 @@ class CreatePipeline extends React.Component {
   api = new Api();
 
   retriveData = () => {
+    console.log("Here")
     var uid = firebase.auth().currentUser.uid;
     firebase
       .database()
@@ -316,6 +317,6 @@ class CreatePipeline extends React.Component {
     )
   }
 }
-export default CreatePipeline;
+export default PipelineMenu;
 
 

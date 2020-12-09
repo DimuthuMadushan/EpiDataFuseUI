@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import Route from '../route/router';
+import PrivateRoute from '../route/router';
 import Schema from "../configuration/single/schema";
 import Ingest from "../configuration/single/ingest";
 import Granularity from "../configuration/single/addGranularity";
@@ -82,7 +82,7 @@ class Pipeline extends React.Component {
         // this.setState({pipelineName:id},()=>{
         //     console.log(this.state.pipelineName)
         // })
-       // this.retriveData(id)
+        // this.retriveData(id)
     }
 
     handleSubmit = (e) => {
@@ -411,21 +411,13 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
-<<<<<<< HEAD
                             <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
-                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName}/></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName}/></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName} /></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName} /></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addAggreConfig"><BulkIngest /></PrivateRoute>
-=======
-                            <Route exact path="/addGranularity"><Schema pipelineName={pipelineName} /></Route>
-                            <Route exact path="/addFeature"><Ingest /></Route>
-                            <Route exact path="/addSource"><SourceConnector /></Route>
-                            <Route exact path="/addGranConfig"><Granularity /></Route>
-                            <Route exact path="/addAggreConfig"><BulkIngest /></Route>
->>>>>>> Refactor forms
                         </Switch>
                     </Router>
                 </div>

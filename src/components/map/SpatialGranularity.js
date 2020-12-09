@@ -24,7 +24,6 @@ class SpatialGranularity extends React.Component {
 
     retriveData = (shapefile) => {
         shp(shapefile).then(function (data) {
-            TextFile(data)
             return data
         }).then(features => {
             this.setState(prevState => ({ features: features['features'] }))
