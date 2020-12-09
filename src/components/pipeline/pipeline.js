@@ -55,8 +55,8 @@ class Pipeline extends React.Component {
                             'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
                             'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
                             'mappingMethod': granularityConfigs[key],
-                            'conversionFrequency': '24hrs',
-                            'externalSource': 'http://localhost/3000/weatherdata'
+                            'conversionFrequency': '1 week',
+                            'externalSource': 'http://localhost:3000/weatherdata'
 
                         }
                         featurelist.push(obj)
@@ -82,7 +82,7 @@ class Pipeline extends React.Component {
         // this.setState({pipelineName:id},()=>{
         //     console.log(this.state.pipelineName)
         // })
-       // this.retriveData(id)
+        // this.retriveData(id)
     }
 
     handleSubmit = (e) => {
@@ -316,7 +316,7 @@ class Pipeline extends React.Component {
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Conversion job frequency</Typography></th>
+                            }}>Fusion frequency</Typography></th>
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
@@ -366,7 +366,7 @@ class Pipeline extends React.Component {
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
                     <Router>
-                        <Link to='/addGranular' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
+                        <Link to='/addGranularity' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
                             <Typography style={{
                                 fontSize: 12,
                                 fontFamily: 'Courier New',
@@ -412,11 +412,11 @@ class Pipeline extends React.Component {
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
                             <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
-                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName}/></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName}/></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName}/></PrivateRoute>
+                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName} /></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName} /></PrivateRoute>
+                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addAggreConfig"><BulkIngest /></PrivateRoute>
                         </Switch>
                     </Router>
