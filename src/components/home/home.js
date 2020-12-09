@@ -88,9 +88,6 @@ export default function Home() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState(null);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
 
   const getUserName = () => {
     var uid = firebase.auth().currentUser.uid;
@@ -101,10 +98,6 @@ export default function Home() {
       console.log(name)
     });
   }
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   return (
     <div

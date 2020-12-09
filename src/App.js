@@ -10,7 +10,7 @@ import { AuthProvider } from './components/auth/authentication';
 import Pipeline from './components/pipeline/pipeline';
 import PipelineMenu from './components/pipelines/pipelines';
 import MenuBar from './components/menubar/menubar'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const drawerWidth = 240;
@@ -61,14 +61,14 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth,
+    marginLeft: 0,
   },
   contentShift: {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: 0,
+    marginLeft: drawerWidth,
   },
   toolbar: {
     minHeight: 10,
@@ -95,16 +95,26 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+
+  const handleDrawerClose = () => {
+    console.log("Here")
+    setOpen(false);
+  };
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
   return (
 
     <BrowserRouter>
       <AuthProvider>
-        <MenuBar />
+        <MenuBar handleDrawerClose={handleDrawerClose} handleDrawerOpen={handleDrawerOpen} />
         <div
           className={clsx(classes.content, {
             [classes.contentShift]: open,
           })}
-          style={{ "width": "100%", padding: 5, marginLeft: 30, marginTop: 70 }}
+          style={{ "width": "100%", padding: 5, marginTop: 70 }}
         >
           <Switch>
             <Route exact path="/" component={Home} />

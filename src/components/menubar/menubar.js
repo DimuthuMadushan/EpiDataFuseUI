@@ -98,13 +98,14 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-export default function MenuBar() {
+export default function MenuBar(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState(null);
   const handleDrawerOpen = () => {
     setOpen(true);
+    props.handleDrawerOpen(false)
   };
 
   const getUserName = () => {
@@ -119,6 +120,7 @@ export default function MenuBar() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+    props.handleDrawerClose(false)
   };
 
 
@@ -136,7 +138,7 @@ export default function MenuBar() {
             </IconButton>
           </MenuItem>
           <MenuItem>
-            <Typography className={classes.topic}>EpiDataFuse -  A generic framework for collection, fusion and integration of data for disease surveillance</Typography>
+            <Typography className={classes.topic}>EpiDataFuse - A generic framework for collection, fusion and integration of data for disease surveillance</Typography>
           </MenuItem>
         </Toolbar>
         <div className="w3-bar w3-light-grey" style={{ 'height': 30 }}>
@@ -175,6 +177,5 @@ export default function MenuBar() {
         </List>
       </Drawer>
     </div>
-
   )
 }
