@@ -13,8 +13,18 @@ class SpatialGranularity extends React.Component {
         }
     }
 
+    TextFile = (data) => {
+        const element = document.createElement("a");
+        const file = new Blob(data, { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = "myFile.txt";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+    }
+
     retriveData = (shapefile) => {
         shp(shapefile).then(function (data) {
+            TextFile(data)
             return data
         }).then(features => {
             this.setState(prevState => ({ features: features['features'] }))

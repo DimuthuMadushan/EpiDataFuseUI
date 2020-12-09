@@ -16,7 +16,7 @@ class App extends React.Component {
     return (
       <AuthProvider>
         <div>
-          <PrivateRoute exact path="/" component={Home} />
+          <Route exact path="/" component={Home} />
           <Route exact path="/signin" component={SignIn} />
           <Route exact path="/signup" component={SignUp} />
         </div>

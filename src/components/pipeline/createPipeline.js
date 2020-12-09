@@ -14,10 +14,10 @@ class CreatePipeline extends React.Component {
     this.state = {
       pipelineNames: [],
       pipelineName: "",
-      pipelines: [{ pipelineName: "", status: "" , isConfigured:"False"}],
+      pipelines: [{ pipelineName: "", status: "", isConfigured: "False" }],
       displayUI: "none",
-      errorMsg:"",
-      response:"",
+      errorMsg: "",
+      response: "",
       form: "none",
     }
 
@@ -56,9 +56,9 @@ class CreatePipeline extends React.Component {
     let pipelines = [...this.state.pipelines]
     var id = pipelines.length
     let pipelineName = this.state.pipelineName
-    if(pipelineName==""){
-        let error = "Pipeline Name can not be null"
-        this.setState({errorMsg:error})
+    if (pipelineName == "") {
+      let error = "Pipeline Name can not be null"
+      this.setState({ errorMsg: error })
     } else {
       pipelines[id - 1]["pipelineName"] = pipelineName
       pipelines[id - 1]["status"] = "idle"
@@ -76,14 +76,14 @@ class CreatePipeline extends React.Component {
       });
 
       let data = this.api.createPipeLine({ pipeline_name: pipelineName });
-      this.setState({response:data});
+      this.setState({ response: data });
       this.state.pipelineName = "";
     }
 
   }
 
   handleChange = (e) => {
-    this.setState({errorMsg:""})
+    this.setState({ errorMsg: "" })
     this.setState({ pipelineName: e.target.value });
   }
 
@@ -171,7 +171,7 @@ class CreatePipeline extends React.Component {
               </Link>
             </td>
             <td>
-              <button onClick={()=>{this.initializePipeline(val.pipelineName)}} disabled={<val className="isConfigured"></val>} className="w3-btn w3-white w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
+              <button onClick={() => { this.initializePipeline(val.pipelineName) }} className="w3-btn w3-white w3-green  w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
                 <Typography style={{
                   fontSize: 8,
                   fontFamily: 'Courier New',
@@ -211,6 +211,7 @@ class CreatePipeline extends React.Component {
                   color: 'grey',
                   fontWeight: 'bolder'
                 }}>Status</Typography></th>
+                <th></th>
                 <th></th>
               </tr>
             </thead>

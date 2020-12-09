@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import PrivateRoute from '../route/router';
+import Route from '../route/router';
 import Schema from "../configuration/single/schema";
 import Ingest from "../configuration/single/ingest";
 import Granularity from "../configuration/single/addGranularity";
@@ -55,8 +55,8 @@ class Pipeline extends React.Component {
                             'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
                             'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
                             'mappingMethod': granularityConfigs[key],
-                            'conversionFrequency': '24hrs',
-                            'externalSource': 'http://localhost/3000/weatherdata'
+                            'conversionFrequency': '1 week',
+                            'externalSource': 'http://localhost:3000/weatherdata'
 
                         }
                         featurelist.push(obj)
@@ -316,7 +316,7 @@ class Pipeline extends React.Component {
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Conversion job frequency</Typography></th>
+                            }}>Fusion frequency</Typography></th>
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
@@ -366,7 +366,7 @@ class Pipeline extends React.Component {
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
                     <Router>
-                        <Link to='/addGranular' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
+                        <Link to='/addGranularity' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
                             <Typography style={{
                                 fontSize: 12,
                                 fontFamily: 'Courier New',
@@ -411,6 +411,7 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>Bulk ingest</Typography></button></Link>
                         <Switch>
+<<<<<<< HEAD
                             <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
@@ -418,6 +419,13 @@ class Pipeline extends React.Component {
                             <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName}/></PrivateRoute>
                             <PrivateRoute exact path="/addAggreConfig"><BulkIngest /></PrivateRoute>
+=======
+                            <Route exact path="/addGranularity"><Schema pipelineName={pipelineName} /></Route>
+                            <Route exact path="/addFeature"><Ingest /></Route>
+                            <Route exact path="/addSource"><SourceConnector /></Route>
+                            <Route exact path="/addGranConfig"><Granularity /></Route>
+                            <Route exact path="/addAggreConfig"><BulkIngest /></Route>
+>>>>>>> Refactor forms
                         </Switch>
                     </Router>
                 </div>

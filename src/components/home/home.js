@@ -17,7 +17,7 @@ import CreatePipeline from '../pipeline/createPipeline';
 import Pipeline from '../pipeline/pipeline';
 import app from "../../firebase/firebase.js";
 import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import PrivateRoute from '../route/router';
+import Route from '../route/router';
 import firebase from "../../firebase/firebase";
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 
@@ -186,8 +186,8 @@ export default function PersistentDrawerLeft() {
           <div className={classes.drawerHeader} />
           <div className="btn-home" style={{ "width": "100%", padding: 5 }}>
             <Switch>
-              <PrivateRoute exact path="/pipeline" component={Pipeline} />
-              <PrivateRoute exact path="/" component={CreatePipeline} />
+              <Route exact path="/pipeline" component={Pipeline} />
+              <Route exact path="/" component={CreatePipeline} />
             </Switch>
           </div>
         </div>
