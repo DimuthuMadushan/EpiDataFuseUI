@@ -34,7 +34,7 @@ export default class Api {
             })
     }
 
-    initializePipeline = (data) =>{
+    initializePipeline = (data) => {
         axios.post('http://localhost:8080/initPipeline', data)
             .then(function (response) {
                 if (response.data.success) {
@@ -71,7 +71,7 @@ export default class Api {
                 }
             })
     }
-    bulkIngest = (data) =>{
+    bulkIngest = (data) => {
         axios.post('http://localhost:8080/ingest', data)
             .then(function (response) {
                 console.log(response);
@@ -84,7 +84,7 @@ export default class Api {
             })
     }
 
-    ingestToGranularity = (data) =>{
+    ingestToGranularity = (data) => {
         axios.post('http://localhost:8080/ingestToGranularity', data)
             .then(function (response) {
                 console.log(response);
@@ -97,7 +97,7 @@ export default class Api {
             })
     }
 
-    ingestToFeature = (data) =>{
+    ingestToFeature = (data) => {
         axios.post('http://localhost:8080/ingestToFeature', data)
             .then(function (response) {
                 console.log(response);
@@ -108,5 +108,9 @@ export default class Api {
                     return response.data.message;
                 }
             })
+    }
+
+    getAttributeInfo = (data) => {
+
     }
 }
