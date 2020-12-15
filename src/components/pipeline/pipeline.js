@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
 import PrivateRoute from '../route/router';
-import Schema from "../configuration/single/schema";
+import AddFeature from "../configuration/single/addfeature";
 import Ingest from "../configuration/single/ingest";
 import Granularity from "../configuration/single/addGranularity";
 import BulkIngest from "../configuration/single/bulkIngest";
@@ -21,6 +21,10 @@ class Pipeline extends React.Component {
             pipelineName: this.props.location.state.pipelineId,
             features: [],
             granularities: [],
+            addFeature: false,
+            addGranularity: false,
+            ingestToFeature: false,
+            ingestToGranularity: false
         }
     }
 
@@ -91,6 +95,46 @@ class Pipeline extends React.Component {
 
     handleChange = (event) => {
         this.setState({ age: event.target.value })
+    }
+
+    toggleAddFeature = () => {
+        if (this.state.addFeature) {
+            this.setState({ addFeature: false })
+        } else {
+            this.setState({ addFeature: true })
+            this.setState({ addGranularity: false, ingestToGranularity: false, ingestToFeature: false })
+        }
+
+    }
+
+    toggleAddGranularity = () => {
+        if (this.state.addGranularity) {
+            this.setState({ addGranularity: false })
+        } else {
+            this.setState({ addGranularity: true })
+            this.setState({ addFeature: false, ingestToGranularity: false, ingestToFeature: false })
+        }
+
+    }
+
+    toggleIngestToFeature = () => {
+        if (this.state.ingestToFeature) {
+            this.setState({ ingestToFeature: false })
+        } else {
+            this.setState({ ingestToFeature: true })
+            this.setState({ addGranularity: false, addFeature: false, ingestToGranularity: false })
+        }
+
+    }
+
+    toggleIngestToGranularity = () => {
+        if (this.state.ingestToGranularity) {
+            this.setState({ ingestToGranularity: false })
+        } else {
+            this.setState({ ingestToGranularity: true })
+            this.setState({ addGranularity: false, ingestToFeature: false, addFeature: false })
+        }
+
     }
 
     render() {
@@ -365,61 +409,65 @@ class Pipeline extends React.Component {
                     </tbody>
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
-                    <Router>
-                        <Link to='/addGranularity' ><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
-                            <Typography style={{
-                                fontSize: 12,
-                                fontFamily: 'Courier New',
-                                color: 'white',
-                                fontWeight: 'bolder'
-                            }}>Add New Granularity</Typography></button></Link>
-                        <Link to="/addFeature"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
+                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
+                        fontSize: 12,
+                        fontFamily: 'Courier New',
+                        color: 'white',
+                        fontWeight: 'bolder'
+                    }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
+                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
+                        <Typography style={{
                             fontSize: 12,
                             fontFamily: 'Courier New',
                             color: 'white',
                             fontWeight: 'bolder'
-                        }}>Add New Feature</Typography></button></Link>
-                        <Link to="/addSource"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                            fontSize: 12,
-                            fontFamily: 'Courier New',
-                            color: 'white',
-                            fontWeight: 'bolder'
-                        }}>Add New Source</Typography></button></Link>
-                        <Link to="/addGranConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                            fontSize: 12,
-                            fontFamily: 'Courier New',
-                            color: 'white',
-                            fontWeight: 'bolder'
-                        }}>Add New Granularity</Typography></button></Link>
-                        <Link to="/ingestToGranularity"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                            fontSize: 12,
-                            fontFamily: 'Courier New',
-                            color: 'white',
-                            fontWeight: 'bolder'
-                        }}>Ingest to Granularity</Typography></button></Link>
-                        <Link to="/ingestToFeature"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                            fontSize: 12,
-                            fontFamily: 'Courier New',
-                            color: 'white',
-                            fontWeight: 'bolder'
-                        }}>Ingest to Feature</Typography></button></Link>
+                        }} onClick={this.toggleAddGranularity}>Add New Granularity</Typography></button>
+                    {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                        fontSize: 12,
+                        fontFamily: 'Courier New',
+                        color: 'white',
+                        fontWeight: 'bolder'
+                    }} onClick={this.toggleAddNewSource}>Add New Source</Typography></button> */}
 
-                        <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
+                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                        fontSize: 12,
+                        fontFamily: 'Courier New',
+                        color: 'white',
+                        fontWeight: 'bolder'
+                    }} onClick={this.toggleIngestToFeature}>Ingest to Feature</Typography></button>
+                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                        fontSize: 12,
+                        fontFamily: 'Courier New',
+                        color: 'white',
+                        fontWeight: 'bolder'
+                    }} onClick={this.toggleIngestToGranularity}>Ingest to Granularity</Typography></button>
+
+                    {/* <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
                             fontSize: 12,
                             fontFamily: 'Courier New',
                             color: 'white',
                             fontWeight: 'bolder'
-                        }}>Bulk ingest</Typography></button></Link>
-                        <Switch>
-                            <PrivateRoute exact path="/addGranular"><Schema pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addFeature"><Ingest pipelineName={pipelineName} /></PrivateRoute>
+                        }}>Bulk ingest</Typography></button></Link> */}
+                    {/* <Switch>
+                            <PrivateRoute exact path="/addFeature"><Schema pipelineName={pipelineName} /></PrivateRoute>
+                            <PrivateRoute exact path="/addGranularity"><Granularity pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
-                            <PrivateRoute exact path="/addGranConfig"><Granularity pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addAggreConfig"><BulkIngest /></PrivateRoute>
-                        </Switch>
-                    </Router>
+                        </Switch> */}
+
+                    <div style={!this.state.addFeature ? { display: 'none' } : {}}>
+                        <AddFeature pipelineName={pipelineName} />
+                    </div>
+                    <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
+                        <Granularity pipelineName={pipelineName} />
+                    </div>
+                    <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
+                        <IngestToFeature pipelineName={pipelineName} />
+                    </div>
+                    <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
+                        <IngestToGranularity pipelineName={pipelineName} />
+                    </div>
                 </div>
             </div>
         )

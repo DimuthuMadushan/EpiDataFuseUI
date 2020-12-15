@@ -1,20 +1,18 @@
 import React from 'react';
 import axios from 'axios';
 import Api from '../../api';
-import Granularity from "./granularity";
-import Aggregation from "./aggregation";
 
 class AddGranularity extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
-            pipelineName:this.props.pipelineName,
+            pipelineName: this.props.pipelineName,
             featureName: null,
             attributes: [{ attribute_name: null, attribute_type: null }],
             uuid: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
-            granularity:{feature_name:null, attributes:[], uuid_attribute_name:null},
+            granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
             errorMsg: { featureName: null, atttributes: null, uuid: null },
             response: null
         };
@@ -64,7 +62,7 @@ class AddGranularity extends React.Component {
 
     componentDidMount() {
         var id = this.props.pipelineName
-        this.setState({pipelineName:id})
+        this.setState({ pipelineName: id })
     }
 
     addAttribute = (e) => {
@@ -121,7 +119,7 @@ class AddGranularity extends React.Component {
                 attributes: [{ attribute_name: null, attribute_type: null }],
                 uuid: null,
                 postingFeatures: [...prevState.postingFeatures, { featureName: null, attributes: {}, uuid: null }],
-                granularity:{feature_name:null, attributes:[], uuid_attribute_name:null},
+                granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
                 errorMsg: { featureName: null, atttributes: null, uuid: null }
             }));
         }
