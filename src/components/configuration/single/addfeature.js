@@ -10,8 +10,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { render } from '@testing-library/react';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
@@ -138,15 +136,17 @@ class AddFeature extends React.Component {
 
     addNewFeature = (e) => {
         var featureConfig = {
-            pipline_name: this.state.pipelineName,
+            pipeline_name: this.state.pipelineName,
             feature_name: this.state.featureName,
             attributes: this.state.attributes,
             granularity_config: this.state.granularity_config,
             aggregation_config: this.state.aggregation_config
         }
         console.log(featureConfig);
-        //let response = this.api.configureSchema(schemaConfig);
-        //console.log(response);
+        this.api.configureSchema(featureConfig, (res) => {
+            console.log(res);
+            alert(res.data.message)
+        });
     }
 
     handleSubmit = (e) => {
@@ -181,7 +181,6 @@ class AddFeature extends React.Component {
 
                         {
                             attributes.map((val, idx) => {
-                                let nameId = `name-${idx}`, typeId = `type-${idx}`
                                 return (
                                     <div key={idx} className="row">
 

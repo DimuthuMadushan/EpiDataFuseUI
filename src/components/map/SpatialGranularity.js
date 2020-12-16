@@ -18,26 +18,30 @@ class SpatialGranularity extends React.Component {
         const file = new Blob(data, { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = "myFile.txt";
-        document.body.appendChild(element); // Required for this to work in FireFox
+        document.body.appendChild(element);
         element.click();
     }
 
     retriveData = (shapefile) => {
-        shp(shapefile).then(function (data) {
-            return data
-        }).then(features => {
-            this.setState(prevState => ({ features: features['features'] }))
+        shapefile.arrayBuffer().then(buffer => {
+            shp(buffer).then(function (data) {
+                console.log(data)
+                return data
+            }).then(features => {
+                this.setState(prevState => ({ features: features['features'] }))
+            })
         })
     }
 
     componentDidMount() {
+        console.log("Heree comp")
         var shapefile = this.props.shapefile
+        console.log(shapefile)
         this.retriveData(shapefile)
     }
 
     render() {
         let featureCollection = this.state.features.length > 0 ? this.state.features.map((feature, idx) => {
-
             let positions = []
             if (feature['geometry']['type'] != "Point") {
                 feature['geometry']['coordinates'][0].forEach(record => {

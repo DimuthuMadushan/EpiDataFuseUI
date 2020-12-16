@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import firebase from "../../firebase/firebase";
-
+import ReactMarkdown from 'react-markdown'
 
 
 const drawerWidth = 240;
@@ -87,6 +87,7 @@ export default function Home() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const [markdown, setMarkown] = useState(null);
   const [userName, setUserName] = useState(null);
 
   const getUserName = () => {
@@ -99,6 +100,22 @@ export default function Home() {
     });
   }
 
+
+  // useEffect(() => {
+  //   fetch("https://github.com/DimuthuMadushan/EpiDataFuseUI/blob/main/README.md",
+  //     {
+  //       mode: "no-cors" // 'cors' by default
+  //     })
+  //     .then(response => {
+  //       console.log(response)
+  //       return response.text()
+  //     })
+  //     .then(text => {
+  //       setMarkown(text)
+  //       console.log(markdown)
+  //     })
+  // })
+
   return (
     <div
       className={clsx(classes.content, {
@@ -106,7 +123,7 @@ export default function Home() {
       })}
       style={{ "width": "100%", padding: 5, marginLeft: 30, marginTop: 70 }}
     >
-
+      <ReactMarkdown source={markdown}></ReactMarkdown>
     </div>
   )
 }

@@ -43,7 +43,6 @@ class Pipeline extends React.Component {
             }).then(featureData => {
                 if (featureData != null) {
                     var featurelist = []
-                    var granularitylist = []
                     var geodatalist = []
                     var features = featureData['features']
                     var granularityConfigs = featureData['granularityConfigs']
@@ -66,27 +65,36 @@ class Pipeline extends React.Component {
                         featurelist.push(obj)
                     })
                     this.setState(prevState => ({ features: featurelist }))
+                    var self = this
                     Object.keys(granularities).forEach(function (key, index) {
-                        let obj = {
-                            'granularityName': key,
-                            'attributes': granularities[key],
-                            'shapefile': granules[key]
+                        var fileName = {
+                            file_name: granules[key]
                         }
-                        granularitylist.push(obj)
+                        var granularitylist = self.state.granularities
+                        axios.post('http://localhost:8080/getFile', fileName)
+                            .then(function (res) {
+                                console.log(res)
+                                let obj = {
+                                    'grlarityName': key,
+                                    'attributes': granularities[key],
+                                    'shapefile': res.data
+                                }
+                                granularitylist.push(obj)
+                                self.setState({ granularities: granularitylist }, () => {
+                                    console.log(self.state.granularities)
+                                })
+                            })
                     })
-
-                    this.setState(prevState => ({ granularities: granularitylist }))
                 }
-
             })
     }
 
     componentDidMount() {
         var id = this.props.location.state.pipelineId
-        // this.setState({pipelineName:id},()=>{
-        //     console.log(this.state.pipelineName)
-        // })
-        // this.retriveData(id)
+        this.setState({ pipelineName: id }, () => {
+            console.log(this.state.pipelineName)
+        })
+        this.retriveData(id)
     }
 
     handleSubmit = (e) => {
@@ -139,6 +147,7 @@ class Pipeline extends React.Component {
 
     render() {
         let { features, granularities, pipelineName } = this.state
+        console.log(granularities)
         let featureList = features.length > 0
             && features.map((val, i) => {
                 return (
@@ -409,12 +418,6 @@ class Pipeline extends React.Component {
                     </tbody>
                 </table>
                 <div style={{ marginTop: 20 }} className="w3-container w3-center">
-                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
-                        fontSize: 12,
-                        fontFamily: 'Courier New',
-                        color: 'white',
-                        fontWeight: 'bolder'
-                    }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
                     <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
                         <Typography style={{
                             fontSize: 12,
@@ -422,6 +425,14 @@ class Pipeline extends React.Component {
                             color: 'white',
                             fontWeight: 'bolder'
                         }} onClick={this.toggleAddGranularity}>Add New Granularity</Typography></button>
+
+                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
+                        fontSize: 12,
+                        fontFamily: 'Courier New',
+                        color: 'white',
+                        fontWeight: 'bolder'
+                    }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
+
                     {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
                         fontSize: 12,
                         fontFamily: 'Courier New',
@@ -435,12 +446,12 @@ class Pipeline extends React.Component {
                         color: 'white',
                         fontWeight: 'bolder'
                     }} onClick={this.toggleIngestToFeature}>Ingest to Feature</Typography></button>
-                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                    {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
                         fontSize: 12,
                         fontFamily: 'Courier New',
                         color: 'white',
                         fontWeight: 'bolder'
-                    }} onClick={this.toggleIngestToGranularity}>Ingest to Granularity</Typography></button>
+                    }} onClick={this.toggleIngestToGranularity}>Ingest to Granularity</Typography></button> */}
 
                     {/* <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
                             fontSize: 12,
@@ -456,11 +467,11 @@ class Pipeline extends React.Component {
                             <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
                         </Switch> */}
 
-                    <div style={!this.state.addFeature ? { display: 'none' } : {}}>
-                        <AddFeature pipelineName={pipelineName} />
-                    </div>
                     <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
                         <Granularity pipelineName={pipelineName} />
+                    </div>
+                    <div style={!this.state.addFeature ? { display: 'none' } : {}}>
+                        <AddFeature pipelineName={pipelineName} />
                     </div>
                     <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
                         <IngestToFeature pipelineName={pipelineName} />

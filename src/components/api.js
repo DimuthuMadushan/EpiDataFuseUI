@@ -46,15 +46,15 @@ export default class Api {
                 }
             })
     }
-    configureSchema = (data) => {
+
+    configureSchema = (data, callback) => {
         axios.post('http://localhost:8080/addFeatureSchema', data)
             .then(function (response) {
                 if (response.data.success) {
-                    console.log("inside config schema");
-                    return response.data.message;
+                    callback(response.data.message)
+
                 } else {
-                    console.log(response);
-                    return response.data.message;
+                    callback(response.data.message)
                 }
             })
     }
@@ -71,6 +71,15 @@ export default class Api {
                 }
             })
     }
+
+    putFile = (data, config, callback) => {
+        axios.put('http://localhost:8080/putFile', data, config)
+            .then(function (response) {
+                console.log(response);
+                callback(response)
+            })
+    }
+
     bulkIngest = (data) => {
         axios.post('http://localhost:8080/ingest', data)
             .then(function (response) {
