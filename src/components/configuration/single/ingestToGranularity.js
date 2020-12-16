@@ -1,6 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import Api from '../../api';
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import Button from "@material-ui/core/Button";
+import AddBoxIcon from "@material-ui/icons/AddBox";
 
 class IngestToGranularity extends React.Component {
     state = {
@@ -9,23 +19,24 @@ class IngestToGranularity extends React.Component {
         sourceType: null,
         sourceFormat: null,
         transformation: [{ attribute_name: null, transformation: null }],
-        dataSources: [],
+        dataSources: [{data_source:null}],
         postingFeatures: [{ pipeline_name:null, feature_name: null, source_type: null, source_format: null, transformations: [], data_sources: [] }],
         errorMsg: { featureName: null, sourceType: null, sourceFormat: null, transformation: null },
-        response: null
+        response: null,
+        attributeTypes:[]
     }
 
     api = new Api();
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
-        let id = e.target.dataset.id
-        if (["attributeName", "transformation"].includes(e.target.id)) {
+        let id = e.target.id
+        if (["attribute_name", "transformation"].includes(e.target.name)) {
             let transformation = [...this.state.transformation]
-            if(e.target.id==="attributeName") {
-                transformation[e.target.dataset.id]["attribute_name"] = e.target.value.toUpperCase()
+            if(e.target.name==="attribute_name") {
+                transformation[e.target.id]["attribute_name"] = e.target.value.toUpperCase()
             }else{
-                transformation[e.target.dataset.id]["transformation"] = e.target.value.toUpperCase()
+                transformation[e.target.id]["transformation"] = e.target.value.toUpperCase()
             }
             this.setState({ transformation }, () => {
                 let err = '';
@@ -41,9 +52,9 @@ class IngestToGranularity extends React.Component {
                 }
                 console.log(this.state.transformation)
             })
-        } else if (["dataSources"].includes(e.target.id)) {
+        } else if (["data_source"].includes(e.target.name)) {
             let dataSources = [...this.state.dataSources]
-            dataSources[e.target.dataset.id][e.target.name] = e.target.value.toUpperCase()
+            dataSources[e.target.id][e.target.name] = e.target.value.toUpperCase()
             this.setState({
                 dataSources
             }, () => {
@@ -68,7 +79,7 @@ class IngestToGranularity extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            transformation: [...prevState.transformation, { attributeName: "", transformation: "" }]
+            transformation: [...prevState.transformation, { attribute_name: null, transformation: null }]
         }));
     }
     removeAttribute = (e) => {
@@ -85,7 +96,7 @@ class IngestToGranularity extends React.Component {
     }
     addSource = (e) => {
         this.setState((prevState) => ({
-            dataSources: [...prevState.dataSources, { dataSource: "" }]
+            dataSources: [...prevState.dataSources, { data_source: null }]
         }));
     }
     removeSource = (e) => {
@@ -99,6 +110,24 @@ class IngestToGranularity extends React.Component {
             dataSources: arraySources,
             errorMsg: errorMsg
         }));
+    }
+    getAttributeInfo(data) {
+        axios.post('http://localhost:8080/getAttributeInfo', data)
+            .then(function (response) {
+                if (response.data.success) {
+                    return response.data
+                } else {
+                    return null
+                }
+            }).then((res) => {
+            if (res.data.attribute_types) {
+                this.setState({ attributeTypes: res.data.attribute_types })
+            }
+        })
+    }
+    componentDidMount() {
+        var id = this.props.pipelineName
+        this.getAttributeInfo({ pipelineName: id })
     }
     ingestData = (e) => {
         let errorMsg = this.state.errorMsg
@@ -115,7 +144,7 @@ class IngestToGranularity extends React.Component {
             errorMsg["sourceType"] = error
             this.setState({ errorMsg });
         } else if (this.state.errorMsg["transformation"]) {
-            console.log("inside igest")
+            console.log("Incomplete input at Transformation")
         } else {
             let postingFeatures = {
                 pipeline_name: this.state.pipelineName,
@@ -139,7 +168,7 @@ class IngestToGranularity extends React.Component {
                 sourceType: null,
                 sourceFormat: null,
                 transformation: [{ attribute_name: null, transformation: null }],
-                dataSources: [{ dataSource: null }],
+                dataSources: [{ data_source: null }],
                 postingFeatures: [{ pipeline_name:null, feature_name: null, source_type: null, source_format: null, transformations: [], data_sources: [] }],
                 errorMsg: { featureName: null, sourceType: null, sourceFormat: null, transformation: null },
             }))
@@ -186,75 +215,139 @@ class IngestToGranularity extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { transformation, dataSources } = this.state
+        let { transformation, dataSources, attributeTypes } = this.state
+        let attributeTypeList = attributeTypes.length > 0
+            && attributeTypes.map((val, i) => {
+                return (
+                    <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
+                )
+            }, this);
         return (
-            <div className="w3-border">
-                <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
-                    <h6>
-                        <label>Feature Name</label>
-                        <input className="w3-input" type="text" name="featureName"></input>
-                        <label>Source Type</label>
-                        <input className="w3-input" type="text" name="sourceType"></input>
-                        <label>Source Format</label>
-                        <input className="w3-input" type="text" name="sourceFormat"></input>
-                        <div className="h7">{this.state.errorMsg["featureName"]}</div>
-                        <br />
-                        <label>Transformation</label>
-                        <br /><br />
+            <div className="w3-border w3-center" style={{ marginTop: 20, width: '70%', 'marginLeft': '15%' }}>
+                <form className="w3-container" style={{ paddingLeft: 40 }}  onSubmit={this.handleSubmit} onChange={this.handleChange}>
+                    <div className="row">
+                        <TextField id="featureName" className="col-75" name="featureName"
+                                   value={this.state.featureName} label="Feature Name" />
+
+                    </div>
+                    <div className="row">
+                        <TextField id="sourceType" className="col-75" name="sourceType"
+                                   value={this.state.sourceType} label="Source Type" />
+
+                    </div>
+                    <div className="row">
+                        <TextField id="sourceFormat" className="col-75" name="sourceFormat"
+                                   value={this.state.sourceFormat} label="Source Type" />
+
+                    </div>
+                    <div className="h7">{this.state.errorMsg["featureName"]}</div>
+                    <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
+                        <h4
+                            style={{
+                                fontSize: 14, fontFamily: 'Courier New',
+                                color: 'grey', fontWeight: 'bolder', align: 'left'
+                            }}>
+                            Transformation
+                        </h4>
                         {
                             transformation.map((val, idx) => {
                                 let nameId = `name-${idx}`, typeId = `type-${idx}`
                                 return (
-                                    <div key={idx} className="row w3-panel w3-border">
-                                        <label htmlFor={nameId} className="col-25">Attribute Name</label>
-                                        <input
-                                            type="text"
-                                            name={nameId}
-                                            data-id={idx}
-                                            id="attributeName"
-                                            value={transformation[idx].ame}
-                                            className="col-75"
+                                    <div key={idx} className="row">
+                                        <TextField
+                                            name={"attribute_name"}
+                                            id={idx}
+                                            className="col-50"
+                                            label="Attribute Name"
                                         />
-                                        <label htmlFor={typeId} className="col-25">Type</label>
-                                        <input
-                                            type="text"
-                                            name={typeId}
-                                            data-id={idx}
-                                            id="transformation"
-                                            value={transformation[idx].type}
-                                            className="col-75 "
-                                        />
-                                        <br />
+                                        <FormControl variant="filled" size="small" className="col-25" style={{ marginLeft: 10 }}>
+                                            <InputLabel id="attribute_type_label">Transformation</InputLabel>
+                                            <Select
+                                                labelId="attribute_type_label"
+                                                id={idx}
+                                                name={"transformation"}
+                                            >
+                                                {attributeTypeList}
+                                            </Select>
+                                        </FormControl>
                                     </div>
                                 )
                             })
                         }
-                        <div className="h7">{this.state.errorMsg["transformation"]}</div>
-                        <br />
-                        <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
-                        <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
-                        <br /><br />
-                        <label>Data Sources</label>
+                    </div>
+                    <div className="h7">{this.state.errorMsg["transformation"]}</div>
+                    <div style={{ "align": 'left' }}>
+                        <IconButton aria-label="remove" onClick={this.removeAttribute}>
+                            <RemoveCircleIcon></RemoveCircleIcon>
+                        </IconButton>
+                        <IconButton aria-label="add" onClick={this.addAttribute}>
+                            <AddCircleIcon></AddCircleIcon>
+                        </IconButton>
+                    </div>
+                    <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
+                        <h4
+                            style={{
+                                fontSize: 14, fontFamily: 'Courier New',
+                                color: 'grey', fontWeight: 'bolder', align: 'left'
+                            }}>
+                            Data Sources
+                        </h4>
                         {
                             dataSources.map((val, idx) => {
                                 let inputId = `${idx}`
                                 return (
-                                    <input className="w3-input" data-id={idx} id="dataSources" type="text" name="dataSource"></input>
+                                    <div key={idx} className="row">
+                                        <TextField
+                                            name={"data_source"}
+                                            id={idx}
+                                            className="col-75"
+                                            label="Data Source"
+                                        />
+                                    </div>
                                 )
                             })
                         }
-                        <br />
-                        <button className="w3-button w3-circle w3-teal" onClick={this.removeSource}>-</button>
-                        <button className="w3-button w3-circle w3-teal" onClick={this.addSource}>+</button>
-                        <br /><br />
+                    </div>
+                    <div style={{ "align": 'left' }}>
+                        <IconButton aria-label="remove" onClick={this.removeSource}>
+                            <RemoveCircleIcon></RemoveCircleIcon>
+                        </IconButton>
+                        <IconButton aria-label="add" onClick={this.addSource}>
+                            <AddCircleIcon></AddCircleIcon>
+                        </IconButton>
+                    </div>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={this.ingestData}
+                        startIcon={<AddBoxIcon />}>
+                        Ingest Data
+                    </Button>
+                    <div className="response w3-panel w3-border">{this.state.response}</div>
+                    {/*<br />*/}
+                    {/*    <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>*/}
+                    {/*    <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>*/}
+                    {/*    <br /><br />*/}
+                    {/*    <label>Data Sources</label>*/}
+                    {/*    {*/}
+                    {/*        dataSources.map((val, idx) => {*/}
+                    {/*            let inputId = `${idx}`*/}
+                    {/*            return (*/}
+                    {/*                <input className="w3-input" data-id={idx} id="dataSources" type="text" name="dataSource"></input>*/}
+                    {/*            )*/}
+                    {/*        })*/}
+                    {/*    }*/}
+                    {/*    <br />*/}
+                    {/*    <button className="w3-button w3-circle w3-teal" onClick={this.removeSource}>-</button>*/}
+                    {/*    <button className="w3-button w3-circle w3-teal" onClick={this.addSource}>+</button>*/}
+                    {/*    <br /><br />*/}
 
-                    </h6>
-                    <p className="response w3-panel w3-border">{this.state.response}</p>
-                    <button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeIngest}>Remove</button>
-                    <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.ingestData}>Ingest Data</button>
-                    <br />
+
+                    {/*<p className="response w3-panel w3-border">{this.state.response}</p>*/}
+                    {/*<button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeIngest}>Remove</button>*/}
+                    {/*<button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.ingestData}>Ingest Data</button>*/}
+                    {/*<br />*/}
                 </form>
-                <div className="response w3-panel w3-border">{this.state.response}</div>
             </div>
         );
     }

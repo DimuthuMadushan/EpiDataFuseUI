@@ -169,7 +169,7 @@ class AddFeature extends React.Component {
                             value={this.state.featureName} label="Feature name" />
 
                     </div>
-                    ><div className="row h7">{this.state.errorMsg["featureName"]}</div>
+                    <div className="row h7">{this.state.errorMsg["featureName"]}</div>
                     <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
                         <h4
                             style={{
