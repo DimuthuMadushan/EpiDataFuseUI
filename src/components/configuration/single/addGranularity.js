@@ -1,6 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import Api from '../../api';
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import Button from "@material-ui/core/Button";
+import AddBoxIcon from "@material-ui/icons/AddBox";
 
 class AddGranularity extends React.Component {
     constructor(props) {
@@ -14,7 +24,8 @@ class AddGranularity extends React.Component {
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
             granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
             errorMsg: { featureName: null, atttributes: null, uuid: null },
-            response: null
+            response: null,
+            attributeTypes: [],
         };
 
         this.api = new Api();
@@ -25,10 +36,10 @@ class AddGranularity extends React.Component {
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
-        let id = e.target.dataset.id
-        if (["attribute_name", "attribute_type"].includes(e.target.id)) {
+        let id = e.target.id
+        if (["attribute_name", "attribute_type"].includes(e.target.name)) {
             let attributes = [...this.state.attributes]
-            attributes[e.target.dataset.id][e.target.id] = e.target.value.toUpperCase()
+            attributes[id][e.target.name] = e.target.value.toUpperCase()
             this.setState({ attributes }, () => {
                 let err = '';
                 if (!this.state.attributes[id]["attribute_name"] ||
@@ -63,6 +74,7 @@ class AddGranularity extends React.Component {
     componentDidMount() {
         var id = this.props.pipelineName
         this.setState({ pipelineName: id })
+        this.getAttributeInfo({ pipelineName: id })
     }
 
     addAttribute = (e) => {
@@ -82,6 +94,20 @@ class AddGranularity extends React.Component {
             attributes: arrayAttribute,
             errorMsg: errorMsg
         }));
+    }
+    getAttributeInfo(data) {
+        axios.post('http://localhost:8080/getAttributeInfo', data)
+            .then(function (response) {
+                if (response.data.success) {
+                    return response.data
+                } else {
+                    return null
+                }
+            }).then((res) => {
+            if (res.data.attribute_types) {
+                this.setState({ attributeTypes: res.data.attribute_types })
+            }
+        })
     }
 
     addFeature = (e) => {
@@ -156,59 +182,106 @@ class AddGranularity extends React.Component {
         e.preventDefault()
     }
     render() {
-        let { attributes } = this.state
+        let { attributes, attributeTypes } = this.state
+        let attributeTypeList = attributeTypes.length > 0
+            && attributeTypes.map((val, i) => {
+                return (
+                    <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
+                )
+            }, this);
         return (
-            <div className="w3-border">
-                <form className="w3-container" onSubmit={this.handleSubmit} onChange={this.handleChange}>
-                    <h6>
-                        <label>Feature Name</label>
-                        <input className="w3-input" type="text" name="featureName"></input>
+            <div className="w3-border w3-center" style={{ marginTop: 20, width: '70%', 'marginLeft': '15%' }}>
+                <form style={{ paddingLeft: 40 }}  onSubmit={this.handleSubmit} onChange={this.handleChange}>
+                        <div className="row">
+                            <TextField id="featurename" className="col-75" name="featureName"
+                                       value={this.state.featureName} label="Feature name" />
+
+                        </div>
                         <div className="h7">{this.state.errorMsg["featureName"]}</div>
-                        <br />
-                        <label>Attributes</label>
-                        <br /><br />
+                        <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
+                            <h4
+                                style={{
+                                    fontSize: 14, fontFamily: 'Courier New',
+                                    color: 'grey', fontWeight: 'bolder', align: 'left'
+                                }}>
+                                Attributes
+                            </h4>
                         {
                             attributes.map((val, idx) => {
                                 let nameId = `name-${idx}`, typeId = `type-${idx}`
                                 return (
-                                    <div key={idx} className="row w3-panel w3-border">
-                                        <label htmlFor={nameId} className="col-25">Attribute #{idx + 1}</label>
-                                        <input
-                                            type="text"
-                                            name={nameId}
-                                            data-id={idx}
-                                            id="attribute_name"
+                                    <div key={idx} className="row">
+
+                                        <TextField
+                                            name={"attribute_name"}
+                                            id={idx}
                                             value={attributes[idx].ame}
-                                            className="col-75"
+                                            className="col-50"
+                                            label="Attribute Name"
                                         />
-                                        <label htmlFor={typeId} className="col-25">Type</label>
-                                        <input
-                                            type="text"
-                                            name={typeId}
-                                            data-id={idx}
-                                            id="attribute_type"
-                                            value={attributes[idx].type}
-                                            className="col-75 "
-                                        />
-                                        <br />
+
+                                        <FormControl variant="filled" size="small" className="col-25" style={{ marginLeft: 10 }}>
+                                            <InputLabel data-id={idx} id="attribute_type_label">Type</InputLabel>
+                                            <Select
+                                                labelId="attribute_type_label"
+                                                id={idx}
+                                                name="attribute_type"
+                                                value={attributes[idx].type}
+                                            >
+                                                {attributeTypeList}
+                                            </Select>
+                                        </FormControl>
                                     </div>
+                                    // <div key={idx} className="row w3-panel w3-border">
+                                    //     <label htmlFor={nameId} className="col-25">Attribute #{idx + 1}</label>
+                                    //     <input
+                                    //         type="text"
+                                    //         name={nameId}
+                                    //         data-id={idx}
+                                    //         id="attribute_name"
+                                    //         value={attributes[idx].ame}
+                                    //         className="col-75"
+                                    //     />
+                                    //     <label htmlFor={typeId} className="col-25">Type</label>
+                                    //     <input
+                                    //         type="text"
+                                    //         name={typeId}
+                                    //         data-id={idx}
+                                    //         id="attribute_type"
+                                    //         value={attributes[idx].type}
+                                    //         className="col-75 "
+                                    //     />
+                                    //     <br />
+                                    // </div>
                                 )
                             })
                         }
+                        </div>
                         <div className="h7">{this.state.errorMsg["atttributes"]}</div>
-                        <br />
-                        <button className="w3-button w3-circle w3-teal" onClick={this.removeAttribute}>-</button>
-                        <button className="w3-button w3-circle w3-teal" onClick={this.addAttribute}>+</button>
-                        <br /><br />
-                        <label>UUID</label>
-                        <input className="w3-input" type="text" name="uuid"></input>
-                    </h6>
-                    <p className="response w3-panel w3-border">{this.state.response}</p>
-                    <button className="w3-btn w3-white w3-border w3-border-red w3-round-large" onClick={this.removeFeature}>Remove</button>
-                    <button className="w3-btn w3-white w3-border w3-border-green w3-round-large" onClick={this.addFeature}>Add Feature</button>
-                    <br />
-                </form>
+                        <div style={{ "align": 'left' }}>
+                            <IconButton aria-label="remove" onClick={this.removeAttribute}>
+                                <RemoveCircleIcon></RemoveCircleIcon>
+                            </IconButton>
+                            <IconButton aria-label="add" onClick={this.addAttribute}>
+                                <AddCircleIcon></AddCircleIcon>
+                            </IconButton>
+                        </div>
+                        <div className="row">
+                            <TextField id="uuid" className="col-75" name="uuid"
+                                       value={this.state.uuid} label="UUID" />
 
+                        </div>
+
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={this.addFeature}
+                        startIcon={<AddBoxIcon />}>
+                        Add New Feature
+                    </Button>
+
+                    <div className="response w3-panel w3-border">{this.state.response}</div>
+                </form>
             </div>
         );
     }
