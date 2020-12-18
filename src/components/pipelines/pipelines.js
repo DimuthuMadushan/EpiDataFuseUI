@@ -6,7 +6,7 @@ import Api from '../api';
 import PipelineDataService from '../../firebase/pipelineDataService';
 import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
-
+import axios from 'axios';
 class PipelineMenu extends React.Component {
 
   constructor() {
@@ -19,6 +19,7 @@ class PipelineMenu extends React.Component {
       errorMsg: "",
       response: "",
       form: "none",
+      selectedFile:[]
     }
 
     this.retriveData()
@@ -142,8 +143,30 @@ class PipelineMenu extends React.Component {
     this.setState({ "form": "none" });
   }
 
+  fileHandler = (e) =>{
+    let fileList = this.state.selectedFile
+    fileList.push(e.target.files[0])
+    this.setState({
+        selectedFile:fileList
+    },()=>{
+        console.log(this.state.selectedFile)
+    })
+   }
+
+  uploadHandler = () =>{
+    const fd  = new FormData();
+    const files = this.state.selectedFile
+    for(let i = 0; i<files.length; i++){
+        fd.append(`config[${i}]`, files[i], files[i].name)
+    }
+    axios.post("url", fd)
+    .then(res =>{
+    })
+  }
+
   render() {
     let pipelineNames = this.state.pipelineNames
+    let selectedFile = this.state.selectedFile
     let pipelineList = pipelineNames.length > 0 &&
       pipelineNames.map((val, i) => {
         let status = val.status
@@ -291,8 +314,24 @@ class PipelineMenu extends React.Component {
             }}>
               <div style={{ "marginBottom": 10 }}>
                 <form noValidate autoComplete="off">
-                  <Input className="formCotrol" type="file" id="upload-file" placeholder="choose file"></Input>
+                  <Input className="formCotrol" type="file" placeholder="choose file" onChange={this.fileHandler} multiple></Input>
                 </form>
+                <div>
+                {
+                    selectedFile.map((val, idx) => {
+                        let inputId = `${idx}`
+                        return (
+                            <h4
+                                style={{
+                                    fontSize: 14, fontFamily: 'Courier New',
+                                    color: 'grey', fontWeight: 'bolder', align: 'left'
+                                }}>
+                                {val.name}
+                            </h4>
+                        )
+                    })
+                }
+                </div>
               </div>
 
               <button className="w3-btn w3-white w3-bar w3-bar-item  w3-border w3-border-red w3-round w3-left"

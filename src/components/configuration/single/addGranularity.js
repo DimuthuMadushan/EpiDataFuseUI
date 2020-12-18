@@ -277,7 +277,7 @@ class AddGranularity extends React.Component {
                         color="secondary"
                         onClick={this.addFeature}
                         startIcon={<AddBoxIcon />}>
-                        Add New Feature
+                        Add New Granularity
                     </Button>
 
                     <div className="response w3-panel w3-border">{this.state.response}</div>
