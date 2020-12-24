@@ -12,6 +12,7 @@ import PipelineMenu from './components/pipelines/pipelines';
 import MenuBar from './components/menubar/menubar'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import Outputdataframe from './components/outputdataframe/outputdataframe';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -122,6 +123,7 @@ function App() {
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/pipelines" component={PipelineMenu} />
             <Route exact path="/pipeline" component={Pipeline} />
+            <Route exact path="/getdataframes" component={Outputdataframe} />
           </Switch>
         </div>
       </AuthProvider>
