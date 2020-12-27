@@ -11,6 +11,12 @@ import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Button from "@material-ui/core/Button";
 import AddBoxIcon from "@material-ui/icons/AddBox";
+import { FilePicker } from "react-file-picker";
+import PinDropIcon from '@material-ui/icons/PinDrop';
+import SpatialGranularity from '../../map/SpatialGranularity'
+import shp from 'shpjs'
+import { CodeSharp, LensTwoTone } from '@material-ui/icons';
+import GranularityConfig from './granularityconfig';
 
 class AddGranularity extends React.Component {
     constructor(props) {
@@ -20,67 +26,117 @@ class AddGranularity extends React.Component {
             pipelineName: this.props.pipelineName,
             featureName: null,
             attributes: [{ attribute_name: null, attribute_type: null }],
-            uuid: null,
+            uuid_attribute_name: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
             granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
             errorMsg: { featureName: null, atttributes: null, uuid: null },
             response: null,
             attributeTypes: [],
+            shapefile: null,
+            columns: ["MOH_ID"],
+            ingestConfig: {
+                "pipeline_name": "dengue",
+                "feature_name": "moh",
+                "source_type": "shp",
+                "source_format": "",
+                "transformations": [
+                    {
+                        "attribute_name": null,
+                        "transformation": null,
+                    }
+                ],
+                "data_sources": []
+            }
         };
 
         this.api = new Api();
     }
 
-
-
+    handleFileChange = file => {
+        console.log()
+        this.setState({ shapefile: file }, () => {
+            file.arrayBuffer().then(buffer => {
+                shp(buffer).then(function (data) {
+                    console.log(data)
+                    return data
+                }).then(features => {
+                    var columns = []
+                    Object.keys(features.features[0].properties).forEach(key => {
+                        columns.push(key)
+                    })
+                    this.setState({ columns: columns }, () => {
+                        console.log(this.state)
+                    })
+                })
+            })
+            var ingestConfig = this.state.ingestConfig
+            ingestConfig.data_sources.push(file.name.split('.').slice(0, -1).join('.') + ".shp")
+            this.setState({ ingestConfig: ingestConfig })
+        })
+    };
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
-        let id = e.target.id
-        if (["attribute_name", "attribute_type"].includes(e.target.name)) {
-            let attributes = [...this.state.attributes]
-            attributes[id][e.target.name] = e.target.value.toUpperCase()
-            this.setState({ attributes }, () => {
-                let err = '';
-                if (!this.state.attributes[id]["attribute_name"] ||
-                    !this.state.attributes[id]["attribute_type"]) {
-                    err = "Attribute fields can not be empty";
-                    errorMsg["atttributes"] = err
-                    this.setState({ errorMsg });
-                } else {
-                    err = "";
-                    errorMsg["atttributes"] = err
-                    this.setState({ errorMsg });
-                }
-                //console.log(this.state.attributes)
+        let error = ""
+        if (!e.target.value) {
+            error = `${e.target.name} field cannot be empty`
+        }
+        errorMsg[e.target.name] = error
+        this.setState({ errorMsg });
+        this.setState({ [e.target.name]: e.target.value }, () => {
+            console.log(this.state)
+        })
+        if (e.target.name === "featureName") {
+            let ingestConfig = this.state.ingestConfig
+            ingestConfig.feature_name = e.target.value
+            this.setState({ ingestConfig: ingestConfig }, () => {
+                console.log(this.state)
             })
         }
-        else {
-            let error = ""
-            if (!e.target.value) {
-                error = `${e.target.name} field cannot be empty`
+    }
+
+    handleAttributeChange = (id, name) => (e) => {
+        let errorMsg = this.state.errorMsg
+        let value = e.target.value
+        let attributes = [...this.state.attributes]
+        attributes[id][name] = value
+        this.setState({ attributes }, () => {
+            let err = '';
+            if (!this.state.attributes[id][name]) {
+                err = "Attribute fields can not be empty";
+                errorMsg["atttributes"] = err
+                this.setState({ errorMsg });
+            } else {
+                err = "";
+                errorMsg["atttributes"] = err
+                this.setState({ errorMsg });
             }
-            errorMsg["featureName"] = error
-            this.setState({ errorMsg });
-            this.setState({ [e.target.name]: e.target.value.toUpperCase() }, () => {
-                console.log(this.state.featureName);
-                console.log(this.state.uuid);
+        })
+        if (name === "attribute_name") {
+            let ingestConfig = this.state.ingestConfig
+            ingestConfig.transformations[id][name] = e.target.value
+            ingestConfig.transformations[id]["transformation"] = id
+            this.setState({ ingestConfig: ingestConfig }, () => {
+                console.log(this.state)
             })
         }
-
-
     }
 
     componentDidMount() {
         var id = this.props.pipelineName
         this.setState({ pipelineName: id })
-        this.getAttributeInfo({ pipelineName: id })
+        this.getAttributeInfo({ pipeline_name: id })
     }
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
             attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "" }]
         }));
+        let ingestConfig = this.state.ingestConfig
+        ingestConfig.transformations.push({ attribute_name: "", transformation: "" })
+        this.setState({ ingestConfig: ingestConfig }, () => {
+            console.log(this.state)
+        })
     }
 
     removeAttribute = (e) => {
@@ -94,7 +150,13 @@ class AddGranularity extends React.Component {
             attributes: arrayAttribute,
             errorMsg: errorMsg
         }));
+        let ingestConfig = this.state.ingestConfig
+        ingestConfig.transformations.pop()
+        this.setState({ ingestConfig: ingestConfig }, () => {
+            console.log(this.state)
+        })
     }
+
     getAttributeInfo(data) {
         axios.post('http://localhost:8080/getAttributeInfo', data)
             .then(function (response) {
@@ -104,111 +166,98 @@ class AddGranularity extends React.Component {
                     return null
                 }
             }).then((res) => {
-            if (res.data.attribute_types) {
-                this.setState({ attributeTypes: res.data.attribute_types })
-            }
-        })
+                if (res.data.attribute_types) {
+                    this.setState({ attributeTypes: res.data.attribute_types })
+                }
+            })
     }
 
-    addFeature = (e) => {
-        let errorMsg = this.state.errorMsg
-        let error = ""
-        errorMsg["featureName"] = error
-        let postingFeatues = {
-            featureName: this.state.featureName,
+    addNewGranularity = (e) => {
+        var granularityConfig = {
+            pipeline_name: this.state.pipelineName,
+            feature_name: this.state.featureName,
             attributes: this.state.attributes,
-            uuid: this.state.uuid
+            uuid_attribute_name: this.state.uuid_attribute_name,
+            geom_source: this.state.geomsource,
+            ingestion_config: this.state.ingestConfig
         }
-        console.log(postingFeatues)
-        if (!this.state.featureName) {
-            error = `Feature name field cannot be empty`
-            errorMsg["featureName"] = error
-            this.setState({ errorMsg });
+        let formData = new FormData()
+        // formData.append("payload", granularityConfig)
+        formData.append("file", this.state.shapefile)
+        formData.append("pipeline_name", this.state.pipelineName)
+        formData.append("feature_name", this.state.featureName)
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
         }
-        else if (this.state.errorMsg["attributes"]) {
-        } else {
-            this.setState({
-                postingFeatures: [postingFeatues]
-            }, () => {
-                console.log(this.state.postingFeatures);
-                this.postConfigurations();
-
+        this.api.putFile(formData, config, (res) => {
+            console.log(res.data)
+            this.api.addGranularity(granularityConfig, (res) => {
+                console.log(res);
             });
+        })
 
-            Array.from(document.querySelectorAll("input")).forEach(
-                input => (input.value = "")
-            );
-            errorMsg = { featureName: "", atttributes: "", uuid: "" }
-            this.setState({ errorMsg })
-            this.setState((prevState) => ({
-                featureName: null,
-                attributes: [{ attribute_name: null, attribute_type: null }],
-                uuid: null,
-                postingFeatures: [...prevState.postingFeatures, { featureName: null, attributes: {}, uuid: null }],
-                granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
-                errorMsg: { featureName: null, atttributes: null, uuid: null }
-            }));
-        }
     }
 
-    removeFeature = (e) => {
-        var arrayFeature = this.state.postingFeatures;
-        if (arrayFeature.length > 1) {
-            arrayFeature.splice(-1, 1)
-        }
-        this.setState((prevState) => ({
-            postingFeatures: arrayFeature,
-            errorMsg: { featureName: "", atttributes: "", uuid: "" }
-        }), () => {
-            console.log(this.state.postingFeatures)
-        });
-        Array.from(document.querySelectorAll("input")).forEach(
-            input => (input.value = "")
-        );
-    }
-
-    postConfigurations = (e) => {
-        let granularity = this.state.granularity;
-        granularity["pipeline_name"] = this.state.pipelineName;
-        granularity["feature_name"] = this.state.postingFeatures[0]["feature_name"];
-        granularity["attributes"] = this.state.postingFeatures[0]["attributes"];
-        granularity["uuid_attribute_name"] = this.state.postingFeatures[0]["uuid"];
-        console.log(granularity);
-        let response = this.api.addGranularity(granularity);
-        console.log(response);
+    handleTransformationChange = (id) => (e) => {
+        let value = e.target.value
+        let ingestConfig = this.state.ingestConfig
+        ingestConfig.transformations[id]["transformation"] = value
+        this.setState({ ingestConfig: ingestConfig }, () => {
+            console.log(this.state)
+        })
     }
 
     handleSubmit = (e) => {
         e.preventDefault()
     }
+
     render() {
-        let { attributes, attributeTypes } = this.state
+        let { attributes, attributeTypes, columns } = this.state
+        let transformations = this.state.ingestConfig.transformations
         let attributeTypeList = attributeTypes.length > 0
             && attributeTypes.map((val, i) => {
                 return (
                     <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
                 )
             }, this);
+
+        let attributesList = attributes.length > 0
+            && attributes.map((val, i) => {
+                return (
+                    <MenuItem key={i} id={val["attribute_name"]} value={val["attribute_name"]} >{val["attribute_name"]}</MenuItem>
+                )
+            }, this);
+
+        let columnsList = columns.length > 0
+            && columns.map((val, i) => {
+                return (
+                    <MenuItem key={val} id={val} value={i + 1} >{val}</MenuItem>
+                )
+            }, this);
+
         return (
             <div className="w3-border w3-center" style={{ marginTop: 20, width: '70%', 'marginLeft': '15%' }}>
-                <form style={{ paddingLeft: 40 }}  onSubmit={this.handleSubmit} onChange={this.handleChange}>
-                        <div className="row">
-                            <TextField id="featurename" className="col-75" name="featureName"
-                                       value={this.state.featureName} label="Feature name" />
+                <form style={{ paddingLeft: 40 }} onSubmit={this.handleSubmit}>
+                    <div className="row">
+                        <TextField
+                            id="featureName"
+                            onChange={this.handleChange}
+                            className="col-75" name="featureName"
+                            value={this.state.featureName} label="Granularity name" />
 
-                        </div>
-                        <div className="h7">{this.state.errorMsg["featureName"]}</div>
-                        <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
-                            <h4
-                                style={{
-                                    fontSize: 14, fontFamily: 'Courier New',
-                                    color: 'grey', fontWeight: 'bolder', align: 'left'
-                                }}>
-                                Attributes
-                            </h4>
+                    </div>
+                    <div className="h7">{this.state.errorMsg["featureName"]}</div>
+                    <div className="row" style={{ marginTop: 30, alignItems: 'flex-start' }}>
+                        <h4
+                            style={{
+                                fontSize: 14, fontFamily: 'Courier New',
+                                color: 'grey', fontWeight: 'bolder', align: 'left'
+                            }}>
+                            Attributes
+                        </h4>
+
                         {
                             attributes.map((val, idx) => {
-                                let nameId = `name-${idx}`, typeId = `type-${idx}`
                                 return (
                                     <div key={idx} className="row">
 
@@ -218,6 +267,7 @@ class AddGranularity extends React.Component {
                                             value={attributes[idx].ame}
                                             className="col-50"
                                             label="Attribute Name"
+                                            onChange={this.handleAttributeChange(idx, "attribute_name")}
                                         />
 
                                         <FormControl variant="filled" size="small" className="col-25" style={{ marginLeft: 10 }}>
@@ -227,60 +277,111 @@ class AddGranularity extends React.Component {
                                                 id={idx}
                                                 name="attribute_type"
                                                 value={attributes[idx].type}
+                                                onChange={this.handleAttributeChange(idx, "attribute_type")}
                                             >
                                                 {attributeTypeList}
                                             </Select>
                                         </FormControl>
                                     </div>
-                                    // <div key={idx} className="row w3-panel w3-border">
-                                    //     <label htmlFor={nameId} className="col-25">Attribute #{idx + 1}</label>
-                                    //     <input
-                                    //         type="text"
-                                    //         name={nameId}
-                                    //         data-id={idx}
-                                    //         id="attribute_name"
-                                    //         value={attributes[idx].ame}
-                                    //         className="col-75"
-                                    //     />
-                                    //     <label htmlFor={typeId} className="col-25">Type</label>
-                                    //     <input
-                                    //         type="text"
-                                    //         name={typeId}
-                                    //         data-id={idx}
-                                    //         id="attribute_type"
-                                    //         value={attributes[idx].type}
-                                    //         className="col-75 "
-                                    //     />
-                                    //     <br />
-                                    // </div>
                                 )
                             })
                         }
-                        </div>
-                        <div className="h7">{this.state.errorMsg["atttributes"]}</div>
-                        <div style={{ "align": 'left' }}>
-                            <IconButton aria-label="remove" onClick={this.removeAttribute}>
-                                <RemoveCircleIcon></RemoveCircleIcon>
-                            </IconButton>
-                            <IconButton aria-label="add" onClick={this.addAttribute}>
-                                <AddCircleIcon></AddCircleIcon>
-                            </IconButton>
-                        </div>
-                        <div className="row">
-                            <TextField id="uuid" className="col-75" name="uuid"
-                                       value={this.state.uuid} label="UUID" />
+                    </div>
+                    <div className="h7">{this.state.errorMsg["atttributes"]}</div>
+                    <div style={{ "align": 'left' }}>
+                        <IconButton aria-label="remove" onClick={this.removeAttribute}>
+                            <RemoveCircleIcon></RemoveCircleIcon>
+                        </IconButton>
+                        <IconButton aria-label="add" onClick={this.addAttribute}>
+                            <AddCircleIcon></AddCircleIcon>
+                        </IconButton>
+                    </div>
+                    <div className="row">
+                        <FormControl variant="filled" size="small" className="col-50" >
+                            <InputLabel id="uuid_lable">Unique granule identifier</InputLabel>
+                            <Select
+                                id="uuid_attribute_name"
+                                labelId="uuid_lable"
+                                name="uuid_attribute_name"
+                                value={this.state.uuid}
+                                onChange={this.handleChange}
+                            >
+                                {attributesList}
+                            </Select>
+                        </FormControl>
+                    </div>
 
+                    {this.state.shapefile == null ? <div className="row">
+                        <FilePicker
+                            extensions={["zip"]}
+                            onChange={this.handleFileChange}
+                            maxSize={100}
+                            onError={errMsg => console.log(errMsg)}
+                            className="col-50"
+                            style={{ float: 'left' }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                style={{ marginTop: 20 }}
+                                startIcon={<PinDropIcon />}>
+                                Upload shape file to ingest granules
+                            </Button>
+                        </FilePicker>
+                    </div> :
+                        <div className="row">
+                            <div className="row" style={{ width: 600, height: 400, marginTop: 20 }}>
+                                <h4
+                                    style={{
+                                        fontSize: 14, fontFamily: 'Courier New',
+                                        color: 'grey', fontWeight: 'bolder', align: 'left'
+                                    }}>
+                                    {"Granules of " + this.state.featureName}
+                                </h4>
+                                <SpatialGranularity shapefile={this.state.shapefile} />
+                            </div>
+                            <div className="row" style={{ marginTop: 40 }}>
+                                <h4
+                                    style={{
+                                        fontSize: 14, fontFamily: 'Courier New',
+                                        color: 'grey', fontWeight: 'bolder', align: 'left'
+                                    }}>
+                                    Shapefile columns to attributes mapping
+                                </h4>
+                            </div>
+                            {
+                                transformations.map((val, idx) => {
+                                    return (
+                                        <div key={idx} className="row">
+                                            <FormControl variant="filled" size="small" className="col-25" style={{ marginLeft: 10 }}>
+                                                <InputLabel data-id={idx} id="column_label">{transformations[idx]["attribute_name"]}</InputLabel>
+                                                <Select
+                                                    labelId="column_label"
+                                                    id={idx}
+                                                    name="column_index"
+                                                    value={attributes[idx].type}
+                                                    onChange={this.handleTransformationChange(idx)}
+                                                >
+                                                    {columnsList}
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    )
+                                })
+                            }
                         </div>
+                    }
 
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={this.addFeature}
+                        style={{ marginTop: 40, marginBottom: 20 }}
+                        onClick={this.addNewGranularity}
                         startIcon={<AddBoxIcon />}>
-                        Add New Granularity
+                        Add New granularity
                     </Button>
 
-                    <div className="response w3-panel w3-border">{this.state.response}</div>
+                    {this.state.response ? <div className="response w3-panel w3-border">{this.state.response}</div> : ""}
                 </form>
             </div>
         );
