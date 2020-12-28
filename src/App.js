@@ -7,12 +7,14 @@ import SignIn from './components/auth/signin'
 import SignUp from './components/auth/signup'
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { AuthProvider } from './components/auth/authentication';
+import AllPagePDFViewer from './components/docs/docs';
 import Pipeline from './components/pipeline/pipeline';
 import PipelineMenu from './components/pipelines/pipelines';
 import MenuBar from './components/menubar/menubar'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Outputdataframe from './components/outputdataframe/outputdataframe';
+import pdfDoc from './components/docs/sdf.pdf';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -123,6 +125,7 @@ function App() {
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/pipelines" component={PipelineMenu} />
             <Route exact path="/pipeline" component={Pipeline} />
+            <Route exact path="/docs" component={AllPagePDFViewer} />
             <Route exact path="/getdataframes" component={Outputdataframe} />
           </Switch>
         </div>
