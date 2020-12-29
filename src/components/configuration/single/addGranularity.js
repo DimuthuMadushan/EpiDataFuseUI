@@ -27,16 +27,18 @@ class AddGranularity extends React.Component {
             featureName: null,
             attributes: [{ attribute_name: null, attribute_type: null }],
             uuid_attribute_name: null,
+            granularity_file: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
             granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
             errorMsg: { featureName: null, atttributes: null, uuid: null },
             response: null,
             attributeTypes: [],
             shapefile: null,
+            file_name: "",
             columns: ["MOH_ID"],
             ingestConfig: {
-                "pipeline_name": "dengue",
-                "feature_name": "moh",
+                "pipeline_name": this.props.pipelineName,
+                "feature_name": "",
                 "source_type": "shp",
                 "source_format": "",
                 "transformations": [
@@ -53,7 +55,7 @@ class AddGranularity extends React.Component {
     }
 
     handleFileChange = file => {
-        console.log()
+        this.setState({ file_name: file.name })
         this.setState({ shapefile: file }, () => {
             file.arrayBuffer().then(buffer => {
                 shp(buffer).then(function (data) {
@@ -72,6 +74,7 @@ class AddGranularity extends React.Component {
             var ingestConfig = this.state.ingestConfig
             ingestConfig.data_sources.push(file.name.split('.').slice(0, -1).join('.') + ".shp")
             this.setState({ ingestConfig: ingestConfig })
+            this.setState({ granularity_file: file.name })
         })
     };
 
@@ -178,6 +181,8 @@ class AddGranularity extends React.Component {
             feature_name: this.state.featureName,
             attributes: this.state.attributes,
             uuid_attribute_name: this.state.uuid_attribute_name,
+            file_name: this.state.file_name,
+            granularity_name: this.state.granularity_file,
             geom_source: this.state.geomsource,
             ingestion_config: this.state.ingestConfig
         }
@@ -193,6 +198,7 @@ class AddGranularity extends React.Component {
             console.log(res.data)
             this.api.addGranularity(granularityConfig, (res) => {
                 console.log(res);
+                window.location.reload(true);
             });
         })
 

@@ -11,7 +11,7 @@ import axios from 'axios';
 import SpatialGranularity from '../map/SpatialGranularity';
 import IngestToGranularity from "../configuration/single/ingestToGranularity";
 import IngestToFeature from "../configuration/single/ingestToFeature";
-
+import shp from 'shpjs'
 
 class Pipeline extends React.Component {
 
@@ -27,6 +27,7 @@ class Pipeline extends React.Component {
             ingestToGranularity: false
         }
     }
+
 
     retriveData = (id) => {
         var data = {
@@ -67,17 +68,45 @@ class Pipeline extends React.Component {
                     this.setState(prevState => ({ features: featurelist }))
                     var self = this
                     Object.keys(granularities).forEach(function (key, index) {
-                        var fileName = {
+                        var data = {
+                            pipeline_name: self.state.pipelineName,
+                            feature_name: key,
                             file_name: granules[key]
                         }
                         var granularitylist = self.state.granularities
-                        axios.post('http://localhost:8080/getFile', fileName)
+                        axios({ url: 'http://localhost:8080/getFile', method: 'POST', responseType: 'blob', data: data })
                             .then(function (res) {
-                                console.log(res)
+
+                                var file = new File([res.data], granules[key])
+                                // //Create blob link to download
+                                // // var url = window.URL.createObjectURL(blob);
+                                // // var link = document.createElement('a');
+                                // // link.href = url;
+                                // // link.setAttribute(
+                                // //     'download',
+                                // //     `SL_MOH.zip`,
+                                // // );
+
+                                // // // Append to html link element page
+                                // // document.body.appendChild(link);
+
+                                // // // Start download
+                                // // link.click();
+
+                                // // // Clean up and remove the link
+                                // // link.parentNode.removeChild(link);
+
+                                // var url = window.URL.createObjectURL(new Blob([res.data]));
+                                // var link = document.createElement('a');
+                                // link.href = url;
+                                // link.setAttribute('download', 'SL_MOH.zip'); //or any other extension
+                                // document.body.appendChild(link);
+                                // link.click();
+
                                 let obj = {
-                                    'grlarityName': key,
+                                    'granularityName': key,
                                     'attributes': granularities[key],
-                                    'shapefile': res.data
+                                    'shapefile': file
                                 }
                                 granularitylist.push(obj)
                                 self.setState({ granularities: granularitylist }, () => {
@@ -87,6 +116,14 @@ class Pipeline extends React.Component {
                     })
                 }
             })
+    }
+
+    str2bytes = (str) => {
+        var bytes = new Uint8Array(str.length);
+        for (var i = 0; i < str.length; i++) {
+            bytes[i] = str.charCodeAt(i);
+        }
+        return bytes;
     }
 
     componentDidMount() {
