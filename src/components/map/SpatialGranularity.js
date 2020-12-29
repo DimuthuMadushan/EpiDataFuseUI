@@ -23,10 +23,16 @@ class SpatialGranularity extends React.Component {
     }
 
     retriveData = (shapefile) => {
+        console.log("Heree comp")
         shapefile.arrayBuffer().then(buffer => {
-            shp(buffer).then(function (data) {
-                console.log(data)
-                return data
+            shp(buffer).then(function (data, err) {
+                if (data) {
+                    console.log(data)
+                    return data
+                } else {
+                    console.log(err)
+                }
+
             }).then(features => {
                 this.setState(prevState => ({ features: features['features'] }))
             })
@@ -34,9 +40,7 @@ class SpatialGranularity extends React.Component {
     }
 
     componentDidMount() {
-        console.log("Heree comp")
         var shapefile = this.props.shapefile
-        console.log(shapefile)
         this.retriveData(shapefile)
     }
 
