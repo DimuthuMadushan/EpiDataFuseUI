@@ -34,10 +34,11 @@ class AddGranularity extends React.Component {
             response: null,
             attributeTypes: [],
             shapefile: null,
+            file_name: "",
             columns: ["MOH_ID"],
             ingestConfig: {
-                "pipeline_name": "dengue",
-                "feature_name": "moh",
+                "pipeline_name": this.props.pipelineName,
+                "feature_name": "",
                 "source_type": "shp",
                 "source_format": "",
                 "transformations": [
@@ -54,7 +55,7 @@ class AddGranularity extends React.Component {
     }
 
     handleFileChange = file => {
-        console.log()
+        this.setState({ file_name: file.name })
         this.setState({ shapefile: file }, () => {
             file.arrayBuffer().then(buffer => {
                 shp(buffer).then(function (data) {
@@ -180,6 +181,7 @@ class AddGranularity extends React.Component {
             feature_name: this.state.featureName,
             attributes: this.state.attributes,
             uuid_attribute_name: this.state.uuid_attribute_name,
+            file_name: this.state.file_name,
             granularity_name: this.state.granularity_file,
             geom_source: this.state.geomsource,
             ingestion_config: this.state.ingestConfig
@@ -196,6 +198,7 @@ class AddGranularity extends React.Component {
             console.log(res.data)
             this.api.addGranularity(granularityConfig, (res) => {
                 console.log(res);
+                window.location.reload(true);
             });
         })
 

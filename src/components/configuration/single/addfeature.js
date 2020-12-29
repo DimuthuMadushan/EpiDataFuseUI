@@ -145,7 +145,7 @@ class AddFeature extends React.Component {
         console.log(featureConfig);
         this.api.configureSchema(featureConfig, (res) => {
             console.log(res);
-            alert(res.data.message)
+            window.location.reload(false);
         });
     }
 

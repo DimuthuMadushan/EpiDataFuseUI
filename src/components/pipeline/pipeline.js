@@ -68,14 +68,16 @@ class Pipeline extends React.Component {
                     this.setState(prevState => ({ features: featurelist }))
                     var self = this
                     Object.keys(granularities).forEach(function (key, index) {
-                        var fileName = {
+                        var data = {
+                            pipeline_name: self.state.pipelineName,
+                            feature_name: key,
                             file_name: granules[key]
                         }
                         var granularitylist = self.state.granularities
-                        axios({ url: 'http://localhost:8080/getFile', method: 'POST', responseType: 'blob', data: fileName })
+                        axios({ url: 'http://localhost:8080/getFile', method: 'POST', responseType: 'blob', data: data })
                             .then(function (res) {
 
-                                var file = new File([res.data], 'SL_MOH.zip')
+                                var file = new File([res.data], granules[key])
                                 // //Create blob link to download
                                 // // var url = window.URL.createObjectURL(blob);
                                 // // var link = document.createElement('a');
