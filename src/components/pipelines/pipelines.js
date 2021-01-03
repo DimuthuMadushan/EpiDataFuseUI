@@ -7,6 +7,10 @@ import PipelineDataService from '../../firebase/pipelineDataService';
 import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import SettingsIcon from '@material-ui/icons/Settings';
+
 class PipelineMenu extends React.Component {
 
   constructor() {
@@ -19,7 +23,7 @@ class PipelineMenu extends React.Component {
       errorMsg: "",
       response: "",
       form: "none",
-      selectedFile:[]
+      selectedFile: []
     }
 
     this.retriveData()
@@ -143,25 +147,25 @@ class PipelineMenu extends React.Component {
     this.setState({ "form": "none" });
   }
 
-  fileHandler = (e) =>{
+  fileHandler = (e) => {
     let fileList = this.state.selectedFile
     fileList.push(e.target.files[0])
     this.setState({
-        selectedFile:fileList
-    },()=>{
-        console.log(this.state.selectedFile)
+      selectedFile: fileList
+    }, () => {
+      console.log(this.state.selectedFile)
     })
-   }
+  }
 
-  uploadHandler = () =>{
-    const fd  = new FormData();
+  uploadHandler = () => {
+    const fd = new FormData();
     const files = this.state.selectedFile
-    for(let i = 0; i<files.length; i++){
-        fd.append(`config[${i}]`, files[i], files[i].name)
+    for (let i = 0; i < files.length; i++) {
+      fd.append(`config[${i}]`, files[i], files[i].name)
     }
     axios.post("url", fd)
-    .then(res =>{
-    })
+      .then(res => {
+      })
   }
 
   render() {
@@ -185,24 +189,27 @@ class PipelineMenu extends React.Component {
               color: status === "running" ? "green" : "orange"
             }}>{val.status}</Typography></td>
             <td>
-              <Link to={{ pathname: '/pipeline', state: { pipelineId: val.pipelineName } }} className="w3-btn w3-green w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
-                <Typography style={{
-                  fontSize: 8,
-                  fontFamily: 'Courier New',
-                  fontWeight: 'bolder',
-                  'color': 'white'
-                }}>Configure</Typography>
+              <Link to={{ pathname: '/pipeline', state: { pipelineId: val.pipelineName } }} style={{ 'height': 10, 'paddingTop': 1, textDecoration: 'none' }}>
+                <Button
+                  variant="contained"
+                  color="default"
+                  size="small"
+                  startIcon={<SettingsIcon />}
+                >
+                  Configure
+                </Button>
               </Link>
             </td>
             <td>
-              <button onClick={() => { this.initializePipeline(val.pipelineName) }} className="w3-btn w3-white w3-green  w3-border w3-small w3-left" style={{ 'height': 15, 'paddingTop': 1 }}>
-                <Typography style={{
-                  fontSize: 8,
-                  fontFamily: 'Courier New',
-                  fontWeight: 'bolder',
-                  'color': 'grey'
-                }}>Initialize</Typography>
-              </button>
+              <Button
+                variant="contained"
+                color="default"
+                size="small"
+                onClick={() => { this.initializePipeline(val.pipelineName) }}
+                startIcon={<CloudUploadIcon />}
+              >
+                Initialize
+                </Button>
             </td>
           </tr>
         )
@@ -317,20 +324,20 @@ class PipelineMenu extends React.Component {
                   <Input className="formCotrol" type="file" placeholder="choose file" onChange={this.fileHandler} multiple></Input>
                 </form>
                 <div>
-                {
+                  {
                     selectedFile.map((val, idx) => {
-                        let inputId = `${idx}`
-                        return (
-                            <h4
-                                style={{
-                                    fontSize: 14, fontFamily: 'Courier New',
-                                    color: 'grey', fontWeight: 'bolder', align: 'left'
-                                }}>
-                                {val.name}
-                            </h4>
-                        )
+                      let inputId = `${idx}`
+                      return (
+                        <h4
+                          style={{
+                            fontSize: 14, fontFamily: 'Courier New',
+                            color: 'grey', fontWeight: 'bolder', align: 'left'
+                          }}>
+                          {val.name}
+                        </h4>
+                      )
                     })
-                }
+                  }
                 </div>
               </div>
 

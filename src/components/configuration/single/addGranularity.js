@@ -13,6 +13,7 @@ import Button from "@material-ui/core/Button";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import { FilePicker } from "react-file-picker";
 import PinDropIcon from '@material-ui/icons/PinDrop';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import SpatialGranularity from '../../map/SpatialGranularity'
 import shp from 'shpjs'
 import { CodeSharp, LensTwoTone } from '@material-ui/icons';
@@ -330,8 +331,8 @@ class AddGranularity extends React.Component {
                                 variant="contained"
                                 color="primary"
                                 style={{ marginTop: 20 }}
-                                startIcon={<PinDropIcon />}>
-                                Upload shape file to ingest granules
+                                startIcon={<FileCopyIcon />}>
+                                Shape File
                             </Button>
                         </FilePicker>
                     </div> :
