@@ -55,6 +55,8 @@ class Pipeline extends React.Component {
                             'attributes': features[key],
                             'spatialGranularity': granularityConfigs[key]['spatialGranularity'],
                             'temporalGranularity': granularityConfigs[key]['temporalGranularity'],
+                            'temporalMultiplier': granularityConfigs[key]['temporalMultiplier'],
+                            'targetTemporalMultiplier': granularityConfigs[key]['targetTemporalMultiplier'],
                             'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
                             'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
                             'mappingMethod': granularityConfigs[key],
@@ -204,12 +206,27 @@ class Pipeline extends React.Component {
                             color: 'grey',
                             fontWeight: 'bolder'
                         }}>{feature['spatialGranularity']}</Typography></td>
-                        <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['temporalGranularity']}</Typography></td>
+                        <td><div>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Unit: {feature['temporalGranularity']}</Typography>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Frequency: {feature['temporalMultiplier']}</Typography>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}> {feature['temporalMultiplier'] + " " + feature['temporalGranularity']}</Typography>
+                        </div>
+                        </td>
                         <td><Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
@@ -217,12 +234,27 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }}>{feature['targetSpatialGranularity']}</Typography></td>
 
-                        <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['targetTemporalGranularity']}</Typography></td>
+                        <td><div>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Unit: {feature['targetTemporalGranularity']}</Typography>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>Frequency: {feature['targetTemporalMultiplier']}</Typography>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}> {feature['targetTemporalMultiplier'] + " " + feature['targetTemporalGranularity']}</Typography>
+                        </div>
+                        </td>
                         <td>
                             {feature['mappingMethod']['spatialRelationMappingMethod'] != null ? <div> <Typography style={{
                                 fontSize: 10,
@@ -260,12 +292,12 @@ class Pipeline extends React.Component {
                             </div>
                                 : ""}
                         </td>
-                        <td> <Typography style={{
+                        {/* <td> <Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
                             color: 'grey',
                             fontWeight: 'bolder'
-                        }}>{feature['mappingMethod']['temporalRelationMappingMethod']}</Typography></td>
+                        }}>{feature['mappingMethod']['temporalRelationMappingMethod']}</Typography></td> */}
                         <td><Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
@@ -373,12 +405,12 @@ class Pipeline extends React.Component {
                                 color: 'grey',
                                 fontWeight: 'bolder'
                             }}>Spatial conversion Method</Typography></th>
-                            <th><Typography style={{
+                            {/* <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Temporal conversion Method</Typography></th>
+                            }}>Temporal conversion Method</Typography></th> */}
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',

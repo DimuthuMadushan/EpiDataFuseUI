@@ -14,20 +14,16 @@ class GranularityConfig extends React.Component {
         this.state = {
             spatial_granularity: null,
             temporal_granularity: null,
+            temporal_multiplier: 1,
+            target_temporal_multiplier: 1,
             target_spatial_granularity: null,
             target_temporal_granularity: null,
             granularity_mapping: {
                 "spatial_mapping_method": {
                     "method_name": null,
                     "mapping_arguments": null
-                },
-                "temporal_mapping_method": {
-                    "method_name": null,
-                    "mapping_arguments": null
                 }
             },
-
-
             spatialGranularities: [],
             temporalGranularities: [],
             spatialConversionMethods: [],
@@ -43,8 +39,10 @@ class GranularityConfig extends React.Component {
         var granulartiyConfig = {
             spatial_granularity: this.state.spatial_granularity,
             temporal_granularity: this.state.temmporal_granularity,
+            temporal_multiplier: this.state.temporal_multiplier,
             target_spatial_granularity: this.state.target_spatial_granularity,
             target_temporal_granularity: this.state.target_temporal_granularity,
+            temporal_multiplier: this.state.target_temporal_multiplier,
             granularity_mapping: this.state.granularity_mapping
         }
         this.props.updateParentState(granulartiyConfig)
@@ -182,6 +180,7 @@ class GranularityConfig extends React.Component {
             }, this);
         let temporalGranularityList = temporalGranularities.length > 0
             && temporalGranularities.map((val, i) => {
+                console.log(val)
                 return (
                     <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
                 )
@@ -194,12 +193,6 @@ class GranularityConfig extends React.Component {
                 )
             }, this);
 
-        let temporalConversionMethodsList = temporalConversionMethodNames.length > 0
-            && temporalConversionMethodNames.map((val, i) => {
-                return (
-                    <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
-                )
-            }, this);
 
         let spatialMappingArguments = granularity_mapping.spatial_mapping_method.mapping_arguments != null
             && granularity_mapping.spatial_mapping_method.mapping_arguments.map((val, i) => {
@@ -213,21 +206,6 @@ class GranularityConfig extends React.Component {
                     </div>
                 )
             }, this)
-
-        let temporalMappingArguments = granularity_mapping.temporal_mapping_method.mapping_arguments != null
-            && granularity_mapping.temporal_mapping_method.mapping_arguments.map((val, i) => {
-                let argument = granularity_mapping.temporal_mapping_method.mapping_arguments[val]
-                return (
-                    <div className="row">
-                        <TextField
-                            key={i} id={val} label={val["argument_name"]} className="col-50"
-                            value={this.state.granularity_mapping.temporal_mapping_method.mapping_arguments[i]["argument_value"]}
-                            onChange={this.handleMappingArgumentChange("temporal_mapping_method", i)}
-                        />
-                    </div>
-                )
-            }, this)
-
 
         return (
             <div style={{ "paddingLeft": 25 }}>
@@ -325,9 +303,18 @@ class GranularityConfig extends React.Component {
                                     Temporal granularity
                                 </h4>
                             </div>
+                            <div className="row" style={{ marginTop: 5, marginLeft: 10, alignItems: 'flex-start' }}>
+                                <h4
+                                    style={{
+                                        fontSize: 10, fontFamily: 'Courier New',
+                                        color: 'grey', fontWeight: 'bolder', align: 'left'
+                                    }}>
+                                    Current
+                                </h4>
+                            </div>
                             <div className="row" style={{ "marginLeft": 30 }}>
                                 <FormControl variant="filled" size="small" className="col-25">
-                                    <InputLabel id="temporal_granularity_label">current</InputLabel>
+                                    <InputLabel id="temporal_granularity_label">unit</InputLabel>
                                     <Select
                                         labelId="temporal_granularity_label"
                                         id="temporal_granularity"
@@ -338,8 +325,29 @@ class GranularityConfig extends React.Component {
                                     </Select>
                                 </FormControl>
 
-                                <FormControl variant="filled" size="small" className="col-25" style={{ marginLeft: 10 }}>
-                                    <InputLabel id="target_temporal_granularity_label">target</InputLabel>
+                                <FormControl size="small" className="col-25" style={{ marginLeft: 20 }}>
+                                    <TextField id="base_multiplier" label="frequency" className="col-25"
+                                        value={this.state.temporal_multiplier}
+                                        type="number"
+                                        min="0"
+                                        pattern="^[0-9]"
+                                        onChange={this.handleChangeNew("temporal_multiplier")}
+                                    />
+                                </FormControl>
+
+                            </div>
+                            <div className="row" style={{ marginTop: 10, marginLeft: 10, alignItems: 'flex-start' }}>
+                                <h4
+                                    style={{
+                                        fontSize: 10, fontFamily: 'Courier New',
+                                        color: 'grey', fontWeight: 'bolder', align: 'left'
+                                    }}>
+                                    Target
+                                </h4>
+                            </div>
+                            <div className="row" style={{ "marginLeft": 30, marginTop: 5 }}>
+                                <FormControl variant="filled" size="small" className="col-25">
+                                    <InputLabel id="target_temporal_granularity_label">unit</InputLabel>
                                     <Select
                                         labelId="target_temporal_granularity_label"
                                         id="target_temporal_granularity"
@@ -349,46 +357,15 @@ class GranularityConfig extends React.Component {
                                         {temporalGranularityList}
                                     </Select>
                                 </FormControl>
-
-                            </div>
-                            <div className="row" style={{ marginTop: 15, marginLeft: 30, alignItems: 'flex-start' }}>
-                                <h4
-                                    style={{
-                                        fontSize: 12, fontFamily: 'Courier New',
-                                        color: 'grey', fontWeight: 'bolder', align: 'left'
-                                    }}>
-                                    Conversion method configuration
-                                    </h4>
-                            </div>
-                            <div className="row" id="temporalMethodName" style={{ marginLeft: 20 }}>
-                                <FormControl variant="filled" spatialMethodNamesize="small"
-                                    className="col-50" style={{ marginLeft: 10 }}>
-                                    <InputLabel id="temporalMethodName_label">map granules by</InputLabel>
-                                    <Select
-                                        labelId="temporalMethodName_label"
-                                        id="temporalMethodName"
-                                        name="temporalMethodName"
-                                        value={this.state.granularity_mapping.temporal_mapping_method.method_name}
-                                        onChange={this.handleTemporalMappingMethodChange("temporal_mapping_method")}
-                                    >
-                                        {temporalConversionMethodsList}
-                                    </Select>
+                                <FormControl size="small" className="col-25" style={{ marginLeft: 20 }}>
+                                    <TextField id="target_multiplier" label="frequency" className="col-25"
+                                        value={this.state.target_temporal_multiplier}
+                                        type="number"
+                                        min="0"
+                                        onChange={this.handleChangeNew("target_temporal_multiplier")}
+                                    />
                                 </FormControl>
-
                             </div>
-                            <div class="row" style={{ marginTop: 20, marginLeft: 30 }}>
-                                {temporalMappingArguments.length > 0 ? <div className="row" style={{ alignItems: 'flex-start' }}>
-                                    <h4
-                                        style={{
-                                            fontSize: 10, fontFamily: 'Courier New',
-                                            color: 'grey', fontWeight: 'bolder', align: 'left'
-                                        }}>
-                                        arguments
-                                    </h4>
-                                </div> : ""}
-                                {temporalMappingArguments}
-                            </div>
-                            {/* <div className="h7">{this.state.errorMsg["spatialMappingArgs"]}</div> */}
                         </div>
                     </div>
                 </form>
