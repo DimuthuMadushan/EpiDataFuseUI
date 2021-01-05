@@ -3,7 +3,6 @@ import axios from 'axios';
 import Api from '../../api';
 import GranularityConfig from "./granularityconfig";
 import Aggregation from "./aggregation";
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -225,9 +224,6 @@ class AddFeature extends React.Component {
                 <div><Aggregation updateParentState={this.updateAggregationConfig}
                     attributes={this.state.attributes}
                     pipelineName={this.props.pipelineName} /></div>
-
-
-
                 <Button
                     variant="contained"
                     color="secondary"
