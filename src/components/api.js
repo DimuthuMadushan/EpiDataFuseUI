@@ -106,10 +106,10 @@ export default class Api {
             })
     }
 
-    ingestToFeature = (data) => {
+    ingestToFeature = (data, callback) => {
         axios.post('http://localhost:8080/ingestToFeature', data)
             .then(function (response) {
-                console.log(response);
+                callback(response)
                 if (response.data.success) {
                     return response.data.message;
                 } else {

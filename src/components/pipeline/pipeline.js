@@ -43,13 +43,12 @@ class Pipeline extends React.Component {
                 }
             }).then(featureData => {
                 if (featureData != null) {
-                    var featurelist = []
-                    var geodatalist = []
                     var features = featureData['features']
                     var granularityConfigs = featureData['granularityConfigs']
                     var granularities = featureData['granularities']
                     var granules = featureData['granules']
-                    console.log(granules)
+                    var featurelist = []
+                    var self = this
                     Object.keys(features).forEach(function (key, index) {
                         let obj = {
                             'featureName': key,
@@ -65,8 +64,9 @@ class Pipeline extends React.Component {
                         }
                         featurelist.push(obj)
                     })
-                    this.setState(prevState => ({ features: featurelist }))
-                    var self = this
+
+                    self.setState({ features: featurelist })
+
                     Object.keys(granularities).forEach(function (key, index) {
                         var data = {
                             pipeline_name: self.state.pipelineName,
@@ -109,28 +109,16 @@ class Pipeline extends React.Component {
                                     'shapefile': file
                                 }
                                 granularitylist.push(obj)
-                                self.setState({ granularities: granularitylist }, () => {
-                                    console.log(self.state.granularities)
-                                })
+                                self.setState({ granularities: granularitylist })
                             })
                     })
                 }
             })
     }
 
-    str2bytes = (str) => {
-        var bytes = new Uint8Array(str.length);
-        for (var i = 0; i < str.length; i++) {
-            bytes[i] = str.charCodeAt(i);
-        }
-        return bytes;
-    }
-
     componentDidMount() {
         var id = this.props.location.state.pipelineId
-        this.setState({ pipelineName: id }, () => {
-            console.log(this.state.pipelineName)
-        })
+        this.setState({ pipelineName: id })
         this.retriveData(id)
     }
 
@@ -149,7 +137,6 @@ class Pipeline extends React.Component {
             this.setState({ addFeature: true })
             this.setState({ addGranularity: false, ingestToGranularity: false, ingestToFeature: false })
         }
-
     }
 
     toggleAddGranularity = () => {
@@ -159,7 +146,6 @@ class Pipeline extends React.Component {
             this.setState({ addGranularity: true })
             this.setState({ addFeature: false, ingestToGranularity: false, ingestToFeature: false })
         }
-
     }
 
     toggleIngestToFeature = () => {
@@ -183,15 +169,7 @@ class Pipeline extends React.Component {
     }
 
     render() {
-        let { features, granularities, pipelineName } = this.state
-        console.log(granularities)
-        let featureList = features.length > 0
-            && features.map((val, i) => {
-                return (
-                    <option key={i} value={val.pipelineName}>{val.pipelineName}</option>
-                )
-            }, this);
-
+        let { granularities, pipelineName, features } = this.state
         let featureInfoList = features.length > 0 &&
             features.map((feature, i) => {
                 return (
@@ -511,7 +489,7 @@ class Pipeline extends React.Component {
                         <AddFeature pipelineName={pipelineName} />
                     </div>
                     <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
-                        <IngestToFeature pipelineName={pipelineName} />
+                        <IngestToFeature pipelineName={pipelineName} features={features} />
                     </div>
                     <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
                         <IngestToGranularity pipelineName={pipelineName} />
