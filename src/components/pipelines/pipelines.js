@@ -9,6 +9,7 @@ import Input from '@material-ui/core/Input';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 class PipelineMenu extends React.Component {
@@ -141,6 +142,10 @@ class PipelineMenu extends React.Component {
     console.log("data in pipeline" + data);
   }
 
+  deletePipeline = (name) => {
+    PipelineDataService.deletePipeline(name);
+  }
+
   clearPipelineName = () => {
     this.setState({ pipelineName: "" });
     this.setState({ "displayUI": "none" });
@@ -210,6 +215,17 @@ class PipelineMenu extends React.Component {
               >
                 Initialize
                 </Button>
+            </td>
+            <td>
+              <Button
+                variant="contained"
+                color="default"
+                size="small"
+                onClick={() => { this.deletePipeline(val.pipelineName) }}
+                startIcon={<DeleteIcon />}
+              >
+                Delete
+               </Button>
             </td>
           </tr>
         )
