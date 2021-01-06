@@ -8,13 +8,13 @@ import SignUp from './components/auth/signup'
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { AuthProvider } from './components/auth/authentication';
 import AllPagePDFViewer from './components/docs/docs';
+import Markdown from './components/docs/markdown';
 import Pipeline from './components/pipeline/pipeline';
 import PipelineMenu from './components/pipelines/pipelines';
 import MenuBar from './components/menubar/menubar'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Outputdataframe from './components/outputdataframe/outputdataframe';
-import pdfDoc from './components/docs/sdf.pdf';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({

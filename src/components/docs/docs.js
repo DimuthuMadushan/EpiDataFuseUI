@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Document, Page } from "react-pdf";
-import pdfDoc from './sdf.pdf';
+import pdfDoc from './EpidatafuseDocumentation.pdf';
 export default function AllPages(props) {
   const [numPages, setNumPages] = useState(null);
 
