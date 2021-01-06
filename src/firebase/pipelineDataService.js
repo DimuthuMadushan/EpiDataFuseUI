@@ -35,6 +35,10 @@ class PipelineDataService {
 
     return name
   }
+  deletePipeline(key){
+     var uid = firebase.auth().currentUser.uid;
+     return db.ref('users/' + uid + '/pipelines/').child(key).remove();
+  }
 
   delete(key) {
     return db.child(key).remove();

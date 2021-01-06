@@ -145,7 +145,7 @@ export default function MenuBar(props) {
           <Link to="/" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>HOME</Typography></Link>
           <Link to="/pipelines" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>PIPELINES</Typography></Link>
           <Link to="/status" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>STATUS</Typography></Link>
-          <Link to="/status" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>DOCS</Typography></Link>
+          <Link to="/docs" className="w3-bar-item w3-button w3-left" style={{ 'height': 30, 'paddingTop': 1 }}><Typography className={classes.menuBarOption}>DOCS</Typography></Link>
           <button className="w3-bar-item w3-button w3-right" style={{ 'height': 30, 'paddingTop': 4 }} onClick={() => { app.auth().signOut() }}>
             <ExitToAppRoundedIcon style={{ height: 17 }} /></button>
         </div>

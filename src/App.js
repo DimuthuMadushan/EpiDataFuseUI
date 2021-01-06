@@ -7,6 +7,8 @@ import SignIn from './components/auth/signin'
 import SignUp from './components/auth/signup'
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { AuthProvider } from './components/auth/authentication';
+import AllPagePDFViewer from './components/docs/docs';
+import Markdown from './components/docs/markdown';
 import Pipeline from './components/pipeline/pipeline';
 import PipelineMenu from './components/pipelines/pipelines';
 import MenuBar from './components/menubar/menubar'
@@ -123,6 +125,7 @@ function App() {
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/pipelines" component={PipelineMenu} />
             <Route exact path="/pipeline" component={Pipeline} />
+            <Route exact path="/docs" component={AllPagePDFViewer} />
             <Route exact path="/getdataframes" component={Outputdataframe} />
           </Switch>
         </div>
