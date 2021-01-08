@@ -225,8 +225,8 @@ class IngestToFeature extends React.Component {
 
 
         return (
-            <div className="w3-border w3-center" style={{ marginTop: 20, width: '70%', 'marginLeft': '15%' }}>
-                <form className="w3-container" style={{ padding: 40 }} onSubmit={this.handleSubmit} >
+            <div style={{ width: "70vw" }}>
+                <form onSubmit={this.handleSubmit} >
                     <div className="row">
                         <FormControl variant="filled" size="small" className="col-50" >
                             <InputLabel id="feature_name_label">Feature Name</InputLabel>

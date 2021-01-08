@@ -161,8 +161,8 @@ class AddFeature extends React.Component {
                 )
             }, this);
         return (
-            <div className="w3-border w3-center" style={{ marginTop: 20, width: '70%', 'marginLeft': '15%' }}>
-                <form style={{ paddingLeft: 40 }} onSubmit={this.handleSubmit} >
+            <div style={{ width: "70vw" }}>
+                <form onSubmit={this.handleSubmit} >
                     <div className="row">
                         <TextField id="featurename" className="col-75" name="featureName" onChange={this.handleChange}
                             value={this.state.featureName} label="Feature name" />

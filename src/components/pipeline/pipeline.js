@@ -1,17 +1,21 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import PrivateRoute from '../route/router';
 import AddFeature from "../configuration/single/addfeature";
-import Ingest from "../configuration/single/ingest";
 import Granularity from "../configuration/single/addGranularity";
-import BulkIngest from "../configuration/single/bulkIngest";
-import SourceConnector from "../configuration/single/sourceConnector";
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import SpatialGranularity from '../map/SpatialGranularity';
 import IngestToGranularity from "../configuration/single/ingestToGranularity";
 import IngestToFeature from "../configuration/single/ingestToFeature";
-import shp from 'shpjs'
+import PipelineInfo from './pipelineinfo'
+import Api from '../api';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 class Pipeline extends React.Component {
 
@@ -24,10 +28,23 @@ class Pipeline extends React.Component {
             addFeature: false,
             addGranularity: false,
             ingestToFeature: false,
-            ingestToGranularity: false
+            ingestToGranularity: false,
+            fusionFrequency: null,
+            fusionFQUnit: null,
+            fusionFQMultiplier: null,
+            openDialog: false
         }
+        this.api = new Api();
     }
 
+
+    handleClickOpen = () => {
+        this.setState({ openDialog: true })
+    };
+
+    handleClose = () => {
+        this.setState({ openDialog: false })
+    };
 
     retriveData = (id) => {
         var data = {
@@ -43,11 +60,16 @@ class Pipeline extends React.Component {
                 }
             }).then(featureData => {
                 if (featureData != null) {
+                    console.log("Hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                    console.log(featureData)
                     var features = featureData['features']
                     var granularityConfigs = featureData['granularityConfigs']
                     var granularities = featureData['granularities']
                     var granules = featureData['granules']
                     var featurelist = []
+                    this.setState({ fusionFrequency: featureData["fusionFrequency"] })
+                    this.setState({ fusionFQMultiplier: featureData["fusionFQMultiplier"] })
+                    this.setState({ fusionFQUnit: featureData["fusionFQUnit"] })
                     var self = this
                     Object.keys(features).forEach(function (key, index) {
                         let obj = {
@@ -135,27 +157,33 @@ class Pipeline extends React.Component {
     toggleAddFeature = () => {
         if (this.state.addFeature) {
             this.setState({ addFeature: false })
+            this.handleClose()
         } else {
             this.setState({ addFeature: true })
             this.setState({ addGranularity: false, ingestToGranularity: false, ingestToFeature: false })
+            this.handleClickOpen()
         }
     }
 
     toggleAddGranularity = () => {
         if (this.state.addGranularity) {
             this.setState({ addGranularity: false })
+            this.handleClose()
         } else {
             this.setState({ addGranularity: true })
             this.setState({ addFeature: false, ingestToGranularity: false, ingestToFeature: false })
+            this.handleClickOpen()
         }
     }
 
     toggleIngestToFeature = () => {
         if (this.state.ingestToFeature) {
             this.setState({ ingestToFeature: false })
+            this.handleClose()
         } else {
             this.setState({ ingestToFeature: true })
             this.setState({ addGranularity: false, addFeature: false, ingestToGranularity: false })
+            this.handleClickOpen()
         }
 
     }
@@ -170,8 +198,15 @@ class Pipeline extends React.Component {
 
     }
 
+    setFusionFrequuency = (data) => {
+        this.api.setFusionFrequency(data, (res) => {
+            console.log(res)
+            window.location.reload(false);
+        });
+    }
+
     render() {
-        let { granularities, pipelineName, features } = this.state
+        let { granularities, pipelineName, features, fusionFrequency, fusionFQMultiplier, fusionFQUnit } = this.state
         let featureInfoList = features.length > 0 &&
             features.map((feature, i) => {
                 return (
@@ -352,161 +387,169 @@ class Pipeline extends React.Component {
             }, this);
 
         return (
-            <div>
-                <Typography style={{
-                    fontSize: 12.5,
-                    fontFamily: 'Courier New',
-                    color: 'grey',
-                    fontWeight: 'bolder',
-                    marginBottom: 5
-                }}> Feature Table</Typography>
-                <table className="w3-table-all w3-col-50" style={{ marginBottom: 10 }}>
-                    <thead>
-                        <tr>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Feature Name</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Attributes</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Spatial granularity</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Temporal granularity</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Target spatial granularity</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Target temporal granularity</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Spatial conversion Method</Typography></th>
-                            {/* <th><Typography style={{
+            <div style={{ padding: 20 }}>
+                <div>
+                    <PipelineInfo pipelineName={pipelineName} fusionFrequency={fusionFrequency}
+                        setFusionFrequency={this.setFusionFrequuency}
+                        fusionFQMultiplier={fusionFQMultiplier}
+                        fusionFQUnit={fusionFQUnit} />
+                </div>
+                <div>
+                    <Typography style={{
+                        fontSize: 12.5,
+                        fontFamily: 'Courier New',
+                        color: 'grey',
+                        fontWeight: 'bolder',
+                        marginBottom: 5,
+                        marginTop: 30
+                    }}> Feature Table</Typography>
+                    <table className="w3-table-all w3-col-50" style={{ marginBottom: 10 }}>
+                        <thead>
+                            <tr>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Feature Name</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Attributes</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Spatial granularity</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Temporal granularity</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Target spatial granularity</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Target temporal granularity</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Spatial conversion Method</Typography></th>
+                                {/* <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
                             }}>Temporal conversion Method</Typography></th> */}
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Fusion frequency</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>External source confguration</Typography></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {featureInfoList}
-                    </tbody>
-                </table>
-                <Typography style={{
-                    fontSize: 12.5,
-                    fontFamily: 'Courier New',
-                    color: 'grey',
-                    fontWeight: 'bolder',
-                    marginBottom: 5
-                }}> Granularity Table</Typography>
-                <table className="w3-table-all w3-col-50">
-                    <thead>
-                        <tr>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Granularity Name</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Attributes</Typography></th>
-                            <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Granules</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Fusion frequency</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>External source confguration</Typography></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {featureInfoList}
+                        </tbody>
+                    </table>
+                    <Typography style={{
+                        fontSize: 12.5,
+                        fontFamily: 'Courier New',
+                        color: 'grey',
+                        fontWeight: 'bolder',
+                        marginBottom: 5
+                    }}> Granularity Table</Typography>
+                    <table className="w3-table-all w3-col-50">
+                        <thead>
+                            <tr>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Granularity Name</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Attributes</Typography></th>
+                                <th><Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder'
+                                }}>Granules</Typography></th>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {granularityInfoList}
-                    </tbody>
-                </table>
-                <div style={{ marginTop: 20 }} className="w3-container w3-center">
-                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
-                        <Typography style={{
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {granularityInfoList}
+                        </tbody>
+                    </table>
+                    <div style={{ marginTop: 20 }} className="w3-container w3-center">
+                        <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round" >
+                            <Typography style={{
+                                fontSize: 12,
+                                fontFamily: 'Courier New',
+                                color: 'white',
+                                fontWeight: 'bolder'
+                            }} onClick={this.toggleAddGranularity}>Add New Granularity</Typography></button>
+
+                        <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
                             fontSize: 12,
                             fontFamily: 'Courier New',
                             color: 'white',
                             fontWeight: 'bolder'
-                        }} onClick={this.toggleAddGranularity}>Add New Granularity</Typography></button>
+                        }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
 
-                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"> <Typography style={{
-                        fontSize: 12,
-                        fontFamily: 'Courier New',
-                        color: 'white',
-                        fontWeight: 'bolder'
-                    }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
-
-                    {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                        {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
                         fontSize: 12,
                         fontFamily: 'Courier New',
                         color: 'white',
                         fontWeight: 'bolder'
                     }} onClick={this.toggleAddNewSource}>Add New Source</Typography></button> */}
 
-                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                        fontSize: 12,
-                        fontFamily: 'Courier New',
-                        color: 'white',
-                        fontWeight: 'bolder'
-                    }} onClick={this.toggleIngestToFeature}>Ingest to Feature</Typography></button>
-                    {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                        <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
+                            fontSize: 12,
+                            fontFamily: 'Courier New',
+                            color: 'white',
+                            fontWeight: 'bolder'
+                        }} onClick={this.toggleIngestToFeature}>Ingest to Feature</Typography></button>
+                        {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
                         fontSize: 12,
                         fontFamily: 'Courier New',
                         color: 'white',
                         fontWeight: 'bolder'
                     }} onClick={this.toggleIngestToGranularity}>Ingest to Granularity</Typography></button> */}
 
-                    {/* <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
+                        {/* <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
                             fontSize: 12,
                             fontFamily: 'Courier New',
                             color: 'white',
                             fontWeight: 'bolder'
                         }}>Bulk ingest</Typography></button></Link> */}
-                    {/* <Switch>
+                        {/* <Switch>
                             <PrivateRoute exact path="/addFeature"><Schema pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addGranularity"><Granularity pipelineName={pipelineName} /></PrivateRoute>
                             <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
@@ -514,17 +557,65 @@ class Pipeline extends React.Component {
                             <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
                         </Switch> */}
 
-                    <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
-                        <Granularity pipelineName={pipelineName} />
+                        {/* 
+                        <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
+                            <Granularity pipelineName={pipelineName} />
+                        </div>
+                        <div style={!this.state.addFeature ? { display: 'none' } : {}}>
+                            <AddFeature pipelineName={pipelineName} />
+                        </div>
+                        <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
+                            <IngestToFeature pipelineName={pipelineName} features={features} />
+                        </div>
+                        <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
+                            <IngestToGranularity pipelineName={pipelineName} />
+                        </div> */}
                     </div>
-                    <div style={!this.state.addFeature ? { display: 'none' } : {}}>
-                        <AddFeature pipelineName={pipelineName} />
-                    </div>
-                    <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
-                        <IngestToFeature pipelineName={pipelineName} features={features} />
-                    </div>
-                    <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
-                        <IngestToGranularity pipelineName={pipelineName} />
+                    <div>
+                        <Dialog maxWidth={'xl'} open={this.state.openDialog} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+                            <DialogTitle id="form-dialog-title">
+                                <Typography style={{
+                                    fontSize: 15,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder',
+                                }}>
+                                    Add new
+                                </Typography>
+                            </DialogTitle>
+                            <DialogContent>
+                                {/* <DialogContentText>
+                                    <Typography style={{
+                                        fontSize: 12,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                    }}>
+                                        Set the fusion frequenchy of the pipeline
+                                </Typography>
+                                </DialogContentText> */}
+                                <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
+                                    <Granularity pipelineName={pipelineName} />
+                                </div>
+                                <div style={!this.state.addFeature ? { display: 'none' } : {}}>
+                                    <AddFeature pipelineName={pipelineName} />
+                                </div>
+                                <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
+                                    <IngestToFeature pipelineName={pipelineName} features={features} />
+                                </div>
+                                <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
+                                    <IngestToGranularity pipelineName={pipelineName} />
+                                </div>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={this.handleClose} color="primary">
+                                    Cancel
+                            </Button>
+                                <Button onClick={this.handleSubmit} color="primary">
+                                    Set
+                            </Button>
+                            </DialogActions>
+                        </Dialog>
                     </div>
                 </div>
             </div>

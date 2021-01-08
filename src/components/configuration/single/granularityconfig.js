@@ -14,8 +14,8 @@ class GranularityConfig extends React.Component {
         this.state = {
             spatial_granularity: null,
             temporal_granularity: null,
-            temporal_multiplier: 1,
-            target_temporal_multiplier: 1,
+            temporal_multiplier: "1",
+            target_temporal_multiplier: "1",
             target_spatial_granularity: null,
             target_temporal_granularity: null,
             granularity_mapping: {
@@ -38,11 +38,11 @@ class GranularityConfig extends React.Component {
     updateParentState = () => {
         var granulartiyConfig = {
             spatial_granularity: this.state.spatial_granularity,
-            temporal_granularity: this.state.temmporal_granularity,
+            temporal_granularity: this.state.temporal_granularity,
             temporal_multiplier: this.state.temporal_multiplier,
             target_spatial_granularity: this.state.target_spatial_granularity,
             target_temporal_granularity: this.state.target_temporal_granularity,
-            temporal_multiplier: this.state.target_temporal_multiplier,
+            target_temporal_multiplier: this.state.target_temporal_multiplier,
             granularity_mapping: this.state.granularity_mapping
         }
         this.props.updateParentState(granulartiyConfig)
