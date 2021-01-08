@@ -122,4 +122,18 @@ export default class Api {
     getAttributeInfo = (data) => {
 
     }
+
+    setFusionFrequency = (data, callback) => {
+        axios.post('http://localhost:8080/setFusionFrequency', data)
+            .then(function (response) {
+                callback(response)
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
+
 }
