@@ -34,11 +34,11 @@ export default class Api {
             })
     }
 
-    initializePipeline = (data) => {
+    initializePipeline = (data, callback) => {
         axios.post('http://localhost:8080/initPipeline', data)
             .then(function (response) {
                 if (response.data.success) {
-                    console.log(response.data.message);
+                    callback(response)
                     return response.data.message;
                 }
                 else {
@@ -46,6 +46,8 @@ export default class Api {
                 }
             })
     }
+
+
 
     configureSchema = (data, callback) => {
         axios.post('http://localhost:8080/addFeatureSchema', data)
