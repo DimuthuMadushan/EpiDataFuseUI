@@ -30,6 +30,8 @@ class Pipeline extends React.Component {
             ingestToFeature: false,
             ingestToGranularity: false,
             fusionFrequency: null,
+            initialTimestamp: null,
+            initTimestamp: null,
             fusionFQUnit: null,
             fusionFQMultiplier: null,
             openDialog: false
@@ -37,6 +39,16 @@ class Pipeline extends React.Component {
         this.api = new Api();
     }
 
+    initializePipeline = (initialTimestamp) => {
+        var data = {
+            pipeline_name: this.state.pipelineName,
+            initialTimestamp: initialTimestamp
+        }
+        this.api.initializePipeline(data, (res) => {
+            console.log(res)
+            window.location.reload(false);
+        });
+    }
 
     handleClickOpen = () => {
         this.setState({ openDialog: true })
@@ -60,8 +72,6 @@ class Pipeline extends React.Component {
                 }
             }).then(featureData => {
                 if (featureData != null) {
-                    console.log("Hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-                    console.log(featureData)
                     var features = featureData['features']
                     var granularityConfigs = featureData['granularityConfigs']
                     var granularities = featureData['granularities']
@@ -70,6 +80,8 @@ class Pipeline extends React.Component {
                     this.setState({ fusionFrequency: featureData["fusionFrequency"] })
                     this.setState({ fusionFQMultiplier: featureData["fusionFQMultiplier"] })
                     this.setState({ fusionFQUnit: featureData["fusionFQUnit"] })
+                    this.setState({ initialTimestamp: featureData["initialTimestamp"] })
+                    this.setState({ initTimestamp: featureData["initTimestamp"] })
                     var self = this
                     Object.keys(features).forEach(function (key, index) {
                         let obj = {
@@ -206,7 +218,8 @@ class Pipeline extends React.Component {
     }
 
     render() {
-        let { granularities, pipelineName, features, fusionFrequency, fusionFQMultiplier, fusionFQUnit } = this.state
+        let { granularities, pipelineName, features, fusionFrequency, fusionFQMultiplier, fusionFQUnit
+            , initTimestamp, initialTimestamp } = this.state
         let featureInfoList = features.length > 0 &&
             features.map((feature, i) => {
                 return (
@@ -333,7 +346,7 @@ class Pipeline extends React.Component {
                             color: 'grey',
                             fontWeight: 'bolder'
                         }}>{feature['mappingMethod']['temporalRelationMappingMethod']}</Typography></td> */}
-                        <td><Typography style={{
+                        {/* <td><Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
                             color: 'grey',
@@ -344,7 +357,7 @@ class Pipeline extends React.Component {
                             fontFamily: 'Courier New',
                             color: 'grey',
                             fontWeight: 'bolder'
-                        }}>{feature['externalSource']}</Typography></td>
+                        }}>{feature['externalSource']}</Typography></td> */}
                     </tr>
                 )
             }, this);
@@ -392,7 +405,11 @@ class Pipeline extends React.Component {
                     <PipelineInfo pipelineName={pipelineName} fusionFrequency={fusionFrequency}
                         setFusionFrequency={this.setFusionFrequuency}
                         fusionFQMultiplier={fusionFQMultiplier}
-                        fusionFQUnit={fusionFQUnit} />
+                        fusionFQUnit={fusionFQUnit}
+                        initializePipeline={this.initializePipeline}
+                        initTimestamp={initTimestamp}
+                        initialTimestamp={initialTimestamp}
+                    />
                 </div>
                 <div>
                     <Typography style={{
@@ -454,7 +471,7 @@ class Pipeline extends React.Component {
                                 color: 'grey',
                                 fontWeight: 'bolder'
                             }}>Temporal conversion Method</Typography></th> */}
-                                <th><Typography style={{
+                                {/* <th><Typography style={{
                                     fontSize: 10,
                                     fontFamily: 'Courier New',
                                     color: 'grey',
@@ -465,7 +482,7 @@ class Pipeline extends React.Component {
                                     fontFamily: 'Courier New',
                                     color: 'grey',
                                     fontWeight: 'bolder'
-                                }}>External source confguration</Typography></th>
+                                }}>External source confguration</Typography></th> */}
                             </tr>
                         </thead>
                         <tbody>

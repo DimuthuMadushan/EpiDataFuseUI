@@ -210,17 +210,6 @@ class PipelineMenu extends React.Component {
                 variant="contained"
                 color="default"
                 size="small"
-                onClick={() => { this.initializePipeline(val.pipelineName) }}
-                startIcon={<CloudUploadIcon />}
-              >
-                Initialize
-                </Button>
-            </td>
-            <td>
-              <Button
-                variant="contained"
-                color="default"
-                size="small"
                 onClick={() => { this.deletePipeline(val.pipelineName) }}
                 startIcon={<DeleteIcon />}
               >

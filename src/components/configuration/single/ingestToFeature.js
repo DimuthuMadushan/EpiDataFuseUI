@@ -6,12 +6,9 @@ import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import { FilePicker } from "react-file-picker";
-import FileCopyIcon from '@material-ui/icons/FileCopy'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import FolderIcon from '@material-ui/icons/Folder';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
 import * as XLSX from 'xlsx';
