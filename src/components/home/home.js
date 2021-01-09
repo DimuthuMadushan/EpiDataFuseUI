@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import firebase from "../../firebase/firebase";
 import ReactMarkdown from 'react-markdown'
+import Documentation from './documentation'
 
 
 const drawerWidth = 240;
@@ -121,9 +122,9 @@ export default function Home() {
       className={clsx(classes.content, {
         [classes.contentShift]: open,
       })}
-      style={{ "width": "100%", padding: 5, marginLeft: 30, marginTop: 70 }}
+      style={{ "width": "95%", padding: 5, marginLeft: 30 }}
     >
-      <ReactMarkdown source={markdown}></ReactMarkdown>
+      <Documentation />
     </div>
   )
 }

@@ -1,20 +1,22 @@
 **EpiDataFuse Quickstart**
 
-EpiDataFuse allows researchers to easily build pipelines for **collection, fusion and integration** of **spatio-temporal **(collected across both space and time) data for an ample of use cases such as online machine learning and for continuous prediction using computational models in application domains such as disease surveillance, climate science and epidemiology. 
+EpiDataFuse allows researchers to easily build pipelines for **collection, fusion and integration** of **spatio-temporal**(collected across both space and time) data for an ample of use cases such as online machine learning and for continuous prediction using computational models in application domains such as disease surveillance, climate science and epidemiology. 
 
 
 
-1. **Introduction to Spatio-temporal data and terminology**
+**Introduction to Spatio-temporal data and terminology**
 1. **Spatio-temporal data**
 
 Spatio-temporal data is collected across both **space** and **time**. Spatial refers to space and temporal refers to time. A spatio-temporal data point is only valid in a particular spatial context and a temporal context. For instance, consider the following data frame which depicts the new Coivd-19 cases in each **WHO region** from **October 26th  to November 9th** of 2020.
 
 ![alt_text](public/covid.png)
+
 Figure 1.1: Data frame for covid cases
 
 
 
 ![alt_text](public/regions.png)
+
 Figure 1.2: WHO Regions
 
 As depicted above **record 0** is only valid in the   **Americas WHO region** and **record 1** is valid only in **Europe WHO region**. However, record 0 and 1 are both valid in the** week ending on Nov 2nd**.  In contrast, **record 0 **and **record 6** is valid in the **Americas WHO region**, but have different temporal contexts. The spatial and temporal context above is technically termed as granularity. In the above scenario, the number of covid-19 cases is the feature whereas the WHO region and the cumulative week(from Monday to Sunday) are respectively spatial and temporal granularities of the feature. 
@@ -197,4 +199,3 @@ When spatial and temporal granularities are combined it creates a spatio-tempora
     2. Creating a fusion pipeline and configuring the pipeline
     3. Initialize the fusion pipeline and observe the results
     4. Addtional information
-    
