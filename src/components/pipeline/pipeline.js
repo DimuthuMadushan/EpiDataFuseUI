@@ -50,6 +50,13 @@ class Pipeline extends React.Component {
         });
     }
 
+    addStreamingConfig = (data) => {
+        this.api.addStreamingConfiguration(data, (res) => {
+            console.log(res)
+            window.location.reload(false);
+        })
+    }
+
     handleClickOpen = () => {
         this.setState({ openDialog: true })
     };
@@ -76,6 +83,8 @@ class Pipeline extends React.Component {
                     var granularityConfigs = featureData['granularityConfigs']
                     var granularities = featureData['granularities']
                     var granules = featureData['granules']
+                    var streamingConfig = featureData['streamingConfig']
+                    console.log(streamingConfig)
                     var featurelist = []
                     this.setState({ fusionFrequency: featureData["fusionFrequency"] })
                     this.setState({ fusionFQMultiplier: featureData["fusionFQMultiplier"] })
@@ -94,9 +103,7 @@ class Pipeline extends React.Component {
                             'targetSpatialGranularity': granularityConfigs[key]['targetSpatialGranularity'],
                             'targetTemporalGranularity': granularityConfigs[key]['targetTemporalGranularity'],
                             'mappingMethod': granularityConfigs[key],
-                            'conversionFrequency': '1 week',
-                            'externalSource': 'http://localhost:3000/weatherdata'
-
+                            'externalSource': streamingConfig[key]
                         }
                         featurelist.push(obj)
                     })
@@ -409,6 +416,8 @@ class Pipeline extends React.Component {
                         initializePipeline={this.initializePipeline}
                         initTimestamp={initTimestamp}
                         initialTimestamp={initialTimestamp}
+                        features={features}
+                        addStreamingConfig={this.addStreamingConfig}
                     />
                 </div>
                 <div>

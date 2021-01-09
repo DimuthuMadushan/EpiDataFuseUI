@@ -138,4 +138,17 @@ export default class Api {
             })
     }
 
+    addStreamingConfiguration = (data, callback) => {
+        axios.post('http://localhost:8080/addStreamingConfiguration', data)
+            .then(function (response) {
+                callback(response)
+                if (response.data.success) {
+                    return response.data.message;
+                } else {
+                    console.log(response);
+                    return response.data.message;
+                }
+            })
+    }
+
 }

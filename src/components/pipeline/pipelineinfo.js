@@ -12,6 +12,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 
 class PipelineInfo extends React.Component {
@@ -23,17 +24,23 @@ class PipelineInfo extends React.Component {
             fusionFrequency: this.props.fusionFrequency,
             openDialog: false,
             openDialogInit: false,
+            openDialogStreaming: false,
             temporalGranularities: ["week", "day"],
             fusionfq_unit: "",
             fusionfq_multiplier: "",
-            features: ["precipitation"],
+            features: this.props.features,
             initialTimestamp: this.props.initialTimestamp,
             initTimestamp: this.props.initTimestamp,
             intStatus: false,
             streamingConfig: {
-                "precipitation": {
-                    "fetchFrequency": "1 day",
-                    "sources": ["https://weatherdatasl/precipitation"]
+                pipeline_name: this.props.pipelineName,
+                feature_name: null,
+                parameters: {
+                    url: null,
+                    request_frequency: {
+                        granularity: null,
+                        multiplier: null
+                    }
                 }
             }
         }
@@ -44,9 +51,21 @@ class PipelineInfo extends React.Component {
         this.setState({ [name]: value })
     }
 
+    handleStreamingChange = (name) => (e) => {
+        var streamingConfig = this.state.streamingConfig
+        streamingConfig.parameters[name] = e.target.value
+        this.setState({ streamingConfig: streamingConfig }, () => {
+            console.log(this.state.streamingConfig)
+        })
+    }
+
     handleSubmitInit = (e) => {
+        console.log(this.state.initialTimestamp)
         this.props.initializePipeline(this.state.initialTimestamp)
         this.handleCloseInit()
+    }
+    handleSubmitStreaming = (e) => {
+        this.props.addStreamingConfig(this.state.streamingConfig)
     }
 
     handleSubmit = (e) => {
@@ -77,15 +96,28 @@ class PipelineInfo extends React.Component {
         this.setState({ openDialog: false })
     };
 
+    handleClickOpenStreaming = (featureName, temporalMultiplier, temporalGranularity) => (e) => {
+        var streamingConfig = this.state.streamingConfig
+        streamingConfig.feature_name = featureName
+        streamingConfig.parameters.request_frequency.granularity = temporalGranularity
+        streamingConfig.parameters.request_frequency.multiplier = temporalMultiplier
+        this.setState({ streamingConfig: streamingConfig })
+        this.setState({ openDialogStreaming: true })
+    };
+
+    handleCloseStreaming = () => {
+        this.setState({ openDialogStreaming: false })
+    };
+
     render() {
-        let { temporalGranularities, features, streamingConfig } = this.state
+        let { temporalGranularities, streamingConfig } = this.state
+        var features = this.props.features
         let temporalGranularityList = temporalGranularities.length > 0
             && temporalGranularities.map((val, i) => {
                 return (
                     <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
                 )
             }, this);
-
         let featureList = features.length > 0 &&
             features.map((feature, i) => {
                 return (
@@ -95,19 +127,26 @@ class PipelineInfo extends React.Component {
                             fontFamily: 'Courier New',
                             color: 'grey',
                             fontWeight: 'bolder'
-                        }}>{feature}</Typography></td>
+                        }}>{feature['featureName']}</Typography></td>
                         <td><Typography style={{
                             fontSize: 10,
                             fontFamily: 'Courier New',
                             color: 'grey',
                             fontWeight: 'bolder'
-                        }}>{streamingConfig[feature]["fetchFrequency"]}</Typography></td>
-                        <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{streamingConfig[feature]["sources"][0]}</Typography></td>
+                        }}>{feature["temporalMultiplier"] + " " + feature["temporalGranularity"]}</Typography></td>
+                        <td> {feature["externalSource"] != null ?
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder'
+                            }}>{feature["externalSource"]}
+                            </Typography> : <Button variant="outlined"
+                                color="grey"
+                                size="small"
+                                onClick={this.handleClickOpenStreaming(feature["featureName"], feature["temporalMultiplier"], feature["temporalGranularity"])}
+                                style={{ height: 20 }}
+                                startIcon={<SettingsIcon />}>configure</Button>}</td>
                     </tr>
                 )
             })
@@ -269,13 +308,13 @@ class PipelineInfo extends React.Component {
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Fetch Frequenchy | Temporal granularity</Typography></th>
+                            }}>Fetch Frequenchy(Temporal granularity)</Typography></th>
                             <th><Typography style={{
                                 fontSize: 10,
                                 fontFamily: 'Courier New',
                                 color: 'grey',
                                 fontWeight: 'bolder'
-                            }}>Fetch Data From</Typography></th>
+                            }}>API endpoint(Streaming)</Typography></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -378,6 +417,48 @@ class PipelineInfo extends React.Component {
                             </Button>
                             <Button onClick={this.handleSubmitInit} color="primary">
                                 Start
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+                <div>
+                    <Dialog open={this.state.openDialogStreaming} onClose={this.handleCloseStreaming} aria-labelledby="form-dialog-title">
+                        <DialogTitle id="form-dialog-title">
+                            <Typography style={{
+                                fontSize: 15,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>
+                                {"Streaming configuration of " + this.state.featureOnFocus}
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                <Typography style={{
+                                    fontSize: 10,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                }}>
+                                    Streaming configuration to fetch data continously from external data sources.
+                                </Typography>
+                            </DialogContentText>
+                            <form noValidate>
+                                <FormControl size="small" className="col-50" style={{ marginLeft: 20 }}>
+                                    <TextField id="url" label="URL of the extenal data source"
+                                        value={this.state.streamingConfig.parameters.url}
+                                        type="url"
+                                        onChange={this.handleStreamingChange("url")}
+                                    />
+                                </FormControl>
+                            </form>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleCloseStreaming} color="primary">
+                                Cancel
+                            </Button>
+                            <Button onClick={this.handleSubmitStreaming} color="primary">
+                                Proceed
                             </Button>
                         </DialogActions>
                     </Dialog>
