@@ -11,6 +11,12 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
+import AddIcon from '@material-ui/icons/Add';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 class PipelineMenu extends React.Component {
 
@@ -24,7 +30,8 @@ class PipelineMenu extends React.Component {
       errorMsg: "",
       response: "",
       form: "none",
-      selectedFile: []
+      selectedFile: [],
+      openDialog: false
     }
 
     this.retriveData()
@@ -86,6 +93,7 @@ class PipelineMenu extends React.Component {
       this.setState({ response: data });
       this.state.pipelineName = "";
     }
+    this.handleClose()
 
   }
 
@@ -136,6 +144,14 @@ class PipelineMenu extends React.Component {
   handleClick = (e) => {
     console.log(e)
   }
+
+  handleClickOpen = () => {
+    this.setState({ openDialog: true })
+  };
+
+  handleClose = () => {
+    this.setState({ openDialog: false })
+  };
 
   initializePipeline = (name) => {
     let data = this.api.initializePipeline(name);
@@ -196,25 +212,25 @@ class PipelineMenu extends React.Component {
             <td>
               <Link to={{ pathname: '/pipeline', state: { pipelineId: val.pipelineName } }} style={{ 'height': 10, 'paddingTop': 1, textDecoration: 'none' }}>
                 <Button
-                  variant="contained"
-                  color="default"
+                  variant=""
+                  color="grey"
                   size="small"
                   startIcon={<SettingsIcon />}
+                  style={{ height: 20 }}
                 >
-                  Configure
                 </Button>
               </Link>
             </td>
             <td>
               <Button
-                variant="contained"
-                color="default"
+                variant=""
+                color="grey"
                 size="small"
                 onClick={() => { this.deletePipeline(val.pipelineName) }}
                 startIcon={<DeleteIcon />}
+                style={{ height: 20 }}
               >
-                Delete
-               </Button>
+              </Button>
             </td>
           </tr>
         )
@@ -247,8 +263,8 @@ class PipelineMenu extends React.Component {
                   color: 'grey',
                   fontWeight: 'bolder'
                 }}>Status</Typography></th>
-                <th></th>
-                <th></th>
+                <th style={{ width: 20 }}></th>
+                <th style={{ width: 20 }}></th>
               </tr>
             </thead>
             <tbody>
@@ -256,111 +272,67 @@ class PipelineMenu extends React.Component {
             </tbody>
           </table>
 
-          <div className="w3-border w3-left" style={{ width: this.state.displayUI === "block" | this.state.form === "block" ? "77%" : "auto" }}>
-            <button className="w3-btn w3-border w3-blue w3-small w3-left" style={{
+          <div className="w3-left" style={{ width: this.state.displayUI === "block" | this.state.form === "block" ? "77%" : "auto" }}>
+            <Button className="w3-left" style={{
               "marginBottom": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0,
               "marginLeft": this.state.displayUI === "block" | this.state.form === "block" ? 120 : 0,
               "marginTop": this.state.displayUI === "block" | this.state.form === "block" ? 10 : 0,
-              "height": 25,
+              "height": 30,
               "paddingTop": 4
-            }} onClick={this.handleCreate} >
-              <Typography style={{
-                fontSize: 12,
-                fontFamily: 'Courier New',
-                color: 'white',
-                fontWeight: 'bolder'
-              }}>Create a new pipeline</Typography>
-            </button>
+            }} onClick={this.handleClickOpen}
+              variant="outlined"
+              color="primary"
+              size="small"
+              startIcon={<AddIcon />}
+              style={{ height: 30 }} >
+              Create a new pipeline
+            </Button>
 
-            <div className="w3-border w3-left" style={{
-              display: this.state.displayUI, "marginBottom": 10,
-              "marginLeft": 50, padding: 5, width: "77%"
-            }}>
-              <div className="h7">{this.state.errorMsg}</div>
-              <div className="response">{this.state.response}</div>
-              <div style={{ "marginBottom": 10 }}>
-                <form noValidate autoComplete="off">
-                  <TextField id="pipelineName" onChange={this.handleChange}
-                    value={this.state.pipelineName} label="Enter Pipeline name" />
-                </form>
-              </div>
-              <button className="w3-btn w3-red w3-bar w3-bar-item  w3-border w3-border  w3-left"
-                style={{ "marginLeft": 40, "height": 20, paddingTop: 3 }} onClick={this.clearPipelineName}><Typography style={{
-                  fontSize: 10,
-                  fontFamily: 'Courier New',
-                  color: 'white',
-                  fontWeight: 'bolder',
-                }}>cancel</Typography></button>
-              <button className="w3-btn w3-green w3-bar-item w3-bar w3-border w3-border  w3-right"
-                style={{ "marginRight": 40, "height": 20, paddingTop: 3 }} onClick={this.createPipeline} ><Typography style={{
-                  fontSize: 10,
-                  fontFamily: 'Courier New',
-                  color: 'white',
-                  fontWeight: 'bolder'
-                }}>create</Typography></button>
 
-              <button className="w3-btn w3-white w3-border w3-left"
-                style={{
-                  "display": this.state.form === "none" ? "block" : "none",
-                  "marginBottom": 10,
-                  "marginLeft": 40,
-                  "marginTop": 10,
-                  "height": 17,
-                  "paddingTop": 2
-                }} onClick={this.useConfig}>
 
-                <Typography style={{
-                  fontSize: 8,
-                  fontFamily: 'Courier New',
-                  color: 'black',
-                  textDecoration: "underline",
-                  fontWeight: 'bolder'
-                }}>USE CONFIG FILE INSTEAD
-                </Typography>
-              </button>
-            </div>
-
-            <div className="w3-border w3-left" style={{
-              display: this.state.form, "marginBottom": 10,
-              "marginLeft": 50, padding: 5, width: "77%"
-            }}>
-              <div style={{ "marginBottom": 10 }}>
-                <form noValidate autoComplete="off">
-                  <Input className="formCotrol" type="file" placeholder="choose file" onChange={this.fileHandler} multiple></Input>
-                </form>
-                <div>
-                  {
-                    selectedFile.map((val, idx) => {
-                      let inputId = `${idx}`
-                      return (
-                        <h4
-                          style={{
-                            fontSize: 14, fontFamily: 'Courier New',
-                            color: 'grey', fontWeight: 'bolder', align: 'left'
-                          }}>
-                          {val.name}
-                        </h4>
-                      )
-                    })
-                  }
-                </div>
-              </div>
-
-              <button className="w3-btn w3-white w3-bar w3-bar-item  w3-border w3-border-red w3-round w3-left"
-                style={{ "marginLeft": 40, "height": 13 }} onClick={this.clearPipelineName}><Typography style={{
-                  fontSize: 12,
-                  fontFamily: 'Courier New',
-                  color: 'grey',
-                  fontWeight: 'bolder'
-                }}>cancel</Typography></button>
-              <button className="w3-btn w3-white w3-bar-item w3-bar w3-border w3-border-green w3-round w3-right"
-                style={{ "marginRight": 40, "height": 13 }} onClick={this.createPipeline} ><Typography style={{
-                  fontSize: 12,
-                  fontFamily: 'Courier New',
-                  color: 'grey',
-                  fontWeight: 'bolder'
-                }}>create</Typography></button>
-
+            <div>
+              <Dialog open={this.state.openDialog} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">
+                  <Typography style={{
+                    fontSize: 15,
+                    fontFamily: 'Courier New',
+                    color: 'grey',
+                    fontWeight: 'bolder',
+                  }}>
+                    Create a new Pipeline
+                  </Typography>
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    <Typography style={{
+                      fontSize: 12,
+                      fontFamily: 'Courier New',
+                      color: 'grey',
+                      fontWeight: 'bolder',
+                    }}>
+                      Create a new pipeline for continous spatio-temporal data fusion
+                    </Typography>
+                  </DialogContentText>
+                  <div>
+                    <div className="h7">{this.state.errorMsg}</div>
+                    <div className="response">{this.state.response}</div>
+                    <div>
+                      <form noValidate autoComplete="off">
+                        <TextField id="pipelineName" onChange={this.handleChange}
+                          value={this.state.pipelineName} label="Enter Pipeline name" />
+                      </form>
+                    </div>
+                  </div>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="primary">
+                    Cancel
+                  </Button>
+                  <Button onClick={this.createPipeline} color="primary">
+                    Create
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           </div>
         </div>
