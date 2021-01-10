@@ -16,8 +16,6 @@ import PinDropIcon from '@material-ui/icons/PinDrop';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import SpatialGranularity from '../../map/SpatialGranularity'
 import shp from 'shpjs'
-import { CodeSharp, LensTwoTone } from '@material-ui/icons';
-import GranularityConfig from './granularityconfig';
 
 class AddGranularity extends React.Component {
     constructor(props) {
@@ -26,7 +24,7 @@ class AddGranularity extends React.Component {
         this.state = {
             pipelineName: this.props.pipelineName,
             featureName: null,
-            attributes: [{ attribute_name: null, attribute_type: null }],
+            attributes: [{ attribute_name: null, attribute_type: null, indexed: false }],
             uuid_attribute_name: null,
             granularity_file: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
@@ -134,7 +132,7 @@ class AddGranularity extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "" }]
+            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: false }]
         }));
         let ingestConfig = this.state.ingestConfig
         ingestConfig.transformations.push({ attribute_name: "", transformation: "" })
@@ -272,7 +270,7 @@ class AddGranularity extends React.Component {
                                             name={"attribute_name"}
                                             id={idx}
                                             value={attributes[idx].ame}
-                                            className="col-50"
+                                            s className="col-50"
                                             label="Attribute Name"
                                             onChange={this.handleAttributeChange(idx, "attribute_name")}
                                         />
@@ -310,7 +308,7 @@ class AddGranularity extends React.Component {
                                 id="uuid_attribute_name"
                                 labelId="uuid_lable"
                                 name="uuid_attribute_name"
-                                value={this.state.uuid}
+                                value={this.state.uuid_attribute_name}
                                 onChange={this.handleChange}
                             >
                                 {attributesList}

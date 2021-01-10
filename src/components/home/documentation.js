@@ -69,7 +69,6 @@ class Documentation extends React.Component {
                     </tr>
                 </table>
 
-
                 <p>Multi-point, Multi-Line, Multi-Polygon are extensions of these primitive spatial objects that also used to define spatial granularities. For each granularity, there is a set of <strong>granules</strong>. For instance, if we consider <strong>Airports in the world </strong>as a granularity the set of airports around the globe forms the granules set for that particular granularity.</p>
                 <ul>
                     <li>Los Angeles International Airport</li>

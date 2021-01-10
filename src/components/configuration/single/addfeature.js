@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import { FlashOffOutlined } from '@material-ui/icons';
 
 class AddFeature extends React.Component {
 
@@ -21,7 +22,7 @@ class AddFeature extends React.Component {
         this.state = {
             pipelineName: this.props.pipelineName,
             featureName: null,
-            attributes: [{ attribute_name: null, attribute_type: null }],
+            attributes: [{ attribute_name: null, attribute_type: null, indexed: false }],
             errorMsg: { featureName: null, atttributes: null },
             response: null,
             attributeTypes: [],
@@ -79,7 +80,7 @@ class AddFeature extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "" }]
+            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: false }]
         }));
     }
 
