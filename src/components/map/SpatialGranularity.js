@@ -47,7 +47,7 @@ class SpatialGranularity extends React.Component {
     render() {
         let featureCollection = this.state.features.length > 0 ? this.state.features.map((feature, idx) => {
             let positions = []
-            if (feature['geometry']['type'] != "Point") {
+            if (feature['geometry']['type'] == "Polygon") {
                 feature['geometry']['coordinates'][0].forEach(record => {
                     let temp = []
                     temp.push(record[1])
