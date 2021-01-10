@@ -24,7 +24,7 @@ class AddGranularity extends React.Component {
         this.state = {
             pipelineName: this.props.pipelineName,
             featureName: null,
-            attributes: [{ attribute_name: null, attribute_type: null, indexed: false }],
+            attributes: [{ attribute_name: null, attribute_type: null, indexed: "false" }],
             uuid_attribute_name: null,
             granularity_file: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
@@ -132,7 +132,7 @@ class AddGranularity extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: false }]
+            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: "false" }]
         }));
         let ingestConfig = this.state.ingestConfig
         ingestConfig.transformations.push({ attribute_name: "", transformation: "" })

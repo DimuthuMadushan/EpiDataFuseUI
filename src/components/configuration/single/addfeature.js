@@ -22,7 +22,7 @@ class AddFeature extends React.Component {
         this.state = {
             pipelineName: this.props.pipelineName,
             featureName: null,
-            attributes: [{ attribute_name: null, attribute_type: null, indexed: false }],
+            attributes: [{ attribute_name: null, attribute_type: null, indexed: "false" }],
             errorMsg: { featureName: null, atttributes: null },
             response: null,
             attributeTypes: [],
@@ -80,7 +80,7 @@ class AddFeature extends React.Component {
 
     addAttribute = (e) => {
         this.setState((prevState) => ({
-            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: false }]
+            attributes: [...prevState.attributes, { attribute_name: "", attribute_type: "", indexed: "false" }]
         }));
     }
 
