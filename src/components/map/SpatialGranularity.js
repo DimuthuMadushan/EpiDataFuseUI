@@ -2,6 +2,7 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet'
 import '../../App.css'
 import shp from 'shpjs'
+import { polygon } from 'leaflet';
 
 class SpatialGranularity extends React.Component {
 
@@ -46,6 +47,7 @@ class SpatialGranularity extends React.Component {
 
     render() {
         let featureCollection = this.state.features.length > 0 ? this.state.features.map((feature, idx) => {
+
             let positions = []
             if (feature['geometry']['type'] == "Polygon") {
                 feature['geometry']['coordinates'][0].forEach(record => {
@@ -53,6 +55,30 @@ class SpatialGranularity extends React.Component {
                     temp.push(record[1])
                     temp.push(record[0])
                     positions.push(temp)
+                })
+            } else if (feature['geometry']['type'] == "MultiPolygon") {
+                positions = feature['geometry']['coordinates'].map((polygon) => {
+                    if (polygon.length == 1) {
+                        let coords = polygon[0].map(record => {
+                            let temp = []
+                            temp.push(record[1])
+                            temp.push(record[0])
+                            return temp
+                        })
+                        return coords
+                    } else {
+                        let coords = polygon.map(subpoly => {
+                            let coords = subpoly.map(record => {
+                                let temp = []
+                                temp.push(record[1])
+                                temp.push(record[0])
+                                return temp
+                            })
+                            return coords
+                        })
+                        return coords
+                    }
+
                 })
             }
 
@@ -99,7 +125,7 @@ class SpatialGranularity extends React.Component {
         }) : ""
 
         return (
-            <MapContainer center={[7.8731, 80.7718]} zoom={7} scrollWheelZoom={false}>
+            <MapContainer center={[7.8731, 80.7718]} zoom={1} scrollWheelZoom={false}>
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
