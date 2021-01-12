@@ -14,6 +14,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import SettingsIcon from '@material-ui/icons/Settings';
 import axios from 'axios';
+import Outputdataframe from '../outputdataframe/outputdataframe'
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 
 class PipelineInfo extends React.Component {
 
@@ -177,28 +181,32 @@ class PipelineInfo extends React.Component {
         return (
             <div>
                 <div className="row">
-                    <div className="col-25">
-                        <Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder',
-                            marginTop: 2
-                        }}>
-                            Pipeline Name :  {this.props.pipelineName}
-                        </Typography>
+                    <Card className="col-25" style={{ padding: 15 }}>
+                        <CardContent>
+                            <Typography style={{
+                                fontSize: 10,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                                marginTop: 2
+                            }}>
+                                Pipeline Name :  {this.props.pipelineName}
+                            </Typography>
 
-                        <Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder',
-                            marginTop: 10
-                        }}>
-                            Status :
-                                {this.props.initTimestamp != null ?
-                                <div className="row">
-                                    <div className="col-50">
+                            <div className="row" style={{ marginTop: 10 }}>
+                                <div className="col-25">
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                    }}>
+                                        Status :
+                                </Typography>
+                                </div>
+                                <div className="col-50">
+                                    {this.props.initTimestamp != null ?
+
                                         <Typography style={{
                                             fontSize: 10,
                                             fontFamily: 'Courier New',
@@ -206,27 +214,54 @@ class PipelineInfo extends React.Component {
                                             fontWeight: 'bolder',
                                         }}>
                                             Initialized
-                                      </Typography>
-                                    </div>
-                                </div> :
-                                <div className="row">
-                                    <div className="col-50">
+                                      </Typography> :
                                         <Typography style={{
                                             fontSize: 10,
                                             fontFamily: 'Courier New',
                                             color: 'orange',
                                             fontWeight: 'bolder',
-                                            marginTop: 10
                                         }}>
                                             Not initialized
                                         </Typography>
-                                    </div>
+                                    }
                                 </div>
-                            }
-                        </Typography>
+                            </div>
 
-                        {
-                            this.props.fusionFQUnit == null | this.props.fusionFrequency == null | this.props.fusionFQMultiplier == null ?
+                            {
+                                this.props.fusionFQUnit == null | this.props.fusionFrequency == null | this.props.fusionFQMultiplier == null ?
+                                    <div>
+                                        <Typography style={{
+                                            fontSize: 10,
+                                            fontFamily: 'Courier New',
+                                            color: 'grey',
+                                            fontWeight: 'bolder',
+                                            marginTop: 10
+                                        }}>
+                                            Fusion Frequency: <Button
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                onClick={this.handleClickOpen}
+                                                startIcon={<AvTimerIcon />}>
+                                                Set
+                                        </Button>
+                                        </Typography>
+                                    </div>
+                                    :
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 10
+                                    }}>
+                                        Fusion Frequency: {this.props.fusionFrequency +
+                                            " seconds (" + this.props.fusionFQMultiplier + " " + this.props.fusionFQUnit + ")"}
+
+                                    </Typography>
+                            }
+
+                            {this.props.initTimestamp != null ?
                                 <div>
                                     <Typography style={{
                                         fontSize: 10,
@@ -235,87 +270,62 @@ class PipelineInfo extends React.Component {
                                         fontWeight: 'bolder',
                                         marginTop: 10
                                     }}>
-                                        Fusion Frequency: <Button
-                                            variant="contained"
-                                            color="primary"
-                                            size="small"
-                                            onClick={this.handleClickOpen}
-                                            startIcon={<AvTimerIcon />}>
-                                            Set
-                                        </Button>
+                                        Initial timestamp :  {this.props.initialTimestamp}
+                                    </Typography>
+
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 10
+                                    }}>
+                                        Initialized on :  {this.props.initTimestamp}
                                     </Typography>
                                 </div>
-                                :
-                                <Typography style={{
-                                    fontSize: 10,
-                                    fontFamily: 'Courier New',
-                                    color: 'grey',
-                                    fontWeight: 'bolder',
-                                    marginTop: 10
-                                }}>
-                                    Fusion Frequency: {this.props.fusionFrequency +
-                                        " seconds (" + this.props.fusionFQMultiplier + " " + this.props.fusionFQUnit + ")"}
-
-                                </Typography>
-                        }
-
-                        {this.props.initTimestamp != null ?
-                            <div>
-                                <Typography style={{
-                                    fontSize: 10,
-                                    fontFamily: 'Courier New',
-                                    color: 'grey',
-                                    fontWeight: 'bolder',
-                                    marginTop: 10
-                                }}>
-                                    Initial timestamp :  {this.props.initialTimestamp}
-                                </Typography>
-
-                                <Typography style={{
-                                    fontSize: 10,
-                                    fontFamily: 'Courier New',
-                                    color: 'grey',
-                                    fontWeight: 'bolder',
-                                    marginTop: 10
-                                }}>
-                                    Initialized on :  {this.props.initTimestamp}
-                                </Typography>
-                            </div>
-                            : ""}
-                        {this.props.initTimestamp != null ? <div className="col-50">
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={this.handleClickOpenInit}
-                                startIcon={<AvTimerIcon />}
-                                style={{ marginLeft: 10 }}>
-                                Terminate
-                                </Button>
-                        </div> :
-                            <div className="col-50">
+                                : ""}
+                            {this.props.initTimestamp != null ? <div className="col-50">
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     size="small"
                                     onClick={this.handleClickOpenInit}
                                     startIcon={<AvTimerIcon />}
-                                    style={{}}>
-                                    Initialize
+                                    style={{ marginLeft: 10 }}>
+                                    Terminate
                                 </Button>
-                            </div>}
-                    </div>
-                    <div className="col-25" style={{ marginLeft: 5 }}>
-                        <Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder',
-                            marginTop: 2
-                        }}>
-                            Fusion summary
+                            </div> :
+                                <div className="col-50">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        onClick={this.handleClickOpenInit}
+                                        startIcon={<AvTimerIcon />}
+                                        style={{}}>
+                                        Initialize
+                                </Button>
+                                </div>}
+                        </CardContent>
+
+                    </Card>
+                    <Card className="col-50" style={{ marginLeft: 100 }}>
+                        <CardContent>
+                            <Typography style={{
+                                fontSize: 15,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bold',
+                                marginTop: 2,
+                                padding: 10,
+
+                            }}>
+                                Integration summary
                         </Typography>
-                    </div>
+                            <Outputdataframe pipelineName={this.props.pipelineName} />
+                        </CardContent>
+
+                    </Card>
                 </div>
 
                 <table className="w3-table-all w3-col-50" style={{ marginBottom: 10, marginTop: 20 }}>

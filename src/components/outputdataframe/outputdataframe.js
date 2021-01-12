@@ -1,6 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import { Typography } from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { CSVLink, CSVDownload } from "react-csv";
 
 class Outputdataframe extends React.Component {
 
@@ -14,11 +24,14 @@ class Outputdataframe extends React.Component {
     }
 
     componentDidMount() {
-        this.retriveData()
+        var data = {
+            pipeline_name: this.props.pipelineName
+        }
+        this.retriveData(data)
     }
 
-    retriveData = () => {
-        axios.post('http://localhost:8080/getdataframes')
+    retriveData = (data) => {
+        axios.post('http://localhost:8080/getdataframes', data)
             .then(function (response) {
                 if (response.data.success) {
                     return response.data.data;
@@ -41,7 +54,6 @@ class Outputdataframe extends React.Component {
 
                     console.log(this.state.tableVisibility);
                 }
-
             })
     }
 
@@ -64,13 +76,23 @@ class Outputdataframe extends React.Component {
 
     }
 
+    createCSVFILE = (content, headers, fileName) => {
+        console.log(headers)
+        console.log(fileName)
+        console.log(content)
+    }
+
     render() {
 
         var dataFrames = this.state.dataFrames;
 
         return (
             <div>
-                <div>
+                <List style={{
+                    position: 'relative',
+                    overflow: 'auto',
+                    maxHeight: 300,
+                }}>
 
                     {dataFrames.map((frame, index) => {
                         var fileName = frame.fileName;
@@ -85,95 +107,167 @@ class Outputdataframe extends React.Component {
 
                         return (
 
-                            <div>
-                                <span style={{ display: "inline-block" }}>
-                                    <h4>
-                                        Data Frame {index + 1}
-                                    </h4>
-
-                                    <h4>
-                                        TimeStamp : {timestamp}
-                                    </h4>
-
-                                    <h4>
-                                        Spatial Granularity : {spatialGranularity}
-                                    </h4>
-
-                                    <h4>
-                                        Spatial Granularity : {temporalGranularity}
-                                    </h4>
-
-                                    <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                                        fontSize: 12,
+                            <ListItem>
+                                <ListItemText >
+                                    <Typography style={{
+                                        fontSize: 10,
                                         fontFamily: 'Courier New',
-                                        color: 'white',
-                                        fontWeight: 'bolder'
-                                    }} onClick={() => this.toggleTableView(index)}>Show/Hide</Typography></button>
-                                </span>
-                                <table style={{
-                                    display: this.state.tableVisibility[index] === true ? "block" : "none",
-                                    width: "100%"
-                                }}>
-                                    <thead>
-                                        <tr>
-                                            {
-                                                headers.map(header => {
-                                                    return <th style={{ padding: "15px", borderSpacing: "5px", border: "1px dotted #999" }}>{header}</th>
-                                                })
-                                            }
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            content.map(row => {
-                                                return (
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 2
+                                    }}>
+                                        Fused data set No:  {index + 1}
+                                    </Typography>
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 2
+                                    }}>
+                                        TimeStamp : {timestamp}
+                                    </Typography>
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 2
+                                    }}>
+                                        Spatial Granularity : {spatialGranularity}
+                                    </Typography>
+                                    <Typography style={{
+                                        fontSize: 10,
+                                        fontFamily: 'Courier New',
+                                        color: 'grey',
+                                        fontWeight: 'bolder',
+                                        marginTop: 2
+                                    }}>
+                                        Temporal Granularity : {temporalGranularity}
+                                    </Typography>
+                                    <div className="row">
+                                        <Button
+                                            variant="contained"
+                                            className="row"
+                                            color="secondary"
+                                            size="small"
+                                            onClick={() => this.toggleTableView(index)}
+                                            // startIcon={<AvTimerIcon />}
+                                            style={{ height: 15 }}>
+                                            view
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            className="row"
+                                            color="secondary"
+                                            size="small"
+                                            // startIcon={<AvTimerIcon />}
+                                            style={{ height: 15, marginLeft: 5 }}>
+                                            <CSVLink data={content} separator={","} headers={headers} filename={fileName}>Download</CSVLink>
+                                        </Button>
+
+                                    </div>
+
+                                </ListItemText>
+                                <div>
+                                    <Dialog fullScreen open={this.state.tableVisibility[index]} onClose={() => this.toggleTableView(index)} aria-labelledby="form-dialog-title">
+                                        <DialogTitle id="form-dialog-title">
+                                            <Typography style={{
+                                                fontSize: 15,
+                                                fontFamily: 'Courier New',
+                                                color: 'grey',
+                                                fontWeight: 'bolder',
+                                            }}>
+                                                Integration summary
+                                            </Typography>
+                                        </DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText>
+                                                <Typography style={{
+                                                    fontSize: 10,
+                                                    fontFamily: 'Courier New',
+                                                    color: 'grey',
+                                                    fontWeight: 'bolder',
+                                                    marginTop: 2
+                                                }}>
+                                                    Fused data set No:  {index + 1}
+                                                </Typography>
+                                                <Typography style={{
+                                                    fontSize: 10,
+                                                    fontFamily: 'Courier New',
+                                                    color: 'grey',
+                                                    fontWeight: 'bolder',
+                                                    marginTop: 2
+                                                }}>
+                                                    TimeStamp : {timestamp}
+                                                </Typography>
+                                                <Typography style={{
+                                                    fontSize: 10,
+                                                    fontFamily: 'Courier New',
+                                                    color: 'grey',
+                                                    fontWeight: 'bolder',
+                                                    marginTop: 2
+                                                }}>
+                                                    Spatial Granularity : {spatialGranularity}
+                                                </Typography>
+                                                <Typography style={{
+                                                    fontSize: 10,
+                                                    fontFamily: 'Courier New',
+                                                    color: 'grey',
+                                                    fontWeight: 'bolder',
+                                                    marginTop: 2
+                                                }}>
+                                                    Temporal Granularity : {temporalGranularity}
+                                                </Typography>
+                                            </DialogContentText>
+                                            <table style={{
+                                                width: "100%"
+                                            }}>
+                                                <thead>
                                                     <tr>
                                                         {
-                                                            row.map(item => {
-                                                                return (
-                                                                    <td style={{ padding: "15px", borderSpacing: "5px", border: "1px dotted #999" }}>
-                                                                        {item}
-                                                                    </td>
-                                                                )
+                                                            headers.map(header => {
+                                                                return <th style={{ padding: "15px", borderSpacing: "5px", border: "1px dotted #999" }}>{header}</th>
                                                             })
                                                         }
                                                     </tr>
-                                                )
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        content.map(row => {
+                                                            return (
+                                                                <tr>
+                                                                    {
+                                                                        row.map(item => {
+                                                                            return (
+                                                                                <td style={{ padding: "15px", borderSpacing: "5px", border: "1px dotted #999" }}>
+                                                                                    {item}
+                                                                                </td>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
+                                                </tbody>
+                                            </table>
+
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={() => this.toggleTableView(index)} color="primary">
+                                                Back
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                </div>
+
+                            </ListItem>
                         );
-
-
                     })
                     }
-                </div>
-                {/* <Fragment>
-                    {attendence.map(person => {
-                        return (
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        {person.Attendence.map(personAttendendance => {
-                                            return <th>{personAttendendance.date}</th>;
-                                        })}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{person.Name}</td>
-                                        {person.Attendence.map(personAttendendance => {
-                                            return <td>{personAttendendance.attendence}</td>;
-                                        })}
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        );
-                    })}
-                </Fragment> */}
+                </List>
+
 
 
             </div>
