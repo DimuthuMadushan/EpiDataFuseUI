@@ -10,12 +10,19 @@ import IconButton from "@material-ui/core/IconButton";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Button from "@material-ui/core/Button";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import { FilePicker } from "react-file-picker";
 import PinDropIcon from '@material-ui/icons/PinDrop';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import SpatialGranularity from '../../map/SpatialGranularity'
 import shp from 'shpjs'
+import DialogContent from "@material-ui/core/DialogContent";
+import Alert from "@material-ui/lab/Alert";
+import {Typography} from "@material-ui/core";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
+import AddFeature from "./addfeature";
 
 class AddGranularity extends React.Component {
     constructor(props) {
@@ -36,6 +43,8 @@ class AddGranularity extends React.Component {
             geomAttributeTypes: [],
             shapefile: null,
             file_name: "",
+            isSuccess:false,
+            wait:false,
             columns: ["MOH_ID"],
             ingestConfig: {
                 "pipeline_name": this.props.pipelineName,
@@ -78,6 +87,19 @@ class AddGranularity extends React.Component {
             this.setState({ granularity_file: file.name })
         })
     };
+
+    setResponse=(res, state)=>{
+        this.setState({response:res, isSuccess: state},(res) => {
+            this.setState({wait:!this.state.wait});
+            console.log(this.state.isSuccess);
+        })
+    }
+
+    handleAlert = () => {
+        this.setState({response:null, isSuccess:false},()=>{
+            window.location.reload(true);
+        })
+    }
 
     handleChange = (e) => {
         let errorMsg = this.state.errorMsg
@@ -191,8 +213,13 @@ class AddGranularity extends React.Component {
                 }
             })
     }
+    // handleWait = ()=>{
+    //     let state = this.state.wait;
+    //     this.setState({wait:!state});
+    // }
 
     addNewGranularity = (e) => {
+        this.setState({wait:!this.state.wait});
         var attributes = this.state.attributes
         attributes.push(this.state.geometry)
         this.setState({ attributes: attributes })
@@ -216,10 +243,7 @@ class AddGranularity extends React.Component {
         }
         this.api.putFile(formData, config, (res) => {
             console.log(res.data)
-            this.api.addGranularity(granularityConfig, (res) => {
-                console.log(res);
-                window.location.reload(true);
-            });
+            this.api.addGranularity(granularityConfig, this.setResponse);
         })
 
     }
@@ -431,8 +455,50 @@ class AddGranularity extends React.Component {
                         Add New granularity
                     </Button>
 
-                    {this.state.response ? <div className="response w3-panel w3-border">{this.state.response}</div> : ""}
+                    {/*{this.state.response ? <div className="response w3-panel w3-border">{this.state.response}</div> : ""}*/}
                 </form>
+                <div>
+                    <Dialog
+                        open={this.state.wait}
+                        onClose={!this.state.wait}
+                    >
+                        <DialogContent>
+                            <CircularProgress disableShrink />
+                        </DialogContent>
+                        <DialogActions>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+                <div>
+                    <Dialog
+                    open={this.state.response}
+                    onClose={this.handleAlert}
+                >
+                    <DialogContent>
+                        <div style={!this.state.isSuccess ? { display: 'none' } : {}}>
+                            <Alert severity="success"><Typography style={{
+                                fontSize: 12,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>{this.state.response}</Typography></Alert>
+                        </div>
+                        <div style={this.state.isSuccess ? { display: 'none' } : {}}>
+                            <Alert severity="error"><Typography style={{
+                                fontSize: 12,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>{this.state.response}</Typography></Alert>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleAlert} color="primary">
+                            Ok
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                </div>
             </div>
         );
     }

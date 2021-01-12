@@ -7,6 +7,7 @@ import PipelineDataService from '../../firebase/pipelineDataService';
 import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
 import axios from 'axios';
+import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -17,11 +18,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class PipelineMenu extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       pipelineNames: [],
       pipelineName: "",
@@ -31,10 +33,20 @@ class PipelineMenu extends React.Component {
       response: "",
       form: "none",
       selectedFile: [],
-      openDialog: false
+      openDialog: false,
+      isSuccess:false,
+      wait:false,
     }
-
     this.retriveData()
+  }
+
+  setResponse=(res)=>{
+    this.setState({response:res, isSuccess: true},()=>{
+      this.setState({wait:!this.state.wait},()=>{
+        console.log(this.state.wait);
+      });
+      console.log(this.state.response)
+    })
   }
 
   api = new Api();
@@ -67,6 +79,7 @@ class PipelineMenu extends React.Component {
   }
 
   createPipeline = () => {
+    this.setState({wait:!this.state.wait});
     let pipelines = [...this.state.pipelines]
     var id = pipelines.length
     let pipelineName = this.state.pipelineName
@@ -84,13 +97,11 @@ class PipelineMenu extends React.Component {
       this.setState((prevState) => ({
         pipelines: [...prevState.pipelines, { pipelineName: "", status: "" }]
       }), () => {
+        let data = this.api.createPipeLine({ pipeline_name: pipelineName }, this.setResponse);
         console.log(this.state.pipelines[id - 1])
         PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
         let { path, url } = matchPath
       });
-
-      let data = this.api.createPipeLine({ pipeline_name: pipelineName });
-      this.setState({ response: data });
       this.state.pipelineName = "";
     }
     this.handleClose()
@@ -152,6 +163,10 @@ class PipelineMenu extends React.Component {
   handleClose = () => {
     this.setState({ openDialog: false })
   };
+
+  handleAlert = () => {
+    this.setState({response:"", isSuccess:false})
+  }
 
   initializePipeline = (name) => {
     let data = this.api.initializePipeline(name);
@@ -307,7 +322,6 @@ class PipelineMenu extends React.Component {
                     <Typography style={{
                       fontSize: 12,
                       fontFamily: 'Courier New',
-                      color: 'grey',
                       fontWeight: 'bolder',
                     }}>
                       Create a new pipeline for continous spatio-temporal data fusion
@@ -333,7 +347,48 @@ class PipelineMenu extends React.Component {
                   </Button>
                 </DialogActions>
               </Dialog>
+              <div>
+                <Dialog
+                    open={this.state.wait}
+                    onClose={!this.state.wait}
+                >
+                  <DialogContent>
+                    <CircularProgress disableShrink />
+                  </DialogContent>
+                  <DialogActions>
+                  </DialogActions>
+                </Dialog>
+              </div>
             </div>
+            <Dialog
+                open={this.state.isSuccess}
+                onClose={this.handleAlert}
+            >
+              <DialogContent>
+                <div style={!this.state.isSuccess ? { display: 'none' } : {}}>
+                <Alert severity="success"><Typography style={{
+                  fontSize: 12,
+                  fontFamily: 'Courier New',
+                  color: 'grey',
+                  fontWeight: 'bolder',
+                }}>{this.state.response}</Typography>
+                </Alert>
+                </div>
+                <div style={this.state.isSuccess ? { display: 'none' } : {}}>
+                  <Alert severity="error"><Typography style={{
+                    fontSize: 12,
+                    fontFamily: 'Courier New',
+                    color: 'grey',
+                    fontWeight: 'bolder',
+                  }}>{this.state.response}</Typography></Alert>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleAlert} color="primary">
+                  Ok
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
       </div>
