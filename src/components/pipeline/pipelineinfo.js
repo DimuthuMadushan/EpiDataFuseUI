@@ -13,7 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import SettingsIcon from '@material-ui/icons/Settings';
-
+import axios from 'axios';
 
 class PipelineInfo extends React.Component {
 
@@ -25,7 +25,7 @@ class PipelineInfo extends React.Component {
             openDialog: false,
             openDialogInit: false,
             openDialogStreaming: false,
-            temporalGranularities: ["week", "day"],
+            temporalGranularities: [],
             fusionfq_unit: "",
             fusionfq_multiplier: "",
             features: this.props.features,
@@ -80,6 +80,21 @@ class PipelineInfo extends React.Component {
         this.props.setFusionFrequency(data)
     }
 
+    getGranularityInfo(data) {
+        axios.post('http://localhost:8080/getGranularityInfo', data)
+            .then(function (response) {
+                if (response.data.success) {
+                    return response.data
+                } else {
+                    return null
+                }
+            }).then((res) => {
+                if (res.data.temporalGranularities) {
+                    this.setState({ temporalGranularities: res.data.temporalGranularities })
+                }
+            })
+    }
+
     handleClickOpen = () => {
         this.setState({ openDialog: true })
     };
@@ -108,6 +123,15 @@ class PipelineInfo extends React.Component {
     handleCloseStreaming = () => {
         this.setState({ openDialogStreaming: false })
     };
+
+    componentDidMount() {
+        var id = this.props.pipelineName
+        this.setState({ pipelineName: id })
+        var data = {
+            "pipeline_name": id
+        }
+        this.getGranularityInfo(data)
+    }
 
     render() {
         let { temporalGranularities, streamingConfig } = this.state

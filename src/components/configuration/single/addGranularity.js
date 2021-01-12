@@ -25,13 +25,15 @@ class AddGranularity extends React.Component {
             pipelineName: this.props.pipelineName,
             featureName: null,
             attributes: [{ attribute_name: null, attribute_type: null, indexed: "false" }],
+            geometry: { attribute_name: "geom", attribute_type: null, indexed: "true" },
             uuid_attribute_name: null,
             granularity_file: null,
             postingFeatures: [{ featureName: null, attributes: [], uuid: null }],
             granularity: { feature_name: null, attributes: [], uuid_attribute_name: null },
-            errorMsg: { featureName: null, atttributes: null, uuid: null },
+            errorMsg: { featureName: null, atttributes: null, uuid: null, geom: null },
             response: null,
             attributeTypes: [],
+            geomAttributeTypes: [],
             shapefile: null,
             file_name: "",
             columns: ["MOH_ID"],
@@ -96,6 +98,20 @@ class AddGranularity extends React.Component {
             })
         }
     }
+    handleChangeGeom = (e) => {
+        let errorMsg = this.state.errorMsg
+        var error = ""
+        if (!e.target.value) {
+            error = `${e.target.name} field cannot be empty`
+            errorMsg[e.target.name] = error
+        } else {
+            var geometry = this.state.geometry
+            geometry["attribute_type"] = e.target.value
+            this.setState({ geometry: geometry })
+        }
+        this.setState({ errorMsg });
+    }
+
 
     handleAttributeChange = (id, name) => (e) => {
         let errorMsg = this.state.errorMsg
@@ -168,13 +184,18 @@ class AddGranularity extends React.Component {
                     return null
                 }
             }).then((res) => {
+                console.log(res.data)
                 if (res.data.attribute_types) {
                     this.setState({ attributeTypes: res.data.attribute_types })
+                    this.setState({ geomAttributeTypes: res.data.geom_attribute_types })
                 }
             })
     }
 
     addNewGranularity = (e) => {
+        var attributes = this.state.attributes
+        attributes.push(this.state.geometry)
+        this.setState({ attributes: attributes })
         var granularityConfig = {
             pipeline_name: this.state.pipelineName,
             feature_name: this.state.featureName,
@@ -217,7 +238,7 @@ class AddGranularity extends React.Component {
     }
 
     render() {
-        let { attributes, attributeTypes, columns } = this.state
+        let { attributes, attributeTypes, geomAttributeTypes, columns } = this.state
         let transformations = this.state.ingestConfig.transformations
         let attributeTypeList = attributeTypes.length > 0
             && attributeTypes.map((val, i) => {
@@ -225,6 +246,15 @@ class AddGranularity extends React.Component {
                     <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
                 )
             }, this);
+
+        console.log(geomAttributeTypes)
+        let geomAttributeTypeList = geomAttributeTypes.length > 0
+            && geomAttributeTypes.map((val, i) => {
+                return (
+                    <MenuItem key={i} id={val} value={val} >{val}</MenuItem>
+                )
+            }, this);
+
 
         let attributesList = attributes.length > 0
             && attributes.map((val, i) => {
@@ -301,6 +331,21 @@ class AddGranularity extends React.Component {
                             <AddCircleIcon></AddCircleIcon>
                         </IconButton>
                     </div>
+                    <div className="row">
+                        <FormControl variant="filled" size="small" className="col-50" >
+                            <InputLabel id="geom_label">Geometry type</InputLabel>
+                            <Select
+                                id="geom"
+                                labelId="geom_label"
+                                name="geom"
+                                value={this.state.geometry.attribute_type}
+                                onChange={this.handleChangeGeom}
+                            >
+                                {geomAttributeTypeList}
+                            </Select>
+                        </FormControl>
+                    </div>
+
                     <div className="row">
                         <FormControl variant="filled" size="small" className="col-50" >
                             <InputLabel id="uuid_lable">Unique granule identifier</InputLabel>
