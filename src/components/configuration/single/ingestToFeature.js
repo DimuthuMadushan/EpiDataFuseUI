@@ -17,6 +17,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Alert from "@material-ui/lab/Alert";
 import {Typography} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class IngestToFeature extends React.Component {
 
@@ -35,6 +36,7 @@ class IngestToFeature extends React.Component {
         errorMsg: { featureName: null, sourceType: null, sourceFormat: null, transformation: null },
         response: null,
         isSuccess:null,
+        wait:false,
     }
 
     api = new Api();
@@ -62,6 +64,7 @@ class IngestToFeature extends React.Component {
     }
     setResponse=(res, state)=>{
         this.setState({response:res, isSuccess: state},()=>{
+            this.setState({wait:!this.state.wait});
             console.log(this.state.response)
         })
     }
@@ -138,6 +141,7 @@ class IngestToFeature extends React.Component {
     }
 
     ingestData = () => {
+        this.setState({wait:!this.state.wait});
         let errorMsg = this.state.errorMsg
         let error = ""
         errorMsg["featureName"] = error
@@ -257,7 +261,7 @@ class IngestToFeature extends React.Component {
                         <FormControl variant="filled" size="small" className="col-50" >
                             <input
                                 type="file"
-                                accept={"csv", "xlsx", "xls"}
+                                accept={"csv","xlsx", "xls"}
                                 onChange={this.handleFileChange}
                                 maxSize={100}
                                 className="col-50"
@@ -318,6 +322,18 @@ class IngestToFeature extends React.Component {
                         Ingest Data
                     </Button>
                 </form>
+                <div>
+                    <Dialog
+                        open={this.state.wait}
+                        onClose={!this.state.wait}
+                    >
+                        <DialogContent>
+                            <CircularProgress disableShrink />
+                        </DialogContent>
+                        <DialogActions>
+                        </DialogActions>
+                    </Dialog>
+                </div>
                 <div>
                     <Dialog
                         open={this.state.response}

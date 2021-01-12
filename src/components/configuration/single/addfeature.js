@@ -19,6 +19,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Alert from "@material-ui/lab/Alert";
 import {Typography} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class AddFeature extends React.Component {
 
@@ -31,6 +32,7 @@ class AddFeature extends React.Component {
             errorMsg: { featureName: null, atttributes: null },
             response: null,
             isSuccess:null,
+            wait:false,
             attributeTypes: [],
             granularity_config: null,
             aggregation_config: []
@@ -40,6 +42,7 @@ class AddFeature extends React.Component {
 
     setResponse=(res, state)=>{
         this.setState({response:res, isSuccess: state},()=>{
+            this.setState({wait:!this.state.wait});
             console.log(this.state.response)
         })
     }
@@ -153,6 +156,7 @@ class AddFeature extends React.Component {
     }
 
     addNewFeature = (e) => {
+        this.setState({wait:!this.state.wait});
         var featureConfig = {
             pipeline_name: this.state.pipelineName,
             feature_name: this.state.featureName,
@@ -249,6 +253,18 @@ class AddFeature extends React.Component {
                     startIcon={<AddBoxIcon />}>
                     Add New Feature
                 </Button>
+                <div>
+                    <Dialog
+                        open={this.state.wait}
+                        onClose={!this.state.wait}
+                    >
+                        <DialogContent>
+                            <CircularProgress disableShrink />
+                        </DialogContent>
+                        <DialogActions>
+                        </DialogActions>
+                    </Dialog>
+                </div>
                 <div>
                     <Dialog
                     open={this.state.response}

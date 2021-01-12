@@ -10,6 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Button from "@material-ui/core/Button";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import { FilePicker } from "react-file-picker";
 import PinDropIcon from '@material-ui/icons/PinDrop';
@@ -43,6 +44,7 @@ class AddGranularity extends React.Component {
             shapefile: null,
             file_name: "",
             isSuccess:false,
+            wait:false,
             columns: ["MOH_ID"],
             ingestConfig: {
                 "pipeline_name": this.props.pipelineName,
@@ -88,6 +90,7 @@ class AddGranularity extends React.Component {
 
     setResponse=(res, state)=>{
         this.setState({response:res, isSuccess: state},(res) => {
+            this.setState({wait:!this.state.wait});
             console.log(this.state.isSuccess);
         })
     }
@@ -210,8 +213,13 @@ class AddGranularity extends React.Component {
                 }
             })
     }
+    // handleWait = ()=>{
+    //     let state = this.state.wait;
+    //     this.setState({wait:!state});
+    // }
 
     addNewGranularity = (e) => {
+        this.setState({wait:!this.state.wait});
         var attributes = this.state.attributes
         attributes.push(this.state.geometry)
         this.setState({ attributes: attributes })
@@ -449,7 +457,20 @@ class AddGranularity extends React.Component {
 
                     {/*{this.state.response ? <div className="response w3-panel w3-border">{this.state.response}</div> : ""}*/}
                 </form>
-                <div><Dialog
+                <div>
+                    <Dialog
+                        open={this.state.wait}
+                        onClose={!this.state.wait}
+                    >
+                        <DialogContent>
+                            <CircularProgress disableShrink />
+                        </DialogContent>
+                        <DialogActions>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+                <div>
+                    <Dialog
                     open={this.state.response}
                     onClose={this.handleAlert}
                 >

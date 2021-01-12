@@ -18,6 +18,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class PipelineMenu extends React.Component {
 
@@ -34,13 +35,16 @@ class PipelineMenu extends React.Component {
       selectedFile: [],
       openDialog: false,
       isSuccess:false,
+      wait:false,
     }
-    this.setResponse()
     this.retriveData()
   }
 
   setResponse=(res)=>{
     this.setState({response:res, isSuccess: true},()=>{
+      this.setState({wait:!this.state.wait},()=>{
+        console.log(this.state.wait);
+      });
       console.log(this.state.response)
     })
   }
@@ -75,6 +79,7 @@ class PipelineMenu extends React.Component {
   }
 
   createPipeline = () => {
+    this.setState({wait:!this.state.wait});
     let pipelines = [...this.state.pipelines]
     var id = pipelines.length
     let pipelineName = this.state.pipelineName
@@ -97,8 +102,6 @@ class PipelineMenu extends React.Component {
         PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
         let { path, url } = matchPath
       });
-
-      let data = this.api.createPipeLine({ pipeline_name: pipelineName }, this.setResponse);
       this.state.pipelineName = "";
     }
     this.handleClose()
@@ -344,18 +347,41 @@ class PipelineMenu extends React.Component {
                   </Button>
                 </DialogActions>
               </Dialog>
+              <div>
+                <Dialog
+                    open={this.state.wait}
+                    onClose={!this.state.wait}
+                >
+                  <DialogContent>
+                    <CircularProgress disableShrink />
+                  </DialogContent>
+                  <DialogActions>
+                  </DialogActions>
+                </Dialog>
+              </div>
             </div>
             <Dialog
                 open={this.state.isSuccess}
                 onClose={this.handleAlert}
             >
               <DialogContent>
+                <div style={!this.state.isSuccess ? { display: 'none' } : {}}>
                 <Alert severity="success"><Typography style={{
                   fontSize: 12,
                   fontFamily: 'Courier New',
                   color: 'grey',
                   fontWeight: 'bolder',
-                }}>{this.state.response}</Typography></Alert>
+                }}>{this.state.response}</Typography>
+                </Alert>
+                </div>
+                <div style={this.state.isSuccess ? { display: 'none' } : {}}>
+                  <Alert severity="error"><Typography style={{
+                    fontSize: 12,
+                    fontFamily: 'Courier New',
+                    color: 'grey',
+                    fontWeight: 'bolder',
+                  }}>{this.state.response}</Typography></Alert>
+                </div>
               </DialogContent>
               <DialogActions>
                 <Button onClick={this.handleAlert} color="primary">

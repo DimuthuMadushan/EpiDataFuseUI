@@ -27,7 +27,6 @@ class Api extends React.Component{
     createPipeLine = (data, callback) => {
         axios.post('http://localhost:8080/createPipeline', data)
             .then(function (response) {
-                console.log(response.data.success);
                 if (response.data.success) {
                     callback(response.data.message);
                     return response.data.message;
