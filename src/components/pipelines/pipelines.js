@@ -7,6 +7,7 @@ import PipelineDataService from '../../firebase/pipelineDataService';
 import firebase from "../../firebase/firebase";
 import Input from '@material-ui/core/Input';
 import axios from 'axios';
+import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -20,8 +21,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 class PipelineMenu extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       pipelineNames: [],
       pipelineName: "",
@@ -31,10 +32,17 @@ class PipelineMenu extends React.Component {
       response: "",
       form: "none",
       selectedFile: [],
-      openDialog: false
+      openDialog: false,
+      isSuccess:false,
     }
-
+    this.setResponse()
     this.retriveData()
+  }
+
+  setResponse=(res)=>{
+    this.setState({response:res, isSuccess: true},()=>{
+      console.log(this.state.response)
+    })
   }
 
   api = new Api();
@@ -84,13 +92,13 @@ class PipelineMenu extends React.Component {
       this.setState((prevState) => ({
         pipelines: [...prevState.pipelines, { pipelineName: "", status: "" }]
       }), () => {
+        let data = this.api.createPipeLine({ pipeline_name: pipelineName }, this.setResponse);
         console.log(this.state.pipelines[id - 1])
         PipelineDataService.updatePipeline(pipelineName, this.state.pipelines[id - 1]);
         let { path, url } = matchPath
       });
 
-      let data = this.api.createPipeLine({ pipeline_name: pipelineName });
-      this.setState({ response: data });
+      let data = this.api.createPipeLine({ pipeline_name: pipelineName }, this.setResponse);
       this.state.pipelineName = "";
     }
     this.handleClose()
@@ -152,6 +160,10 @@ class PipelineMenu extends React.Component {
   handleClose = () => {
     this.setState({ openDialog: false })
   };
+
+  handleAlert = () => {
+    this.setState({response:"", isSuccess:false})
+  }
 
   initializePipeline = (name) => {
     let data = this.api.initializePipeline(name);
@@ -307,7 +319,6 @@ class PipelineMenu extends React.Component {
                     <Typography style={{
                       fontSize: 12,
                       fontFamily: 'Courier New',
-                      color: 'grey',
                       fontWeight: 'bolder',
                     }}>
                       Create a new pipeline for continous spatio-temporal data fusion
@@ -334,6 +345,24 @@ class PipelineMenu extends React.Component {
                 </DialogActions>
               </Dialog>
             </div>
+            <Dialog
+                open={this.state.isSuccess}
+                onClose={this.handleAlert}
+            >
+              <DialogContent>
+                <Alert severity="success"><Typography style={{
+                  fontSize: 12,
+                  fontFamily: 'Courier New',
+                  color: 'grey',
+                  fontWeight: 'bolder',
+                }}>{this.state.response}</Typography></Alert>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleAlert} color="primary">
+                  Ok
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
       </div>

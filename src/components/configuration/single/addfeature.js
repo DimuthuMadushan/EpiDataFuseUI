@@ -14,6 +14,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { FlashOffOutlined } from '@material-ui/icons';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import Alert from "@material-ui/lab/Alert";
+import {Typography} from "@material-ui/core";
+import DialogActions from "@material-ui/core/DialogActions";
 
 class AddFeature extends React.Component {
 
@@ -25,11 +30,24 @@ class AddFeature extends React.Component {
             attributes: [{ attribute_name: null, attribute_type: null, indexed: "false" }],
             errorMsg: { featureName: null, atttributes: null },
             response: null,
+            isSuccess:null,
             attributeTypes: [],
             granularity_config: null,
             aggregation_config: []
         };
         this.api = new Api();
+    }
+
+    setResponse=(res, state)=>{
+        this.setState({response:res, isSuccess: state},()=>{
+            console.log(this.state.response)
+        })
+    }
+
+    handleAlert = () => {
+        this.setState({response:null, isSuccess:false}, ()=>{
+            window.location.reload(true);
+        })
     }
 
     handleChange = (e) => {
@@ -143,10 +161,9 @@ class AddFeature extends React.Component {
             aggregation_config: this.state.aggregation_config
         }
         console.log(featureConfig);
-        this.api.configureSchema(featureConfig, (res) => {
-            console.log(res);
-            window.location.reload(false);
-        });
+        this.api.configureSchema(featureConfig, this.setResponse
+            // window.location.reload(false);
+        );
     }
 
     handleSubmit = (e) => {
@@ -232,8 +249,36 @@ class AddFeature extends React.Component {
                     startIcon={<AddBoxIcon />}>
                     Add New Feature
                 </Button>
-                <div className="response w3-panel w3-border">{this.state.response}</div>
-
+                <div>
+                    <Dialog
+                    open={this.state.response}
+                    onClose={this.handleAlert}
+                    >
+                    <DialogContent>
+                        <div style={!this.state.isSuccess ? { display: 'none' } : {}}>
+                            <Alert severity="success"><Typography style={{
+                                fontSize: 12,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>{this.state.response}</Typography></Alert>
+                        </div>
+                        <div style={this.state.isSuccess ? { display: 'none' } : {}}>
+                            <Alert severity="error"><Typography style={{
+                                fontSize: 12,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>{this.state.response}</Typography></Alert>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleAlert} color="primary">
+                            Ok
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                </div>
             </div>
         );
     }

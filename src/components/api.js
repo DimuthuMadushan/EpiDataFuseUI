@@ -1,7 +1,10 @@
+import React from 'react';
 import axios from 'axios';
 
-export default class Api {
+class Api extends React.Component{
     constructor() {
+        super();
+        this.response = "";
         this.client = null;
         this.api_url = "http://localhost:8080";
     }
@@ -21,14 +24,16 @@ export default class Api {
     //     return this.client;
     // };
 
-    createPipeLine = (data) => {
+    createPipeLine = (data, callback) => {
         axios.post('http://localhost:8080/createPipeline', data)
             .then(function (response) {
+                console.log(response.data.success);
                 if (response.data.success) {
-                    console.log(response.data.message);
+                    callback(response.data.message);
                     return response.data.message;
                 }
                 else {
+                    callback(response.data.message);
                     return response.data.message;
                 }
             })
@@ -52,24 +57,29 @@ export default class Api {
     configureSchema = (data, callback) => {
         axios.post('http://localhost:8080/addFeatureSchema', data)
             .then(function (response) {
+                console.log(response)
                 if (response.data.success) {
-                    callback(response.data.message)
-
+                    callback(response.data.message, true)
+                    return response.data.message;
                 } else {
-                    callback(response.data.message)
+                    callback(response.data.message, false)
+                    return response.data.message;
                 }
             })
     }
 
-    addGranularity = (data) => {
+    addGranularity = (data, callback) => {
         axios.post('http://localhost:8080/addGranularity', data)
             .then(function (response) {
-                console.log(response);
-                if (response.data.success) {
-                    return response.data.message;
+                let res;
+                if (response.data=="success!") {
+                    res = "Successfully added a new granularity!"
+                    callback(res, true);
+                    return response.data;
                 } else {
-                    console.log(response);
-                    return response.data.message;
+                    res = "Operation Failed!"
+                    callback(response.data, false);
+                    return response.data;
                 }
             })
     }
@@ -111,11 +121,11 @@ export default class Api {
     ingestToFeature = (data, callback) => {
         axios.post('http://localhost:8080/ingestToFeature', data)
             .then(function (response) {
-                callback(response)
                 if (response.data.success) {
+                    callback(response.data.message, true);
                     return response.data.message;
                 } else {
-                    console.log(response);
+                    callback(response.data.message, false)
                     return response.data.message;
                 }
             })
@@ -152,3 +162,4 @@ export default class Api {
     }
 
 }
+export default Api;

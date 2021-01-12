@@ -12,6 +12,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
 import * as XLSX from 'xlsx';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import Alert from "@material-ui/lab/Alert";
+import {Typography} from "@material-ui/core";
+import DialogActions from "@material-ui/core/DialogActions";
 
 class IngestToFeature extends React.Component {
 
@@ -29,6 +34,7 @@ class IngestToFeature extends React.Component {
         fileNames: [],
         errorMsg: { featureName: null, sourceType: null, sourceFormat: null, transformation: null },
         response: null,
+        isSuccess:null,
     }
 
     api = new Api();
@@ -54,7 +60,17 @@ class IngestToFeature extends React.Component {
         }
         this.setState({ [name]: value })
     }
+    setResponse=(res, state)=>{
+        this.setState({response:res, isSuccess: state},()=>{
+            console.log(this.state.response)
+        })
+    }
 
+    handleAlert = () => {
+        this.setState({response:null, isSuccess:false}, ()=>{
+            window.location.reload(true);
+        })
+    }
     processData = (dataString) => {
         const dataStringLines = dataString.split(/\r\n|\n/);
         const headers = dataStringLines[0].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -158,10 +174,7 @@ class IngestToFeature extends React.Component {
                 this.api.putFile(formData, config, (res) => {
                     if (index === self.state.dataSources.length - 1) {
                         console.log(res)
-                        console.log("Here yay")
-                        self.api.ingestToFeature(data, (res) => {
-                            console.log(res)
-                        })
+                        self.api.ingestToFeature(data, this.setResponse)
                     }
                 })
             })
@@ -304,8 +317,37 @@ class IngestToFeature extends React.Component {
                         startIcon={<AddBoxIcon />}>
                         Ingest Data
                     </Button>
-                    <div className="response w3-panel w3-border">{this.state.response}</div>
                 </form>
+                <div>
+                    <Dialog
+                        open={this.state.response}
+                        onClose={this.handleAlert}
+                    >
+                        <DialogContent>
+                            <div style={!this.state.isSuccess ? { display: 'none' } : {}}>
+                                <Alert severity="success"><Typography style={{
+                                    fontSize: 12,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder',
+                                }}>{this.state.response}</Typography></Alert>
+                            </div>
+                            <div style={this.state.isSuccess ? { display: 'none' } : {}}>
+                                <Alert severity="error"><Typography style={{
+                                    fontSize: 12,
+                                    fontFamily: 'Courier New',
+                                    color: 'grey',
+                                    fontWeight: 'bolder',
+                                }}>{this.state.response}</Typography></Alert>
+                            </div>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleAlert} color="primary">
+                                Ok
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
 
             </div >
         );
