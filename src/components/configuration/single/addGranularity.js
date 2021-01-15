@@ -261,6 +261,7 @@ class AddGranularity extends React.Component {
         e.preventDefault()
     }
 
+
     render() {
         let { attributes, attributeTypes, geomAttributeTypes, columns } = this.state
         let transformations = this.state.ingestConfig.transformations

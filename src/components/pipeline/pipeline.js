@@ -34,7 +34,10 @@ class Pipeline extends React.Component {
             initTimestamp: null,
             fusionFQUnit: null,
             fusionFQMultiplier: null,
-            openDialog: false
+            openDialog: false,
+            openDialogMap: false,
+            granularity: null,
+            shapefile: null
         }
         this.api = new Api();
     }
@@ -224,6 +227,16 @@ class Pipeline extends React.Component {
         });
     }
 
+    handleClickOpenMap = (granularity, shapefile) => (e) => {
+        this.setState({ shapefile: shapefile })
+        this.setState({ granularity: granularity })
+        this.setState({ openDialogMap: true })
+    };
+
+    handleCloseMap = () => {
+        this.setState({ openDialogMap: false })
+    };
+
     render() {
         let { granularities, pipelineName, features, fusionFrequency, fusionFQMultiplier, fusionFQUnit
             , initTimestamp, initialTimestamp } = this.state
@@ -347,24 +360,6 @@ class Pipeline extends React.Component {
                             </div>
                                 : ""}
                         </td>
-                        {/* <td> <Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['mappingMethod']['temporalRelationMappingMethod']}</Typography></td> */}
-                        {/* <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['conversionFrequency']}</Typography></td>
-                        <td><Typography style={{
-                            fontSize: 10,
-                            fontFamily: 'Courier New',
-                            color: 'grey',
-                            fontWeight: 'bolder'
-                        }}>{feature['externalSource']}</Typography></td> */}
                     </tr>
                 )
             }, this);
@@ -398,9 +393,14 @@ class Pipeline extends React.Component {
                             </ul>
                         </td>
                         <td>
-                            <div style={{ width: 900, height: 400 }}>
-                                <SpatialGranularity shapefile={granularity['shapefile']}></SpatialGranularity>
-                            </div>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={this.handleClickOpenMap(granularity['granularityName'], granularity['shapefile'])}
+                                style={{ marginLeft: 10 }}>
+                                View granules
+                            </Button>
                         </td>
                     </tr>
                 )
@@ -474,24 +474,6 @@ class Pipeline extends React.Component {
                                     color: 'grey',
                                     fontWeight: 'bolder'
                                 }}>Spatial conversion Method</Typography></th>
-                                {/* <th><Typography style={{
-                                fontSize: 10,
-                                fontFamily: 'Courier New',
-                                color: 'grey',
-                                fontWeight: 'bolder'
-                            }}>Temporal conversion Method</Typography></th> */}
-                                {/* <th><Typography style={{
-                                    fontSize: 10,
-                                    fontFamily: 'Courier New',
-                                    color: 'grey',
-                                    fontWeight: 'bolder'
-                                }}>Fusion frequency</Typography></th>
-                                <th><Typography style={{
-                                    fontSize: 10,
-                                    fontFamily: 'Courier New',
-                                    color: 'grey',
-                                    fontWeight: 'bolder'
-                                }}>External source confguration</Typography></th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -525,7 +507,7 @@ class Pipeline extends React.Component {
                                     fontFamily: 'Courier New',
                                     color: 'grey',
                                     fontWeight: 'bolder'
-                                }}>Granules</Typography></th>
+                                }}></Typography></th>
 
                             </tr>
                         </thead>
@@ -549,53 +531,12 @@ class Pipeline extends React.Component {
                             fontWeight: 'bolder'
                         }} onClick={this.toggleAddFeature}>Add New Feature</Typography></button>
 
-                        {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                        fontSize: 12,
-                        fontFamily: 'Courier New',
-                        color: 'white',
-                        fontWeight: 'bolder'
-                    }} onClick={this.toggleAddNewSource}>Add New Source</Typography></button> */}
-
                         <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
                             fontSize: 12,
                             fontFamily: 'Courier New',
                             color: 'white',
                             fontWeight: 'bolder'
                         }} onClick={this.toggleIngestToFeature}>Ingest to Feature</Typography></button>
-                        {/* <button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border  w3-round"><Typography style={{
-                        fontSize: 12,
-                        fontFamily: 'Courier New',
-                        color: 'white',
-                        fontWeight: 'bolder'
-                    }} onClick={this.toggleIngestToGranularity}>Ingest to Granularity</Typography></button> */}
-
-                        {/* <Link to="/addAggreConfig"><button style={{ 'height': 30, 'padding': 8, 'marginRight': 5 }} className="w3-btn w3-blue w3-border w3-round"> <Typography style={{
-                            fontSize: 12,
-                            fontFamily: 'Courier New',
-                            color: 'white',
-                            fontWeight: 'bolder'
-                        }}>Bulk ingest</Typography></button></Link> */}
-                        {/* <Switch>
-                            <PrivateRoute exact path="/addFeature"><Schema pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addGranularity"><Granularity pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/addSource"><SourceConnector /></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToGranularity"><IngestToGranularity pipelineName={pipelineName} /></PrivateRoute>
-                            <PrivateRoute exact path="/ingestToFeature"><IngestToFeature pipelineName={pipelineName} /></PrivateRoute>
-                        </Switch> */}
-
-                        {/* 
-                        <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
-                            <Granularity pipelineName={pipelineName} />
-                        </div>
-                        <div style={!this.state.addFeature ? { display: 'none' } : {}}>
-                            <AddFeature pipelineName={pipelineName} />
-                        </div>
-                        <div style={!this.state.ingestToFeature ? { display: 'none' } : {}}>
-                            <IngestToFeature pipelineName={pipelineName} features={features} />
-                        </div>
-                        <div style={!this.state.ingestToGranularity ? { display: 'none' } : {}}>
-                            <IngestToGranularity pipelineName={pipelineName} />
-                        </div> */}
                     </div>
                     <div>
                         <Dialog maxWidth={'xl'} open={this.state.openDialog} onClose={this.handleClose} aria-labelledby="form-dialog-title">
@@ -610,16 +551,6 @@ class Pipeline extends React.Component {
                                 </Typography>
                             </DialogTitle>
                             <DialogContent>
-                                {/* <DialogContentText>
-                                    <Typography style={{
-                                        fontSize: 12,
-                                        fontFamily: 'Courier New',
-                                        color: 'grey',
-                                        fontWeight: 'bolder',
-                                    }}>
-                                        Set the fusion frequenchy of the pipeline
-                                </Typography>
-                                </DialogContentText> */}
                                 <div style={!this.state.addGranularity ? { display: 'none' } : {}}>
                                     <Granularity pipelineName={pipelineName} />
                                 </div>
@@ -643,6 +574,31 @@ class Pipeline extends React.Component {
                             </DialogActions>
                         </Dialog>
                     </div>
+                </div>
+                <div>
+                    <Dialog maxWidth={'xl'} open={this.state.openDialogMap} onClose={this.handleCloseMap} aria-labelledby="form-dialog-title">
+                        <DialogTitle id="form-dialog-title">
+                            <Typography style={{
+                                fontSize: 15,
+                                fontFamily: 'Courier New',
+                                color: 'grey',
+                                fontWeight: 'bolder',
+                            }}>
+                                {"Spatial granules of" + this.state.granularity}
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            {this.state.shapefile != null ?
+                                <div style={{ width: 900, height: 400 }}>
+                                    <SpatialGranularity shapefile={this.state.shapefile}></SpatialGranularity>
+                                </div> : ""}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleCloseMap} color="primary">
+                                Cancel
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </div>
             </div>
         )

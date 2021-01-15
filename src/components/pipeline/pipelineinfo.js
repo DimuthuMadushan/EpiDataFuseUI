@@ -256,7 +256,7 @@ class PipelineInfo extends React.Component {
                                         marginTop: 10
                                     }}>
                                         Fusion Frequency: {this.props.fusionFrequency +
-                                            " seconds (" + this.props.fusionFQMultiplier + " " + this.props.fusionFQUnit + ")"}
+                                            " ms (" + this.props.fusionFQMultiplier + " " + this.props.fusionFQUnit + ")"}
 
                                     </Typography>
                             }
